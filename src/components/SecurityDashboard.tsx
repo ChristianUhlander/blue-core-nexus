@@ -6435,7 +6435,7 @@ const SecurityDashboard = () => {
                   Configure and launch an AI-powered autonomous penetration test with comprehensive LLM integration.
                 </DialogDescription>
               </DialogHeader>
-              <AgenticPentestInterface onClose={() => setIsAgenticPentestOpen(false)} />
+              <EnhancedAgenticPentestInterface onClose={() => setIsAgenticPentestOpen(false)} />
             </DialogContent>
           </Dialog>
         )}
