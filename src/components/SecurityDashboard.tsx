@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import SecurityChatbot from "./SecurityChatbot";
 import { useRealTimeSecurityData } from "@/hooks/useRealTimeSecurityData";
 import { k8sSecurityApi } from "@/services/k8sSecurityApi";
+import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState, useCallback, useMemo } from "react";
 import * as React from "react";

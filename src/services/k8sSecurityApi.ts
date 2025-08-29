@@ -67,26 +67,26 @@ class K8sSecurityApiService {
   private apiKeys: Record<string, string> = {};
 
   constructor() {
-    // In K8s environment, use service discovery
-    // Format: http://service-name.namespace.svc.cluster.local:port
-    this.baseUrl = process.env.NODE_ENV === 'production' 
+    // Browser-safe base URL configuration
+    this.baseUrl = import.meta.env?.PROD 
       ? 'https://security-api.security.svc.cluster.local'
-      : 'http://localhost:3001'; // Development fallback
+      : 'http://localhost:3001';
     
     this.initializeApiKeys();
     this.initializeWebSocket();
   }
 
   /**
-   * Initialize API keys from environment variables or K8s secrets
-   * Backend: Mount secrets as environment variables in deployment
+   * Initialize API keys safely for browser environment
+   * Production: Use Vite environment variables or runtime config
    */
   private initializeApiKeys() {
+    // Browser-safe environment variable access
     this.apiKeys = {
-      wazuh: process.env.WAZUH_API_KEY || '',
-      gvm: process.env.GVM_API_KEY || '',
-      zap: process.env.ZAP_API_KEY || '',
-      spiderfoot: process.env.SPIDERFOOT_API_KEY || ''
+      wazuh: import.meta.env?.VITE_WAZUH_API_KEY || '',
+      gvm: import.meta.env?.VITE_GVM_API_KEY || '',
+      zap: import.meta.env?.VITE_ZAP_API_KEY || '',
+      spiderfoot: import.meta.env?.VITE_SPIDERFOOT_API_KEY || ''
     };
   }
 
