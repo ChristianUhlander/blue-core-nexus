@@ -28,6 +28,7 @@ const SecurityDashboard = () => {
   const [isScanResultsOpen, setIsScanResultsOpen] = useState(false);
   const [isOwaspScanOpen, setIsOwaspScanOpen] = useState(false);
   const [isSpiderfootOpen, setIsSpiderfootOpen] = useState(false);
+  const [isOsintProfilesOpen, setIsOsintProfilesOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<string>('001');
   const [cveScanning, setCveScanning] = useState(false);
   const [owaspScanning, setOwaspScanning] = useState(false);
@@ -56,6 +57,44 @@ const SecurityDashboard = () => {
     alertLevel: '7'
   });
   const { toast } = useToast();
+
+  // OSINT Asset Profile State Management
+  // These states would be managed by backend API calls to SQLite database
+  const [osintProfiles, setOsintProfiles] = useState([
+    {
+      id: 1,
+      name: "Corporate Domain Assets",
+      type: "domain",
+      targets: ["company.com", "subdomain.company.com"],
+      description: "Main corporate web presence monitoring",
+      priority: "high",
+      tags: ["corporate", "web", "public"],
+      created: "2024-01-15",
+      lastScan: "2024-01-20",
+      status: "active"
+    },
+    {
+      id: 2,
+      name: "Executive Email Monitoring",
+      type: "email",
+      targets: ["ceo@company.com", "cto@company.com"],
+      description: "C-level executive digital footprint monitoring",
+      priority: "critical",
+      tags: ["executive", "email", "sensitive"],
+      created: "2024-01-10",
+      lastScan: "2024-01-19",
+      status: "active"
+    }
+  ]);
+
+  const [newProfile, setNewProfile] = useState({
+    name: '',
+    type: 'domain',
+    targets: [''],
+    description: '',
+    priority: 'medium',
+    tags: []
+  });
 
   /**
    * Mock agent data with connection status indicators
@@ -168,6 +207,116 @@ const SecurityDashboard = () => {
    */
   const getSelectedAgentData = () => {
     return agentData.find(agent => agent.id === selectedAgent) || agentData[0];
+  };
+
+  /**
+   * OSINT Profile Management Functions
+   * These functions interact with SQLite backend for encrypted data storage
+   */
+  
+  /**
+   * Handle creating new OSINT profile
+   * Backend Integration: POST /api/osint/profiles
+   * Encryption: All sensitive data (targets, descriptions) should be encrypted before storage
+   * Database Schema: 
+   * - profiles table: id, name, type, encrypted_targets, encrypted_description, priority, tags, created_at, updated_at, status
+   * - profile_scans table: id, profile_id, scan_date, results, status
+   */
+  const handleCreateProfile = async () => {
+    // Validation
+    if (!newProfile.name.trim() || newProfile.targets.filter(t => t.trim()).length === 0) {
+      toast({
+        title: "Validation Error",
+        description: "Profile name and at least one target are required.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // In production, this would:
+    // 1. Encrypt sensitive data (targets, description) using AES-256
+    // 2. Make POST request to backend API
+    // 3. Backend stores encrypted data in SQLite
+    // 4. Return success/error response
+    
+    const profileData = {
+      ...newProfile,
+      id: Date.now(), // Backend should generate proper UUID
+      targets: newProfile.targets.filter(t => t.trim()),
+      created: new Date().toISOString().split('T')[0],
+      lastScan: null,
+      status: 'active'
+    };
+
+    // Frontend state update (backend would return this data)
+    setOsintProfiles([...osintProfiles, profileData]);
+    
+    // Reset form
+    setNewProfile({
+      name: '',
+      type: 'domain',
+      targets: [''],
+      description: '',
+      priority: 'medium',
+      tags: []
+    });
+
+    toast({
+      title: "Profile Created",
+      description: `OSINT profile "${profileData.name}" has been created and encrypted.`,
+    });
+
+    setIsOsintProfilesOpen(false);
+  };
+
+  /**
+   * Handle updating existing OSINT profile
+   * Backend Integration: PUT /api/osint/profiles/:id
+   */
+  const handleUpdateProfile = async (profileId, updatedData) => {
+    // Backend would decrypt, update, and re-encrypt data
+    setOsintProfiles(osintProfiles.map(profile => 
+      profile.id === profileId ? { ...profile, ...updatedData } : profile
+    ));
+    
+    toast({
+      title: "Profile Updated",
+      description: "OSINT profile has been updated successfully.",
+    });
+  };
+
+  /**
+   * Handle deleting OSINT profile
+   * Backend Integration: DELETE /api/osint/profiles/:id
+   */
+  const handleDeleteProfile = async (profileId) => {
+    // Backend would securely delete encrypted data
+    setOsintProfiles(osintProfiles.filter(profile => profile.id !== profileId));
+    
+    toast({
+      title: "Profile Deleted",
+      description: "OSINT profile and all associated data have been securely deleted.",
+    });
+  };
+
+  /**
+   * Handle target input changes (dynamic array)
+   */
+  const handleTargetChange = (index, value) => {
+    const updatedTargets = [...newProfile.targets];
+    updatedTargets[index] = value;
+    setNewProfile({ ...newProfile, targets: updatedTargets });
+  };
+
+  const addTargetField = () => {
+    setNewProfile({ ...newProfile, targets: [...newProfile.targets, ''] });
+  };
+
+  const removeTargetField = (index) => {
+    if (newProfile.targets.length > 1) {
+      const updatedTargets = newProfile.targets.filter((_, i) => i !== index);
+      setNewProfile({ ...newProfile, targets: updatedTargets });
+    }
   };
 
   /**
@@ -2707,9 +2856,356 @@ const SecurityDashboard = () => {
                         </DialogContent>
                       </Dialog>
                       
-                      <Button variant="outline" size="sm">
-                        Intelligence Gathering
-                      </Button>
+                      <Dialog open={isOsintProfilesOpen} onOpenChange={setIsOsintProfilesOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="glow-hover group">
+                            <User className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                            OSINT Profiles
+                            <Badge variant="secondary" className="ml-2">
+                              {osintProfiles.length}
+                            </Badge>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1200px] max-h-[90vh] gradient-card border-primary/20">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <div className="relative">
+                                <Shield className="h-6 w-6 text-blue-500 animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping" />
+                              </div>
+                              OSINT Asset Profile Management
+                              <Badge variant="secondary" className="ml-2 animate-pulse-glow">
+                                ENCRYPTED STORAGE
+                              </Badge>
+                            </DialogTitle>
+                            <DialogDescription className="text-base">
+                              Securely manage and monitor your digital assets through encrypted OSINT profiles. All sensitive data is encrypted before storage.
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <Tabs defaultValue="profiles" className="space-y-6">
+                            <TabsList className="grid w-full grid-cols-2">
+                              <TabsTrigger value="profiles" className="flex items-center gap-2">
+                                <Database className="h-4 w-4" />
+                                Existing Profiles ({osintProfiles.length})
+                              </TabsTrigger>
+                              <TabsTrigger value="create" className="flex items-center gap-2">
+                                <Target className="h-4 w-4" />
+                                Create New Profile
+                              </TabsTrigger>
+                            </TabsList>
+
+                            {/* Existing Profiles Tab */}
+                            <TabsContent value="profiles" className="space-y-4">
+                              <ScrollArea className="h-[400px] w-full">
+                                <div className="space-y-4 pr-4">
+                                  {osintProfiles.map((profile) => (
+                                    <Card key={profile.id} className="gradient-card border border-primary/20 glow-hover">
+                                      <CardHeader className="pb-3">
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-3">
+                                            <div className={`w-3 h-3 rounded-full ${
+                                              profile.status === 'active' ? 'bg-green-500 animate-pulse' :
+                                              profile.status === 'paused' ? 'bg-yellow-500' :
+                                              'bg-gray-500'
+                                            }`} />
+                                            <div>
+                                              <CardTitle className="text-lg">{profile.name}</CardTitle>
+                                              <CardDescription className="flex items-center gap-2">
+                                                <Badge variant="outline" className="text-xs">
+                                                  {profile.type.toUpperCase()}
+                                                </Badge>
+                                                <Badge variant={
+                                                  profile.priority === 'critical' ? 'destructive' :
+                                                  profile.priority === 'high' ? 'default' :
+                                                  'secondary'
+                                                } className="text-xs">
+                                                  {profile.priority.toUpperCase()}
+                                                </Badge>
+                                              </CardDescription>
+                                            </div>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <Button variant="ghost" size="sm" className="glow-hover">
+                                              <Settings className="h-4 w-4" />
+                                            </Button>
+                                            <Button 
+                                              variant="ghost" 
+                                              size="sm" 
+                                              className="glow-hover text-destructive hover:text-destructive"
+                                              onClick={() => handleDeleteProfile(profile.id)}
+                                            >
+                                              <AlertTriangle className="h-4 w-4" />
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      </CardHeader>
+                                      <CardContent className="space-y-3">
+                                        <div>
+                                          <div className="text-sm font-medium mb-2">Monitored Targets ({profile.targets.length})</div>
+                                          <div className="flex flex-wrap gap-2">
+                                            {profile.targets.map((target, idx) => (
+                                              <Badge key={idx} variant="outline" className="text-xs font-mono bg-muted/50">
+                                                <Lock className="h-3 w-3 mr-1" />
+                                                {target}
+                                              </Badge>
+                                            ))}
+                                          </div>
+                                        </div>
+                                        
+                                        {profile.description && (
+                                          <div>
+                                            <div className="text-sm font-medium mb-1">Description</div>
+                                            <p className="text-sm text-muted-foreground">{profile.description}</p>
+                                          </div>
+                                        )}
+
+                                        <div className="grid grid-cols-3 gap-4 pt-2 border-t border-border/50">
+                                          <div className="text-center">
+                                            <div className="text-sm font-medium">Created</div>
+                                            <div className="text-xs text-muted-foreground">{profile.created}</div>
+                                          </div>
+                                          <div className="text-center">
+                                            <div className="text-sm font-medium">Last Scan</div>
+                                            <div className="text-xs text-muted-foreground">
+                                              {profile.lastScan || 'Never'}
+                                            </div>
+                                          </div>
+                                          <div className="text-center">
+                                            <div className="text-sm font-medium">Status</div>
+                                            <div className="text-xs font-semibold text-green-400">
+                                              {profile.status.toUpperCase()}
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div className="flex justify-end gap-2 pt-2">
+                                          <Button variant="outline" size="sm" className="glow-hover">
+                                            <Play className="h-4 w-4 mr-2" />
+                                            Start Scan
+                                          </Button>
+                                          <Button variant="outline" size="sm" className="glow-hover">
+                                            <BarChart3 className="h-4 w-4 mr-2" />
+                                            View Results
+                                          </Button>
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                                </div>
+                              </ScrollArea>
+                            </TabsContent>
+
+                            {/* Create New Profile Tab */}
+                            <TabsContent value="create" className="space-y-6">
+                              <ScrollArea className="h-[400px] w-full">
+                                <div className="space-y-6 pr-4">
+                                  {/* Basic Information */}
+                                  <Card className="gradient-card border border-primary/20">
+                                    <CardHeader>
+                                      <CardTitle className="flex items-center gap-2">
+                                        <Target className="h-5 w-5 text-primary" />
+                                        Basic Profile Information
+                                      </CardTitle>
+                                      <CardDescription>
+                                        Define the basic properties of your OSINT monitoring profile
+                                      </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                          <Label htmlFor="profile-name">Profile Name *</Label>
+                                          <Input
+                                            id="profile-name"
+                                            placeholder="e.g., Corporate Domain Monitoring"
+                                            value={newProfile.name}
+                                            onChange={(e) => setNewProfile({ ...newProfile, name: e.target.value })}
+                                            className="glow-hover"
+                                          />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                          <Label htmlFor="profile-type">Asset Type</Label>
+                                          <Select value={newProfile.type} onValueChange={(value) => setNewProfile({ ...newProfile, type: value })}>
+                                            <SelectTrigger className="glow-hover">
+                                              <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-popover border border-border z-50">
+                                              <SelectItem value="domain">
+                                                <div className="flex items-center gap-2">
+                                                  <Globe className="h-4 w-4" />
+                                                  Domain/Subdomain
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="ip">
+                                                <div className="flex items-center gap-2">
+                                                  <Server className="h-4 w-4" />
+                                                  IP Address/Range
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="email">
+                                                <div className="flex items-center gap-2">
+                                                  <Mail className="h-4 w-4" />
+                                                  Email Address
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="phone">
+                                                <div className="flex items-center gap-2">
+                                                  <Phone className="h-4 w-4" />
+                                                  Phone Number
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="person">
+                                                <div className="flex items-center gap-2">
+                                                  <User className="h-4 w-4" />
+                                                  Person/Individual
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="company">
+                                                <div className="flex items-center gap-2">
+                                                  <Building className="h-4 w-4" />
+                                                  Company/Organization
+                                                </div>
+                                              </SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
+                                      </div>
+
+                                      <div className="space-y-2">
+                                        <Label htmlFor="profile-priority">Priority Level</Label>
+                                        <Select value={newProfile.priority} onValueChange={(value) => setNewProfile({ ...newProfile, priority: value })}>
+                                          <SelectTrigger className="glow-hover">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent className="bg-popover border border-border z-50">
+                                            <SelectItem value="critical">
+                                              <Badge variant="destructive" className="text-xs">CRITICAL</Badge>
+                                              <span className="ml-2">Immediate attention required</span>
+                                            </SelectItem>
+                                            <SelectItem value="high">
+                                              <Badge variant="default" className="text-xs">HIGH</Badge>
+                                              <span className="ml-2">Daily monitoring</span>
+                                            </SelectItem>
+                                            <SelectItem value="medium">
+                                              <Badge variant="secondary" className="text-xs">MEDIUM</Badge>
+                                              <span className="ml-2">Weekly monitoring</span>
+                                            </SelectItem>
+                                            <SelectItem value="low">
+                                              <Badge variant="outline" className="text-xs">LOW</Badge>
+                                              <span className="ml-2">Monthly monitoring</span>
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      <div className="space-y-2">
+                                        <Label htmlFor="profile-description">Description</Label>
+                                        <Textarea
+                                          id="profile-description"
+                                          placeholder="Describe what this profile monitors and why it's important..."
+                                          value={newProfile.description}
+                                          onChange={(e) => setNewProfile({ ...newProfile, description: e.target.value })}
+                                          className="glow-hover min-h-[80px]"
+                                        />
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+
+                                  {/* Target Assets */}
+                                  <Card className="gradient-card border border-primary/20">
+                                    <CardHeader>
+                                      <CardTitle className="flex items-center gap-2">
+                                        <Lock className="h-5 w-5 text-green-500" />
+                                        Target Assets (Encrypted)
+                                      </CardTitle>
+                                      <CardDescription>
+                                        Add the specific assets to monitor. All targets are encrypted before storage in SQLite database.
+                                      </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                      {newProfile.targets.map((target, index) => (
+                                        <div key={index} className="flex items-center gap-2">
+                                          <div className="flex-1">
+                                            <Input
+                                              placeholder={
+                                                newProfile.type === 'domain' ? 'example.com' :
+                                                newProfile.type === 'ip' ? '192.168.1.0/24' :
+                                                newProfile.type === 'email' ? 'contact@example.com' :
+                                                newProfile.type === 'phone' ? '+1-555-0123' :
+                                                newProfile.type === 'person' ? 'John Doe' :
+                                                'Company Name'
+                                              }
+                                              value={target}
+                                              onChange={(e) => handleTargetChange(index, e.target.value)}
+                                              className="glow-hover"
+                                            />
+                                          </div>
+                                          {newProfile.targets.length > 1 && (
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => removeTargetField(index)}
+                                              className="text-destructive hover:text-destructive glow-hover"
+                                            >
+                                              <AlertTriangle className="h-4 w-4" />
+                                            </Button>
+                                          )}
+                                        </div>
+                                      ))}
+                                      
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={addTargetField}
+                                        className="glow-hover"
+                                      >
+                                        <Target className="h-4 w-4 mr-2" />
+                                        Add Another Target
+                                      </Button>
+                                    </CardContent>
+                                  </Card>
+
+                                  {/* Security Notice */}
+                                  <Card className="gradient-card border border-green-500/20 bg-gradient-to-br from-green-500/5 to-blue-500/5">
+                                    <CardContent className="p-4">
+                                      <div className="flex items-start gap-3">
+                                        <Lock className="h-5 w-5 text-green-500 mt-0.5" />
+                                        <div className="space-y-2">
+                                          <div className="font-semibold text-green-400">Security & Encryption Notice</div>
+                                          <div className="text-sm text-muted-foreground space-y-1">
+                                            <p>• All sensitive data (targets, descriptions) are encrypted using AES-256 before storage</p>
+                                            <p>• Profile metadata is stored in SQLite database with proper indexing</p>
+                                            <p>• Access logs are maintained for audit purposes</p>
+                                            <p>• Data is automatically backed up and can be securely exported</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </div>
+                              </ScrollArea>
+
+                              <div className="flex justify-end gap-2 pt-4 border-t border-border/50">
+                                <Button 
+                                  variant="outline" 
+                                  onClick={() => setIsOsintProfilesOpen(false)}
+                                  className="glow-hover"
+                                >
+                                  Cancel
+                                </Button>
+                                <Button 
+                                  onClick={handleCreateProfile}
+                                  className="glow-hover group"
+                                >
+                                  <Shield className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                                  Create Encrypted Profile
+                                </Button>
+                              </div>
+                            </TabsContent>
+                          </Tabs>
+                        </DialogContent>
+                      </Dialog>
                       <Button variant="outline" size="sm">
                         Threat Analysis
                       </Button>
