@@ -92,6 +92,7 @@ const SecurityDashboard = () => {
 
   // Penetration Testing state
   const [isPentestOpen, setIsPentestOpen] = useState(false);
+  const [isAgenticPentestOpen, setIsAgenticPentestOpen] = useState(false);
   const [pentestSession, setPentestSession] = useState({
     name: '',
     description: '',
@@ -121,9 +122,6 @@ const SecurityDashboard = () => {
       }
     }
   ]);
-
-  // Agentic penetration testing state
-  const [isAgenticPentestOpen, setIsAgenticPentestOpen] = useState(false);
 
   // OSINT Asset Profile State Management
   // These states would be managed by backend API calls to SQLite database
@@ -2346,6 +2344,80 @@ const SecurityDashboard = () => {
             <p className="text-xl text-muted-foreground mb-8">
               Unified cybersecurity monitoring with Wazuh, OpenVAS, OWASP ZAP, and Spiderfoot intelligence
             </p>
+            
+            {/* SUPER PROMINENT AGENTIC PENTEST BUTTON - IMPOSSIBLE TO MISS */}
+            <div className="mb-12 relative">
+              <Card className="overflow-hidden border-none bg-gradient-to-br from-orange-600/20 via-red-600/20 to-purple-600/20 backdrop-blur-sm relative group hover:scale-[1.02] transition-all duration-500 animate-pulse">
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-purple-500/10 opacity-50 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-fade-in" />
+                <CardContent className="p-8 relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-lg animate-bounce">
+                          <BrainCircuit className="h-8 w-8 text-white" />
+                        </div>
+                        <div>
+                          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-red-400 to-purple-400 animate-fade-in">
+                            🤖 Full Agentic AI Pentest
+                          </h2>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge className="bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-300 border-orange-500/50 animate-pulse">
+                              EXPERIMENTAL
+                            </Badge>
+                            <Badge className="bg-gradient-to-r from-green-500/20 to-blue-500/20 text-green-300 border-green-500/50">
+                              PRODUCTION READY
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="max-w-2xl">
+                        <p className="text-lg text-muted-foreground leading-relaxed">
+                          <span className="text-orange-400 font-semibold">Revolutionary AI-powered</span> autonomous penetration testing with 
+                          <span className="text-red-400 font-semibold"> LLM integration</span>. Connect GPT-5, Claude, or Perplexity to automatically 
+                          analyze, plan, and execute security assessments using Kali Linux tools.
+                        </p>
+                        
+                        <div className="grid grid-cols-2 gap-4 mt-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+                            <span>Autonomous Nmap → SQLMap → Nikto chains</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                            <span>OWASP & NIST methodology compliance</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+                            <span>Real-time AI decision making</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                            <span>Human oversight & approval gates</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col items-center gap-4">
+                      <Button 
+                        onClick={() => setIsAgenticPentestOpen(true)}
+                        size="lg"
+                        className="bg-gradient-to-r from-orange-600 via-red-600 to-purple-600 hover:from-orange-700 hover:via-red-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-bold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 hover:scale-110 animate-bounce"
+                      >
+                        <Settings className="h-6 w-6 mr-3" />
+                        Configure & Launch AI Pentest
+                      </Button>
+                      
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground">K8s Ready • WebSocket Updates • Comprehensive Logging</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
             
             {/* Security Administration Panel */}
             <Card className="gradient-card glow-hover mt-6">
@@ -5922,54 +5994,7 @@ const SecurityDashboard = () => {
         </Card>
       </div>
       
-        {/* Full Agentic Pentest Button - EXPERIMENTAL FEATURE */}
-        <Card className="gradient-card glow mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-glow">
-              <BrainCircuit className="h-5 w-5" />
-              Full Agentic Pentest
-              <Badge variant="secondary" className="ml-2 bg-orange-500/20 text-orange-400 border-orange-500/50">
-                EXPERIMENTAL
-              </Badge>
-            </CardTitle>
-            <CardDescription>
-              AI-powered autonomous penetration testing with LLM integration. Connect a language model to automatically analyze, plan, and execute security assessments using Kali Linux tools.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                <Info className="h-5 w-5 text-blue-500 mt-0.5" />
-                <div className="space-y-2">
-                  <div className="font-semibold text-blue-400">Autonomous AI Security Assessment</div>
-                  <div className="text-sm text-muted-foreground space-y-1">
-                    <p>• LLM-driven analysis of Nmap, SQLMap, Nikto, Amass, and Sn1per output</p>
-                    <p>• OWASP and NIST methodology compliance</p>
-                    <p>• Real-time decision making and logical next steps</p>
-                    <p>• Sandboxed execution with human oversight</p>
-                    <p>• Comprehensive evidence collection and reporting</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <div className="font-medium">Ready for Production Deployment</div>
-                  <div className="text-sm text-muted-foreground">
-                    K8s integration, WebSocket real-time updates, comprehensive logging
-                  </div>
-                </div>
-                <Button 
-                  onClick={() => setIsAgenticPentestOpen(true)}
-                  className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white glow-hover"
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  Configure & Launch
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Remove the old agentic pentest button that was buried lower in the dashboard */}
 
         {/* Security Chatbot */}
         <SecurityChatbot />
