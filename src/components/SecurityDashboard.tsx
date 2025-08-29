@@ -6434,8 +6434,8 @@ const SecurityDashboard = () => {
         {/* Agentic Pentest Interface Modal */}
         {isAgenticPentestOpen && (
           <Dialog open={isAgenticPentestOpen} onOpenChange={setIsAgenticPentestOpen}>
-            <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
+            <DialogContent className="max-w-7xl h-[90vh] p-0 overflow-hidden">
+              <DialogHeader className="p-6 pb-0 flex-shrink-0">
                 <DialogTitle className="flex items-center gap-2">
                   <BrainCircuit className="h-5 w-5" />
                   Full Agentic Penetration Test Configuration
@@ -6447,7 +6447,9 @@ const SecurityDashboard = () => {
                   Configure and launch an AI-powered autonomous penetration test with comprehensive LLM integration.
                 </DialogDescription>
               </DialogHeader>
-              <EnhancedAgenticPentestInterface onClose={() => setIsAgenticPentestOpen(false)} />
+              <div className="flex-1 overflow-hidden">
+                <EnhancedAgenticPentestInterface onClose={() => setIsAgenticPentestOpen(false)} />
+              </div>
             </DialogContent>
           </Dialog>
         )}
