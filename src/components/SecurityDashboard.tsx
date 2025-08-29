@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import SecurityChatbot from "./SecurityChatbot";
 import { useSecurityStatus } from "@/hooks/useSecurityStatus";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState } from "react";
+import * as React from "react";
 
 const SecurityDashboard = () => {
   const { getConnectionIndicator } = useSecurityStatus();
@@ -26,13 +27,21 @@ const SecurityDashboard = () => {
   const [isCveAssessmentOpen, setIsCveAssessmentOpen] = useState(false);
   const [isScanResultsOpen, setIsScanResultsOpen] = useState(false);
   const [isOwaspScanOpen, setIsOwaspScanOpen] = useState(false);
+  const [isSpiderfootOpen, setIsSpiderfootOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<string>('001');
   const [cveScanning, setCveScanning] = useState(false);
   const [owaspScanning, setOwaspScanning] = useState(false);
+  const [spiderfootScanning, setSpiderfootScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [selectedScanType, setSelectedScanType] = useState('all');
   const [resultFilter, setResultFilter] = useState('all');
   const [owaspTarget, setOwaspTarget] = useState('https://');
+  const [spiderfootTarget, setSpiderfootTarget] = useState('');
+  const [spiderfootTargetType, setSpiderfootTargetType] = useState('domain');
+  const [spiderfootScanType, setSpiderfootScanType] = useState('footprint');
+  const [selectedSpiderfootModules, setSelectedSpiderfootModules] = useState<string[]>([
+    'sfp_dnsresolve', 'sfp_whois', 'sfp_shodan', 'sfp_virustotal', 'sfp_threatcrowd'
+  ]);
   const [selectedOwaspTests, setSelectedOwaspTests] = useState<string[]>([
     'A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10'
   ]);
@@ -667,6 +676,239 @@ const SecurityDashboard = () => {
     const low = owaspTop10Tests.filter(t => t.risk === 'LOW' && selectedOwaspTests.includes(t.id)).length;
     
     return { critical, high, medium, low, total: selectedOwaspTests.length };
+  };
+
+  /**
+   * Spiderfoot OSINT Modules and Configuration
+   * Based on 200+ available Spiderfoot modules for intelligence gathering
+   */
+  const spiderfootModules = [
+    // Core Network & Infrastructure
+    {
+      id: 'sfp_dnsresolve',
+      name: 'DNS Resolution',
+      category: 'Network',
+      description: 'Resolve DNS records for domains and subdomains',
+      risk: 'LOW',
+      enabled: true
+    },
+    {
+      id: 'sfp_whois',
+      name: 'WHOIS Lookup',
+      category: 'Network', 
+      description: 'WHOIS registration data for domains and IP addresses',
+      risk: 'LOW',
+      enabled: true
+    },
+    {
+      id: 'sfp_shodan',
+      name: 'Shodan Search',
+      category: 'Network',
+      description: 'Search Shodan for exposed services and vulnerabilities',
+      risk: 'MEDIUM',
+      enabled: true
+    },
+    {
+      id: 'sfp_censys',
+      name: 'Censys Search',
+      category: 'Network',
+      description: 'Certificate and host discovery via Censys',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    
+    // Threat Intelligence
+    {
+      id: 'sfp_virustotal',
+      name: 'VirusTotal',
+      category: 'Threat Intel',
+      description: 'Check domains/IPs against VirusTotal database',
+      risk: 'MEDIUM',
+      enabled: true
+    },
+    {
+      id: 'sfp_threatcrowd',
+      name: 'ThreatCrowd',
+      category: 'Threat Intel',
+      description: 'Open source threat intelligence data',
+      risk: 'MEDIUM',
+      enabled: true
+    },
+    {
+      id: 'sfp_malwaredomains',
+      name: 'Malware Domains',
+      category: 'Threat Intel',
+      description: 'Check against known malware domain lists',
+      risk: 'HIGH',
+      enabled: false
+    },
+    
+    // Search Engines & Web
+    {
+      id: 'sfp_google',
+      name: 'Google Search',
+      category: 'Search Engines',
+      description: 'Google dorking and search results analysis',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_bing',
+      name: 'Bing Search', 
+      category: 'Search Engines',
+      description: 'Bing search engine reconnaissance',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_pgp',
+      name: 'PGP Key Servers',
+      category: 'Search Engines',
+      description: 'Search PGP key servers for email addresses',
+      risk: 'LOW',
+      enabled: false
+    },
+    
+    // Social Media & People
+    {
+      id: 'sfp_haveibeenpwned',
+      name: 'HaveIBeenPwned',
+      category: 'People',
+      description: 'Check emails against breach databases',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_hunter_io',
+      name: 'Hunter.io',
+      category: 'People',
+      description: 'Find email addresses associated with domains',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_linkedin',
+      name: 'LinkedIn',
+      category: 'People',
+      description: 'LinkedIn profile and company information',
+      risk: 'LOW',
+      enabled: false
+    },
+    
+    // Certificate & SSL
+    {
+      id: 'sfp_sslcert',
+      name: 'SSL Certificate',
+      category: 'Certificates',
+      description: 'SSL certificate analysis and validation',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_crt_sh',
+      name: 'Certificate Transparency',
+      category: 'Certificates',
+      description: 'Certificate transparency log searches',
+      risk: 'LOW',
+      enabled: false
+    },
+    
+    // Subdomain Discovery
+    {
+      id: 'sfp_subdomain_takeover',
+      name: 'Subdomain Takeover',
+      category: 'Subdomains',
+      description: 'Detect potential subdomain takeover vulnerabilities',
+      risk: 'HIGH',
+      enabled: false
+    },
+    {
+      id: 'sfp_dnsbrute',
+      name: 'DNS Brute Force',
+      category: 'Subdomains',
+      description: 'Brute force subdomain discovery',
+      risk: 'MEDIUM',
+      enabled: false
+    }
+  ];
+
+  /**
+   * Handle Spiderfoot OSINT scan launch
+   */
+  const handleSpiderfootScan = () => {
+    if (!spiderfootTarget.trim()) {
+      toast({
+        title: "Target Required",
+        description: "Please enter a target for OSINT reconnaissance",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (selectedSpiderfootModules.length === 0) {
+      toast({
+        title: "No Modules Selected",
+        description: "Please select at least one OSINT module for scanning",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSpiderfootScanning(true);
+    setScanProgress(0);
+
+    // Simulate progressive OSINT scan
+    const interval = setInterval(() => {
+      setScanProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setSpiderfootScanning(false);
+          toast({
+            title: "OSINT Scan Complete",
+            description: `Gathered intelligence on ${spiderfootTarget} using ${selectedSpiderfootModules.length} modules`,
+          });
+          return 100;
+        }
+        return prev + Math.random() * 8;
+      });
+    }, 1000);
+  };
+
+  /**
+   * Toggle Spiderfoot module selection
+   */
+  const toggleSpiderfootModule = (moduleId: string) => {
+    setSelectedSpiderfootModules(prev => 
+      prev.includes(moduleId) 
+        ? prev.filter(id => id !== moduleId)
+        : [...prev, moduleId]
+    );
+  };
+
+  /**
+   * Get Spiderfoot module statistics
+   */
+  const getSpiderfootStats = () => {
+    const high = spiderfootModules.filter(m => m.risk === 'HIGH' && selectedSpiderfootModules.includes(m.id)).length;
+    const medium = spiderfootModules.filter(m => m.risk === 'MEDIUM' && selectedSpiderfootModules.includes(m.id)).length;
+    const low = spiderfootModules.filter(m => m.risk === 'LOW' && selectedSpiderfootModules.includes(m.id)).length;
+    
+    return { high, medium, low, total: selectedSpiderfootModules.length };
+  };
+
+  /**
+   * Get target type icon
+   */
+  const getTargetTypeIcon = (type: string) => {
+    switch (type) {
+      case 'domain': return Globe;
+      case 'ip': return Server;
+      case 'email': return Mail;
+      case 'phone': return Phone;
+      case 'name': return User;
+      case 'company': return Building;
+      default: return Target;
+    }
   };
   const tools = [
     {
@@ -2102,9 +2344,369 @@ const SecurityDashboard = () => {
                   
                   <TabsContent value="osint" className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <Button className="glow-hover" variant="default" size="sm">
-                        Spiderfoot OSINT
-                      </Button>
+                      <Dialog open={isSpiderfootOpen} onOpenChange={setIsSpiderfootOpen}>
+                        <DialogTrigger asChild>
+                          <Button className="glow-hover group" variant="default" size="sm">
+                            <Search className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                            Spiderfoot OSINT
+                            <div className="ml-2 w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1300px] max-h-[90vh] gradient-card border-primary/20">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <div className="relative">
+                                <Search className="h-6 w-6 text-blue-500 animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping" />
+                              </div>
+                              Spiderfoot OSINT Intelligence Gathering
+                              <Badge variant="secondary" className="ml-2 animate-pulse-glow">
+                                200+ MODULES
+                              </Badge>
+                            </DialogTitle>
+                            <DialogDescription className="text-base">
+                              Comprehensive open source intelligence automation using 200+ data sources
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="space-y-6">
+                            {/* Target Configuration and Statistics */}
+                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                              {/* Target Configuration */}
+                              <Card className="lg:col-span-2 gradient-card border border-blue-500/20">
+                                <CardHeader className="pb-3">
+                                  <CardTitle className="text-lg flex items-center gap-2">
+                                    <Target className="h-5 w-5 text-blue-500 animate-pulse" />
+                                    OSINT Target Configuration
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-2">
+                                      <Label htmlFor="sf-target-type">Target Type</Label>
+                                      <Select value={spiderfootTargetType} onValueChange={setSpiderfootTargetType}>
+                                        <SelectTrigger className="glow-hover">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-popover border border-border z-50">
+                                          <SelectItem value="domain">
+                                            <div className="flex items-center gap-2">
+                                              <Globe className="h-4 w-4" />
+                                              Domain Name
+                                            </div>
+                                          </SelectItem>
+                                          <SelectItem value="ip">
+                                            <div className="flex items-center gap-2">
+                                              <Server className="h-4 w-4" />
+                                              IP Address
+                                            </div>
+                                          </SelectItem>
+                                          <SelectItem value="email">
+                                            <div className="flex items-center gap-2">
+                                              <Mail className="h-4 w-4" />
+                                              Email Address
+                                            </div>
+                                          </SelectItem>
+                                          <SelectItem value="phone">
+                                            <div className="flex items-center gap-2">
+                                              <Phone className="h-4 w-4" />
+                                              Phone Number
+                                            </div>
+                                          </SelectItem>
+                                          <SelectItem value="name">
+                                            <div className="flex items-center gap-2">
+                                              <User className="h-4 w-4" />
+                                              Person Name
+                                            </div>
+                                          </SelectItem>
+                                          <SelectItem value="company">
+                                            <div className="flex items-center gap-2">
+                                              <Building className="h-4 w-4" />
+                                              Company Name
+                                            </div>
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                      <Label htmlFor="sf-scan-type">Scan Type</Label>
+                                      <Select value={spiderfootScanType} onValueChange={setSpiderfootScanType}>
+                                        <SelectTrigger className="glow-hover">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-popover border border-border z-50">
+                                          <SelectItem value="passive">Passive (Safe)</SelectItem>
+                                          <SelectItem value="footprint">Footprint</SelectItem>
+                                          <SelectItem value="investigate">Investigate</SelectItem>
+                                          <SelectItem value="all">All Modules</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="space-y-2">
+                                    <Label htmlFor="sf-target">Target Value *</Label>
+                                    <div className="flex items-center gap-2">
+                                      {React.createElement(getTargetTypeIcon(spiderfootTargetType), { 
+                                        className: "h-4 w-4 text-muted-foreground" 
+                                      })}
+                                      <Input
+                                        id="sf-target"
+                                        placeholder={
+                                          spiderfootTargetType === 'domain' ? 'example.com' :
+                                          spiderfootTargetType === 'ip' ? '192.168.1.1' :
+                                          spiderfootTargetType === 'email' ? 'user@domain.com' :
+                                          spiderfootTargetType === 'phone' ? '+1-555-123-4567' :
+                                          spiderfootTargetType === 'name' ? 'John Doe' :
+                                          'Company Name'
+                                        }
+                                        value={spiderfootTarget}
+                                        onChange={(e) => setSpiderfootTarget(e.target.value)}
+                                        className="glow-hover flex-1"
+                                      />
+                                    </div>
+                                  </div>
+                                  
+                                  <Button 
+                                    onClick={handleSpiderfootScan}
+                                    disabled={spiderfootScanning}
+                                    className="w-full glow-hover group"
+                                    variant={spiderfootScanning ? "secondary" : "default"}
+                                  >
+                                    {spiderfootScanning ? (
+                                      <>
+                                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                        Gathering Intelligence...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Play className="h-4 w-4 mr-2 group-hover:animate-bounce" />
+                                        Launch OSINT Scan
+                                      </>
+                                    )}
+                                  </Button>
+                                  
+                                  {spiderfootScanning && (
+                                    <div className="space-y-2">
+                                      <div className="flex justify-between text-sm">
+                                        <span>OSINT Progress</span>
+                                        <span>{Math.round(scanProgress)}%</span>
+                                      </div>
+                                      <Progress value={scanProgress} className="glow animate-pulse" />
+                                      <p className="text-xs text-muted-foreground">
+                                        Running {selectedSpiderfootModules.length} intelligence modules...
+                                      </p>
+                                    </div>
+                                  )}
+                                </CardContent>
+                              </Card>
+
+                              {/* Statistics */}
+                              <Card className="lg:col-span-2 gradient-card border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5">
+                                <CardHeader className="pb-3">
+                                  <CardTitle className="text-lg flex items-center gap-2">
+                                    <BarChart3 className="h-5 w-5 text-blue-500 animate-pulse" />
+                                    Module Statistics
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="text-3xl font-bold text-red-500">
+                                        {getSpiderfootStats().high}
+                                      </div>
+                                      <div className="text-sm font-medium text-red-400">High Risk</div>
+                                    </div>
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="text-3xl font-bold text-yellow-500">
+                                        {getSpiderfootStats().medium}
+                                      </div>
+                                      <div className="text-sm font-medium text-yellow-400">Medium Risk</div>
+                                    </div>
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="text-3xl font-bold text-green-500">
+                                        {getSpiderfootStats().low}
+                                      </div>
+                                      <div className="text-sm font-medium text-green-400">Low Risk</div>
+                                    </div>
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="text-3xl font-bold text-blue-500 animate-pulse">
+                                        {getSpiderfootStats().total}
+                                      </div>
+                                      <div className="text-sm font-medium text-blue-400">Selected</div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </div>
+
+                            {/* OSINT Module Selection */}
+                            <Card className="gradient-card border border-blue-500/20">
+                              <CardHeader className="pb-3">
+                                <div className="flex items-center justify-between">
+                                  <CardTitle className="text-lg flex items-center gap-2">
+                                    <Search className="h-5 w-5 text-blue-500 animate-pulse" />
+                                    OSINT Intelligence Modules
+                                    <Badge variant="outline" className="text-xs">
+                                      {selectedSpiderfootModules.length}/{spiderfootModules.length} Selected
+                                    </Badge>
+                                  </CardTitle>
+                                  <div className="flex gap-2">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => setSelectedSpiderfootModules(spiderfootModules.map(m => m.id))}
+                                      className="glow-hover"
+                                    >
+                                      Select All
+                                    </Button>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => setSelectedSpiderfootModules([])}
+                                      className="glow-hover"
+                                    >
+                                      Clear All
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardHeader>
+                              <CardContent>
+                                <Tabs defaultValue="network" className="space-y-4">
+                                  <TabsList className="grid w-full grid-cols-6">
+                                    <TabsTrigger value="network">Network</TabsTrigger>
+                                    <TabsTrigger value="threat">Threat Intel</TabsTrigger>
+                                    <TabsTrigger value="search">Search Engines</TabsTrigger>
+                                    <TabsTrigger value="people">People</TabsTrigger>
+                                    <TabsTrigger value="certificates">Certificates</TabsTrigger>
+                                    <TabsTrigger value="subdomains">Subdomains</TabsTrigger>
+                                  </TabsList>
+                                  
+                                  {['network', 'threat', 'search', 'people', 'certificates', 'subdomains'].map(category => {
+                                    const categoryModules = spiderfootModules.filter(m => 
+                                      m.category.toLowerCase().includes(category === 'threat' ? 'threat intel' : 
+                                      category === 'search' ? 'search engines' : category)
+                                    );
+                                    
+                                    return (
+                                      <TabsContent key={category} value={category}>
+                                        <ScrollArea className="h-[400px] rounded-md border">
+                                          <div className="space-y-3 p-4">
+                                            {categoryModules.map((module, index) => (
+                                              <Card key={module.id} className={`gradient-card border transition-all duration-300 ${
+                                                selectedSpiderfootModules.includes(module.id) 
+                                                  ? 'border-primary/50 bg-primary/5' 
+                                                  : 'border-border/30'
+                                              } animate-fade-in`} style={{animationDelay: `${index * 0.05}s`}}>
+                                                <CardContent className="p-4">
+                                                  <div className="flex items-center gap-4">
+                                                    <Checkbox
+                                                      checked={selectedSpiderfootModules.includes(module.id)}
+                                                      onCheckedChange={() => toggleSpiderfootModule(module.id)}
+                                                    />
+                                                    
+                                                    <div className="flex-1">
+                                                      <div className="flex items-center justify-between mb-2">
+                                                        <h3 className="font-semibold text-sm">{module.name}</h3>
+                                                        <div className="flex items-center gap-2">
+                                                          <Badge variant="outline" className="text-xs font-mono">
+                                                            {module.id}
+                                                          </Badge>
+                                                          <Badge 
+                                                            variant={
+                                                              module.risk === 'HIGH' ? 'destructive' : 
+                                                              module.risk === 'MEDIUM' ? 'secondary' : 'outline'
+                                                            }
+                                                            className="text-xs"
+                                                          >
+                                                            {module.risk}
+                                                          </Badge>
+                                                        </div>
+                                                      </div>
+                                                      <p className="text-sm text-muted-foreground">{module.description}</p>
+                                                      <div className="mt-2 flex items-center gap-2">
+                                                        <Badge variant="outline" className="text-xs">
+                                                          {module.category}
+                                                        </Badge>
+                                                        {module.enabled && (
+                                                          <div className="flex items-center gap-1 text-xs text-green-400">
+                                                            <CheckCircle className="h-3 w-3" />
+                                                            <span>API Ready</span>
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </CardContent>
+                                              </Card>
+                                            ))}
+                                          </div>
+                                        </ScrollArea>
+                                      </TabsContent>
+                                    );
+                                  })}
+                                </Tabs>
+                              </CardContent>
+                            </Card>
+
+                            {/* API Configuration */}
+                            <Card className="gradient-card border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-indigo-500/5">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center gap-2">
+                                  <Code className="h-5 w-5 text-blue-500" />
+                                  API Configuration & Endpoints
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-3">
+                                    <h4 className="text-sm font-semibold">Spiderfoot API Endpoints</h4>
+                                    <div className="space-y-2 text-xs font-mono bg-muted/50 p-3 rounded border">
+                                      <div>POST /api/startscan - Start new scan</div>
+                                      <div>GET /api/scanstatus/{'<scanId>'} - Check status</div>
+                                      <div>GET /api/scaneventresults/{'<scanId>'} - Get results</div>
+                                      <div>GET /api/modules - List modules</div>
+                                      <div>GET /api/scans - List all scans</div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="space-y-3">
+                                    <h4 className="text-sm font-semibold">Connection Status</h4>
+                                    <div className="flex items-center gap-2 p-3 rounded border bg-red-500/10">
+                                      <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-lg shadow-red-500/50" />
+                                      <div>
+                                        <div className="text-sm font-medium text-red-400">Spiderfoot API</div>
+                                        <div className="text-xs text-muted-foreground">localhost:5001 - OFFLINE</div>
+                                      </div>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                      Configure Spiderfoot server connection in settings to enable real-time OSINT scanning.
+                                    </p>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </div>
+
+                          <div className="flex justify-between items-center gap-2 pt-6 border-t border-border/50">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse-glow" />
+                              <span>Open Source Intelligence Automation</span>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button variant="outline" onClick={() => setIsSpiderfootOpen(false)} className="glow-hover">
+                                Close OSINT Scanner
+                              </Button>
+                              <Button className="glow-hover group">
+                                <Settings className="h-4 w-4 mr-2 group-hover:animate-spin" />
+                                Configure API
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      
                       <Button variant="outline" size="sm">
                         Intelligence Gathering
                       </Button>
