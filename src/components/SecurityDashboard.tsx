@@ -18,6 +18,7 @@ import SecurityChatbot from "./SecurityChatbot";
 import { useRealTimeSecurityData } from "@/hooks/useRealTimeSecurityData";
 import { k8sSecurityApi } from "@/services/k8sSecurityApi";
 import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
+import { AgenticPentestInterface } from "./AgenticPentestInterface";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState, useCallback, useMemo } from "react";
 import * as React from "react";
@@ -121,8 +122,8 @@ const SecurityDashboard = () => {
     }
   ]);
 
-  // Real-time stats calculation
-  const stats = useMemo(() => getServiceStats(), [getServiceStats]);
+  // Agentic penetration testing state
+  const [isAgenticPentestOpen, setIsAgenticPentestOpen] = useState(false);
 
   // OSINT Asset Profile State Management
   // These states would be managed by backend API calls to SQLite database
