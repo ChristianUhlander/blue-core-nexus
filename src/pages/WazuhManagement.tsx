@@ -48,7 +48,191 @@ const WazuhManagement = () => {
     description: ''
   });
   const [copied, setCopied] = useState(false);
+  const [isCreateRuleOpen, setIsCreateRuleOpen] = useState(false);
+  const [ruleForm, setRuleForm] = useState({
+    name: '',
+    level: 'medium',
+    category: 'authentication',
+    template: '',
+    description: '',
+    customRule: ''
+  });
   const { toast } = useToast();
+
+  /**
+   * Predefined rule templates based on common security scenarios
+   * Organized by threat level and category for easy selection
+   */
+  const ruleTemplates = {
+    low: {
+      authentication: [
+        {
+          id: 'auth_success',
+          name: 'Successful Authentication',
+          description: 'Monitor successful login attempts for audit purposes',
+          rule: `<rule id="100001" level="3">
+  <if_sid>5715</if_sid>
+  <description>SSH authentication success.</description>
+  <mitre>
+    <id>T1078</id>
+  </mitre>
+  <group>authentication_success,pci_dss_10.2.5,gpg13_7.1,gpg13_7.2,gdpr_IV_35.7.d,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AC.7,tsc_CC6.8,</group>
+</rule>`
+        },
+        {
+          id: 'user_login',
+          name: 'User Login Events',
+          description: 'Track all user login events for compliance',
+          rule: `<rule id="100002" level="3">
+  <if_sid>5501</if_sid>
+  <description>User login.</description>
+  <group>authentication_success,pci_dss_10.2.5,gpg13_7.8,gdpr_IV_32.2,hipaa_164.312.b,</group>
+</rule>`
+        }
+      ],
+      system: [
+        {
+          id: 'file_access',
+          name: 'File Access Monitoring',
+          description: 'Monitor file access for audit trails',
+          rule: `<rule id="100003" level="2">
+  <if_sid>550</if_sid>
+  <field name="file">/etc|/bin|/sbin</field>
+  <description>File accessed in system directory.</description>
+  <group>syscheck,pci_dss_11.5,nist_800_53_SI.7,</group>
+</rule>`
+        }
+      ]
+    },
+    medium: {
+      authentication: [
+        {
+          id: 'multiple_auth_failures',
+          name: 'Multiple Authentication Failures',
+          description: 'Detect potential brute force attacks',
+          rule: `<rule id="100010" level="7">
+  <if_matched_sid>5716</if_matched_sid>
+  <same_source_ip />
+  <description>Multiple authentication failures from same source IP.</description>
+  <mitre>
+    <id>T1110</id>
+  </mitre>
+  <group>authentication_failures,pci_dss_10.2.4,pci_dss_10.2.5,gpg13_7.1,</group>
+</rule>`
+        },
+        {
+          id: 'privilege_escalation',
+          name: 'Privilege Escalation Attempt',
+          description: 'Detect attempts to gain elevated privileges',
+          rule: `<rule id="100011" level="8">
+  <if_sid>5402</if_sid>
+  <match>su|sudo</match>
+  <description>Privilege escalation attempt detected.</description>
+  <mitre>
+    <id>T1548</id>
+  </mitre>
+  <group>privilege_escalation,pci_dss_10.2.2,</group>
+</rule>`
+        }
+      ],
+      network: [
+        {
+          id: 'port_scan',
+          name: 'Port Scan Detection',
+          description: 'Identify network reconnaissance attempts',
+          rule: `<rule id="100012" level="6">
+  <if_sid>4001</if_sid>
+  <match>port scan</match>
+  <description>Port scan detected from external source.</description>
+  <mitre>
+    <id>T1046</id>
+  </mitre>
+  <group>recon,pci_dss_11.4,</group>
+</rule>`
+        }
+      ],
+      web: [
+        {
+          id: 'sql_injection',
+          name: 'SQL Injection Attempt',
+          description: 'Detect SQL injection attack patterns',
+          rule: `<rule id="100013" level="7">
+  <if_sid>31100</if_sid>
+  <match>union select|drop table|insert into</match>
+  <description>SQL injection attempt detected.</description>
+  <mitre>
+    <id>T1190</id>
+  </mitre>
+  <group>web_attack,pci_dss_6.5.1,</group>
+</rule>`
+        }
+      ]
+    },
+    high: {
+      malware: [
+        {
+          id: 'malware_execution',
+          name: 'Malware Execution',
+          description: 'Detect known malware signatures and behavior',
+          rule: `<rule id="100020" level="12">
+  <if_sid>554</if_sid>
+  <match>trojan|backdoor|keylogger|ransomware</match>
+  <description>Malware execution detected - immediate response required.</description>
+  <mitre>
+    <id>T1055</id>
+  </mitre>
+  <group>malware,pci_dss_5.1,</group>
+</rule>`
+        },
+        {
+          id: 'crypto_mining',
+          name: 'Cryptocurrency Mining',
+          description: 'Detect unauthorized cryptocurrency mining activities',
+          rule: `<rule id="100021" level="10">
+  <if_sid>2902</if_sid>
+  <match>xmrig|cryptonight|monero|bitcoin</match>
+  <description>Cryptocurrency mining activity detected.</description>
+  <mitre>
+    <id>T1496</id>
+  </mitre>
+  <group>cryptomining,</group>
+</rule>`
+        }
+      ],
+      exfiltration: [
+        {
+          id: 'data_exfiltration',
+          name: 'Data Exfiltration',
+          description: 'Detect large data transfers indicating potential data theft',
+          rule: `<rule id="100022" level="11">
+  <if_sid>2830</if_sid>
+  <match>large file transfer|bulk download</match>
+  <description>Potential data exfiltration detected - large data transfer.</description>
+  <mitre>
+    <id>T1041</id>
+  </mitre>
+  <group>data_exfiltration,pci_dss_3.4,</group>
+</rule>`
+        }
+      ],
+      system: [
+        {
+          id: 'rootkit_detection',
+          name: 'Rootkit Detection',
+          description: 'Identify rootkit installation attempts',
+          rule: `<rule id="100023" level="13">
+  <if_sid>510</if_sid>
+  <match>rootkit|kernel module|system call hook</match>
+  <description>Rootkit installation detected - critical system compromise.</description>
+  <mitre>
+    <id>T1014</id>
+  </mitre>
+  <group>rootkit,</group>
+</rule>`
+        }
+      ]
+    }
+  };
 
   // Mock data - replace with actual Wazuh API calls
   const agents = [
@@ -124,6 +308,75 @@ const WazuhManagement = () => {
       toast({
         title: "Copied to clipboard",
         description: "Installation command has been copied to your clipboard",
+      });
+    } catch (err) {
+      toast({
+        title: "Copy failed",
+        description: "Failed to copy to clipboard. Please select and copy manually.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  /**
+   * Handles creating a new Wazuh detection rule
+   * Validates the rule configuration and submits to Wazuh manager
+   */
+  const handleCreateRule = () => {
+    if (!ruleForm.name || (!ruleForm.template && !ruleForm.customRule)) {
+      toast({
+        title: "Validation Error",
+        description: "Rule name and either a template or custom rule content are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // In a real implementation, this would make an API call to the Wazuh manager
+    // POST /rules with the rule configuration
+    toast({
+      title: "Rule Created Successfully",
+      description: `Detection rule "${ruleForm.name}" has been created and activated.`,
+    });
+    
+    // Reset form and close dialog
+    setRuleForm({ name: '', level: 'medium', category: 'authentication', template: '', description: '', customRule: '' });
+    setIsCreateRuleOpen(false);
+  };
+
+  /**
+   * Gets the selected template rule content
+   */
+  const getSelectedTemplate = () => {
+    if (!ruleForm.template) return null;
+    
+    const levelTemplates = ruleTemplates[ruleForm.level as keyof typeof ruleTemplates];
+    const categoryTemplates = levelTemplates?.[ruleForm.category as keyof typeof levelTemplates] as any[];
+    
+    return categoryTemplates?.find(template => template.id === ruleForm.template) || null;
+  };
+
+  /**
+   * Gets available templates for the selected level and category
+   */
+  const getAvailableTemplates = () => {
+    const levelTemplates = ruleTemplates[ruleForm.level as keyof typeof ruleTemplates];
+    const categoryTemplates = levelTemplates?.[ruleForm.category as keyof typeof levelTemplates] as any[];
+    return categoryTemplates || [];
+  };
+
+  /**
+   * Copies rule content to clipboard
+   */
+  const copyRuleContent = async () => {
+    const template = getSelectedTemplate();
+    const content = template?.rule || ruleForm.customRule;
+    
+    try {
+      await navigator.clipboard.writeText(content);
+      toast({
+        title: "Copied to clipboard",
+        description: "Rule content has been copied to your clipboard",
       });
     } catch (err) {
       toast({
@@ -464,10 +717,197 @@ const WazuhManagement = () => {
                     <Upload className="h-4 w-4 mr-2" />
                     Import Rules
                   </Button>
-                  <Button className="glow-hover">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Rule
-                  </Button>
+                  
+                  <Dialog open={isCreateRuleOpen} onOpenChange={setIsCreateRuleOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="glow-hover">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Rule
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto gradient-card">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <FileText className="h-5 w-5 text-primary" />
+                          Create Detection Rule
+                        </DialogTitle>
+                        <DialogDescription>
+                          Create custom detection rules or use predefined templates based on common security scenarios and threat levels.
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="grid gap-6 py-4">
+                        {/* Rule Basic Information */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="rule-name">Rule Name *</Label>
+                            <Input
+                              id="rule-name"
+                              placeholder="SSH Brute Force Detection"
+                              value={ruleForm.name}
+                              onChange={(e) => setRuleForm({...ruleForm, name: e.target.value})}
+                              className="glow-hover"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="rule-level">Threat Level</Label>
+                            <Select value={ruleForm.level} onValueChange={(value) => setRuleForm({...ruleForm, level: value, template: ''})}>
+                              <SelectTrigger className="glow-hover">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-background border z-50">
+                                <SelectItem value="low">
+                                  <div className="flex items-center gap-2">
+                                    <Badge variant="outline" className="text-xs">LOW</Badge>
+                                    <span>Informational & Audit</span>
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="medium">
+                                  <div className="flex items-center gap-2">
+                                    <Badge variant="secondary" className="text-xs">MEDIUM</Badge>
+                                    <span>Security Events</span>
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="high">
+                                  <div className="flex items-center gap-2">
+                                    <Badge variant="destructive" className="text-xs">HIGH</Badge>
+                                    <span>Critical Threats</span>
+                                  </div>
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        
+                        {/* Category and Template Selection */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="rule-category">Security Category</Label>
+                            <Select value={ruleForm.category} onValueChange={(value) => setRuleForm({...ruleForm, category: value, template: ''})}>
+                              <SelectTrigger className="glow-hover">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-background border z-50">
+                                <SelectItem value="authentication">Authentication & Access</SelectItem>
+                                <SelectItem value="system">System Integrity</SelectItem>
+                                <SelectItem value="network">Network Security</SelectItem>
+                                <SelectItem value="web">Web Application</SelectItem>
+                                <SelectItem value="malware">Malware Detection</SelectItem>
+                                <SelectItem value="exfiltration">Data Exfiltration</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="rule-template">Predefined Template</Label>
+                            <Select value={ruleForm.template} onValueChange={(value) => setRuleForm({...ruleForm, template: value})}>
+                              <SelectTrigger className="glow-hover">
+                                <SelectValue placeholder="Choose a template or create custom" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-background border z-50">
+                                <SelectItem value="">Custom Rule (No Template)</SelectItem>
+                                {getAvailableTemplates().map((template) => (
+                                  <SelectItem key={template.id} value={template.id}>
+                                    <div className="flex flex-col">
+                                      <span className="font-medium">{template.name}</span>
+                                      <span className="text-xs text-muted-foreground">{template.description}</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        
+                        {/* Description */}
+                        <div className="space-y-2">
+                          <Label htmlFor="rule-description">Rule Description</Label>
+                          <Textarea
+                            id="rule-description"
+                            placeholder="Describe what this rule detects and when it should trigger..."
+                            value={ruleForm.description}
+                            onChange={(e) => setRuleForm({...ruleForm, description: e.target.value})}
+                            className="glow-hover"
+                            rows={2}
+                          />
+                        </div>
+                        
+                        {/* Template Preview or Custom Rule Input */}
+                        {ruleForm.template ? (
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label>Template Rule Content</Label>
+                              <Button size="sm" variant="outline" onClick={copyRuleContent}>
+                                <Copy className="h-3 w-3 mr-1" />
+                                Copy
+                              </Button>
+                            </div>
+                            <div className="relative">
+                              <pre className="bg-muted p-4 rounded-md text-sm overflow-x-auto border max-h-[300px] overflow-y-auto">
+                                <code>{getSelectedTemplate()?.rule}</code>
+                              </pre>
+                            </div>
+                            <div className="bg-muted/50 p-3 rounded-md">
+                              <p className="text-sm text-muted-foreground">
+                                <strong>Template:</strong> {getSelectedTemplate()?.name}
+                              </p>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {getSelectedTemplate()?.description}
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <Label htmlFor="custom-rule">Custom Rule XML *</Label>
+                            <Textarea
+                              id="custom-rule"
+                              placeholder={`<rule id="100050" level="7">
+  <if_sid>5716</if_sid>
+  <match>authentication failure</match>
+  <description>Custom authentication failure rule</description>
+  <group>authentication_failures,custom</group>
+</rule>`}
+                              value={ruleForm.customRule}
+                              onChange={(e) => setRuleForm({...ruleForm, customRule: e.target.value})}
+                              className="glow-hover font-mono text-sm"
+                              rows={10}
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              Enter your custom Wazuh rule in XML format. Make sure to use unique rule IDs and appropriate log source references.
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* Security Level Information */}
+                        <div className="bg-muted/50 p-4 rounded-md space-y-2">
+                          <h4 className="text-sm font-semibold">Threat Level Guide</h4>
+                          <div className="grid gap-2 text-xs">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">LOW (1-4)</Badge>
+                              <span>Informational events, successful operations, audit trails</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="secondary" className="text-xs">MEDIUM (5-8)</Badge>
+                              <span>Security events requiring attention, potential threats</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="destructive" className="text-xs">HIGH (9+)</Badge>
+                              <span>Critical security incidents requiring immediate response</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setIsCreateRuleOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button onClick={handleCreateRule} className="glow-hover">
+                          <FileText className="h-4 w-4 mr-2" />
+                          Create Rule
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </CardHeader>
