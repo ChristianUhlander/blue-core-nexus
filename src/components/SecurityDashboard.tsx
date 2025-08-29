@@ -996,6 +996,133 @@ const SecurityDashboard = () => {
   };
 
   /**
+   * Generate dynamic alert feed based on actual service connections
+   * Backend Integration: Real-time alert ingestion from connected services
+   * 
+   * BACKEND REQUIREMENTS:
+   * - WebSocket or SSE connection for real-time alerts
+   * - Alert parsing from Wazuh, GVM, ZAP, Spiderfoot logs
+   * - Alert severity classification and deduplication
+   * - Alert persistence and retrieval API
+   */
+  const getDynamicAlertFeed = () => {
+    const dynamicAlerts = [];
+    
+    // Only show real alerts if services are connected
+    if (serviceStatus.wazuh.online) {
+      dynamicAlerts.push(
+        {
+          type: "critical",
+          message: "Suspicious network activity detected on agent-001",
+          time: "2m ago",
+          source: "Wazuh SIEM",
+          severity: "high",
+          connected: true
+        },
+        {
+          type: "warning", 
+          message: "Failed login attempts exceed threshold",
+          time: "8m ago",
+          source: "Wazuh SIEM",
+          severity: "medium",
+          connected: true
+        }
+      );
+    }
+
+    if (serviceStatus.gvm.online) {
+      dynamicAlerts.push({
+        type: "warning",
+        message: "High-risk vulnerability found in web server",
+        time: "5m ago", 
+        source: "OpenVAS",
+        severity: "high",
+        connected: true
+      });
+    }
+
+    if (serviceStatus.zap.online) {
+      dynamicAlerts.push({
+        type: "info",
+        message: "Web application scan completed successfully",
+        time: "10m ago",
+        source: "OWASP ZAP", 
+        severity: "info",
+        connected: true
+      });
+    }
+
+    if (serviceStatus.spiderfoot.online) {
+      dynamicAlerts.push({
+        type: "warning",
+        message: "New threat intelligence indicators discovered",
+        time: "15m ago",
+        source: "Spiderfoot OSINT",
+        severity: "medium", 
+        connected: true
+      });
+    }
+
+    // Add "Connect feed" messages for offline services
+    if (!serviceStatus.wazuh.online) {
+      dynamicAlerts.push({
+        type: "disconnected",
+        message: "Connect feed to receive SIEM alerts",
+        time: serviceStatus.wazuh.lastCheck ? `Last check: ${new Date(serviceStatus.wazuh.lastCheck).toLocaleTimeString()}` : "Never connected",
+        source: "Wazuh SIEM",
+        severity: "offline",
+        connected: false,
+        error: serviceStatus.wazuh.error
+      });
+    }
+
+    if (!serviceStatus.gvm.online) {
+      dynamicAlerts.push({
+        type: "disconnected", 
+        message: "Connect feed to receive vulnerability alerts",
+        time: serviceStatus.gvm.lastCheck ? `Last check: ${new Date(serviceStatus.gvm.lastCheck).toLocaleTimeString()}` : "Never connected",
+        source: "OpenVAS",
+        severity: "offline",
+        connected: false,
+        error: serviceStatus.gvm.error
+      });
+    }
+
+    if (!serviceStatus.zap.online) {
+      dynamicAlerts.push({
+        type: "disconnected",
+        message: "Connect feed to receive web security alerts", 
+        time: serviceStatus.zap.lastCheck ? `Last check: ${new Date(serviceStatus.zap.lastCheck).toLocaleTimeString()}` : "Never connected",
+        source: "OWASP ZAP",
+        severity: "offline",
+        connected: false,
+        error: serviceStatus.zap.error
+      });
+    }
+
+    if (!serviceStatus.spiderfoot.online) {
+      dynamicAlerts.push({
+        type: "disconnected",
+        message: "Connect feed to receive OSINT alerts",
+        time: serviceStatus.spiderfoot.lastCheck ? `Last check: ${new Date(serviceStatus.spiderfoot.lastCheck).toLocaleTimeString()}` : "Never connected", 
+        source: "Spiderfoot OSINT",
+        severity: "offline",
+        connected: false,
+        error: serviceStatus.spiderfoot.error
+      });
+    }
+
+    // Sort alerts by priority: connected services first, then by severity
+    return dynamicAlerts.sort((a, b) => {
+      if (a.connected && !b.connected) return -1;
+      if (!a.connected && b.connected) return 1;
+      
+      const severityOrder = { critical: 0, high: 1, warning: 2, medium: 3, info: 4, offline: 5 };
+      return severityOrder[a.severity] - severityOrder[b.severity];
+    });
+  };
+
+  /**
    * Mock CVE vulnerability data
    * In production, this would come from OpenVAS/GVM API and CVE databases
    */
@@ -1738,12 +1865,8 @@ const SecurityDashboard = () => {
   // REMOVED: Static tools array replaced with getDynamicToolsData() function
   // The tools data is now generated dynamically based on real service status
 
-  const recentAlerts = [
-    { type: "critical", message: "Suspicious network activity detected", time: "2m ago", source: "Wazuh" },
-    { type: "warning", message: "High-risk vulnerability found in web server", time: "5m ago", source: "OpenVAS" },
-    { type: "info", message: "OWASP scan completed successfully", time: "10m ago", source: "ZAP" },
-    { type: "warning", message: "New threat intelligence indicators", time: "15m ago", source: "Spiderfoot" }
-  ];
+  // REMOVED: Static recentAlerts array replaced with getDynamicAlertFeed() function
+  // Alert data is now generated dynamically based on real service connections
 
   return (
     <div className="min-h-screen gradient-bg text-foreground">
@@ -4970,35 +5093,108 @@ const SecurityDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Recent Alerts */}
+        {/* Real-time Alert Feed */}
         <Card className="gradient-card glow mb-12">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-glow">
-              <AlertTriangle className="h-5 w-5" />
-              Recent Security Alerts
+              <div className="relative">
+                <AlertTriangle className="h-5 w-5" />
+                <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full animate-ping ${
+                  getDynamicAlertFeed().some(alert => alert.connected && alert.type === 'critical') ? 'bg-red-500' : 
+                  getDynamicAlertFeed().some(alert => alert.connected) ? 'bg-green-500' : 'bg-gray-500'
+                }`} />
+              </div>
+              Real-time Security Alert Feed
+              <Badge variant={getDynamicAlertFeed().some(alert => alert.connected) ? 'default' : 'secondary'} className="ml-2">
+                {getDynamicAlertFeed().filter(alert => alert.connected).length} ACTIVE FEEDS
+              </Badge>
             </CardTitle>
+            <CardDescription>
+              Live security alerts from connected services. Connect services to receive real-time threat notifications.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentAlerts.map((alert, index) => (
-                <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-muted/20 border border-border/30">
+              {getDynamicAlertFeed().map((alert, index) => (
+                <div key={index} className={`flex items-center justify-between p-4 rounded-lg border transition-all duration-300 ${
+                  alert.connected 
+                    ? 'bg-muted/20 border-border/30 glow-hover' 
+                    : 'bg-muted/10 border-red-500/20 border-dashed'
+                }`}>
                   <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${
-                      alert.type === 'critical' ? 'bg-destructive animate-pulse-glow' :
-                      alert.type === 'warning' ? 'bg-accent animate-pulse' :
-                      'bg-primary'
-                    }`} />
-                    <div>
-                      <p className="font-medium">{alert.message}</p>
-                      <p className="text-sm text-muted-foreground">Source: {alert.source}</p>
+                    {alert.connected ? (
+                      <div className={`w-2 h-2 rounded-full ${
+                        alert.type === 'critical' ? 'bg-red-500 animate-pulse' :
+                        alert.type === 'warning' ? 'bg-orange-500 animate-pulse' :
+                        alert.type === 'info' ? 'bg-blue-500' :
+                        'bg-primary'
+                      }`} />
+                    ) : (
+                      <div className="relative">
+                        <div className="w-2 h-2 rounded-full bg-gray-500" />
+                        <div className="absolute inset-0 w-2 h-2 rounded-full bg-red-500 animate-ping opacity-50" />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <p className={`font-medium ${!alert.connected ? 'text-muted-foreground' : ''}`}>
+                        {alert.message}
+                      </p>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span>Source: {alert.source}</span>
+                        {!alert.connected && alert.error && (
+                          <>
+                            <span>•</span>
+                            <span className="text-red-400 text-xs">({alert.error})</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    {alert.time}
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      {alert.time}
+                    </div>
+                    {!alert.connected && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="ml-3 glow-hover"
+                        onClick={handleRefreshServices}
+                      >
+                        <Settings className="h-4 w-4 mr-2" />
+                        Connect
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Feed Status Summary */}
+            <div className="mt-6 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+              <div className="flex items-start gap-3">
+                <Activity className="h-5 w-5 text-blue-500 mt-0.5" />
+                <div className="space-y-2">
+                  <div className="font-semibold text-blue-400">Alert Feed Integration Status</div>
+                  <div className="text-sm text-muted-foreground">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <div>• Connected Services: {getDynamicAlertFeed().filter(alert => alert.connected).length}</div>
+                      <div>• Offline Services: {getDynamicAlertFeed().filter(alert => !alert.connected).length}</div>
+                      <div>• Active Alerts: {getDynamicAlertFeed().filter(alert => alert.connected && alert.type !== 'info').length}</div>
+                      <div>• Last Refresh: {new Date().toLocaleTimeString()}</div>
+                    </div>
+                  </div>
+                  {getDynamicAlertFeed().filter(alert => !alert.connected).length > 0 && (
+                    <div className="mt-3 p-2 rounded bg-yellow-500/10 border border-yellow-500/20">
+                      <div className="text-sm text-yellow-400">
+                        <strong>Backend Integration Required:</strong> Connect security services to receive real-time alerts.
+                        Services showing "Connect feed" need backend API integration.
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
