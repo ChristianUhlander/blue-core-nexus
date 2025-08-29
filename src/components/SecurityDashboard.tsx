@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SecurityChatbot from "./SecurityChatbot";
 import heroImage from "@/assets/security-hero.jpg";
 
@@ -76,98 +77,101 @@ const SecurityDashboard = () => {
               Unified cybersecurity monitoring with Wazuh, OpenVAS, OWASP ZAP, and Spiderfoot intelligence
             </p>
             
-            {/* Security Management Console */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mt-6">
-              <Card className="gradient-card glow-hover">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Shield className="h-4 w-4 text-primary" />
-                    SIEM Management
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button 
-                    className="w-full glow-hover text-sm" 
-                    variant="default"
-                    size="sm"
-                    onClick={() => window.location.href = '/wazuh'}
-                  >
-                    Manage Wazuh SIEM
-                  </Button>
-                  <Button className="w-full text-sm" variant="outline" size="sm">
-                    View Agent Status
-                  </Button>
-                  <Button className="w-full text-sm" variant="outline" size="sm">
-                    Agent Configuration
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="gradient-card glow-hover">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Eye className="h-4 w-4 text-secondary" />
-                    Vulnerability Management
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button 
-                    className="w-full glow-hover text-sm" 
-                    variant="default"
-                    size="sm"
-                    onClick={() => window.location.href = '/gvm'}
-                  >
-                    Manage GVM/OpenVAS
-                  </Button>
-                  <Button className="w-full text-sm" variant="outline" size="sm">
-                    CVE Assessment
-                  </Button>
-                  <Button className="w-full text-sm" variant="outline" size="sm">
-                    Scan Results
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="gradient-card glow-hover">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Zap className="h-4 w-4 text-accent" />
-                    Web Application Security
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button className="w-full glow-hover text-sm" variant="default" size="sm">
-                    OWASP Top 10 Scan
-                  </Button>
-                  <Button className="w-full text-sm" variant="outline" size="sm">
-                    Custom ZAP Scan
-                  </Button>
-                  <Button className="w-full text-sm" variant="outline" size="sm">
-                    Penetration Testing
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="gradient-card glow-hover">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Search className="h-4 w-4 text-primary" />
-                    OSINT Management
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button className="w-full glow-hover text-sm" variant="default" size="sm">
-                    Spiderfoot OSINT
-                  </Button>
-                  <Button className="w-full text-sm" variant="outline" size="sm">
-                    Intelligence Gathering
-                  </Button>
-                  <Button className="w-full text-sm" variant="outline" size="sm">
-                    Threat Analysis
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+            {/* Security Administration Panel */}
+            <Card className="gradient-card glow-hover mt-6">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xl text-glow">Security Administration</CardTitle>
+                <CardDescription>Manage all security tools from one central location</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="siem" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="siem" className="flex items-center gap-2">
+                      <Shield className="h-4 w-4" />
+                      SIEM
+                    </TabsTrigger>
+                    <TabsTrigger value="vulnerability" className="flex items-center gap-2">
+                      <Eye className="h-4 w-4" />
+                      Vulnerability
+                    </TabsTrigger>
+                    <TabsTrigger value="webapp" className="flex items-center gap-2">
+                      <Zap className="h-4 w-4" />
+                      Web App
+                    </TabsTrigger>
+                    <TabsTrigger value="osint" className="flex items-center gap-2">
+                      <Search className="h-4 w-4" />
+                      OSINT
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="siem" className="mt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <Button 
+                        className="glow-hover" 
+                        variant="default"
+                        size="sm"
+                        onClick={() => window.location.href = '/wazuh'}
+                      >
+                        Manage Wazuh SIEM
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        View Agent Status
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Agent Configuration
+                      </Button>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="vulnerability" className="mt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <Button 
+                        className="glow-hover" 
+                        variant="default"
+                        size="sm"
+                        onClick={() => window.location.href = '/gvm'}
+                      >
+                        Manage GVM/OpenVAS
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        CVE Assessment
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Scan Results
+                      </Button>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="webapp" className="mt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <Button className="glow-hover" variant="default" size="sm">
+                        OWASP Top 10 Scan
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Custom ZAP Scan
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Penetration Testing
+                      </Button>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="osint" className="mt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <Button className="glow-hover" variant="default" size="sm">
+                        Spiderfoot OSINT
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Intelligence Gathering
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Threat Analysis
+                      </Button>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
