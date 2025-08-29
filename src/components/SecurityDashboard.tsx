@@ -88,6 +88,38 @@ const SecurityDashboard = () => {
   });
   const { toast } = useToast();
 
+  // Penetration Testing state
+  const [isPentestOpen, setIsPentestOpen] = useState(false);
+  const [pentestSession, setPentestSession] = useState({
+    name: '',
+    description: '',
+    methodology: 'owasp',
+    phase: 'reconnaissance',
+    team: {
+      lead: 'Security Lead',
+      members: []
+    }
+  });
+  const [newTeamMember, setNewTeamMember] = useState('');
+  const [activePentestSessions, setActivePentestSessions] = useState([
+    {
+      id: 'session-001',
+      name: 'Production K8s Assessment',
+      description: 'Comprehensive security assessment of production cluster',
+      phase: 'exploitation',
+      status: 'active',
+      findings: [
+        { severity: 'critical' },
+        { severity: 'high' },
+        { severity: 'medium' }
+      ],
+      targets: [{ name: 'web-app' }, { name: 'api-gateway' }],
+      timeline: {
+        started: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+      }
+    }
+  ]);
+
   // Real-time stats calculation
   const stats = useMemo(() => getServiceStats(), [getServiceStats]);
 
@@ -367,16 +399,86 @@ const SecurityDashboard = () => {
   }, [agents, selectedAgent]);
 
   /**
-   * Real-time Wazuh agent restart with error handling
-   * Backend Integration: POST /api/wazuh/agents/{agentId}/restart
+   * Penetration Testing Session Management
    */
-  const handleAgentRestart = useCallback(async (agentId: string) => {
-    try {
-      await restartAgent(agentId);
-    } catch (error) {
-      console.error('❌ Agent restart failed:', error);
+  const handleCreatePentestSession = useCallback(async () => {
+    if (!pentestSession.name.trim()) {
+      toast({
+        title: "Session Name Required",
+        description: "Please enter a name for the penetration test session.",
+        variant: "destructive"
+      });
+      return;
     }
-  }, [restartAgent]);
+
+    try {
+      // API call to create session would go here
+      const newSession = {
+        id: `session-${Date.now()}`,
+        ...pentestSession,
+        status: 'active',
+        findings: [],
+        targets: [],
+        timeline: {
+          started: new Date().toISOString()
+        }
+      };
+
+      setActivePentestSessions(prev => [...prev, newSession]);
+      
+      toast({
+        title: "Session Created",
+        description: `Penetration test session "${pentestSession.name}" has been started.`,
+      });
+
+      // Reset form
+      setPentestSession({
+        name: '',
+        description: '',
+        methodology: 'owasp',
+        phase: 'reconnaissance',
+        team: { lead: 'Security Lead', members: [] }
+      });
+
+    } catch (error) {
+      toast({
+        title: "Session Creation Failed",
+        description: "Failed to create penetration test session.",
+        variant: "destructive"
+      });
+    }
+  }, [pentestSession, toast]);
+
+  const handleLoadSession = useCallback((sessionId: string) => {
+    // Load session details
+    toast({
+      title: "Loading Session",
+      description: `Loading penetration test session ${sessionId}...`,
+    });
+  }, [toast]);
+
+  const handleStopSession = useCallback(async (sessionId: string) => {
+    try {
+      setActivePentestSessions(prev => 
+        prev.map(session => 
+          session.id === sessionId 
+            ? { ...session, status: 'completed' }
+            : session
+        )
+      );
+      
+      toast({
+        title: "Session Stopped",
+        description: "Penetration test session has been stopped successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Stop Failed",
+        description: "Failed to stop penetration test session.",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
 
   /**
    * OSINT Profile Management Functions
@@ -2471,7 +2573,9 @@ const SecurityDashboard = () => {
                                             {agent.name}
                                           </TableCell>
                                           <TableCell className="font-mono text-sm">{agent.ip}</TableCell>
-                                          <TableCell className="text-sm">{agent.os}</TableCell>
+                                           <TableCell className="text-sm">
+                                             {typeof agent.os === 'object' && agent.os?.name ? agent.os.name : String(agent.os || 'Unknown')}
+                                           </TableCell>
                                           <TableCell className="text-sm">
                                             <div className="flex items-center gap-1">
                                               <Clock className="h-3 w-3 text-muted-foreground" />
@@ -3956,9 +4060,273 @@ const SecurityDashboard = () => {
                           </div>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="sm">
-                        Penetration Testing
-                      </Button>
+                      <Dialog open={isPentestOpen} onOpenChange={setIsPentestOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="glow-hover group">
+                            <Target className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                            Penetration Testing
+                            <div className="ml-2 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1400px] max-h-[95vh] gradient-card border-primary/20">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <div className="relative">
+                                <Target className="h-6 w-6 text-red-500 animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+                              </div>
+                              K8s Penetration Testing Framework
+                              <Badge variant="destructive" className="text-xs animate-pulse">
+                                ACTIVE TESTING
+                              </Badge>
+                            </DialogTitle>
+                            <DialogDescription className="text-base">
+                              Comprehensive security assessment for Kubernetes environments with real-time tool integration
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <Tabs defaultValue="session" className="space-y-4">
+                            <TabsList className="grid w-full grid-cols-6 bg-background/50 backdrop-blur">
+                              <TabsTrigger value="session" className="glow-hover">Session Setup</TabsTrigger>
+                              <TabsTrigger value="targets" className="glow-hover">Target Discovery</TabsTrigger>
+                              <TabsTrigger value="tools" className="glow-hover">Tool Integration</TabsTrigger>
+                              <TabsTrigger value="k8s-tests" className="glow-hover">K8s Security</TabsTrigger>
+                              <TabsTrigger value="findings" className="glow-hover">Findings</TabsTrigger>
+                              <TabsTrigger value="reporting" className="glow-hover">Reporting</TabsTrigger>
+                            </TabsList>
+
+                            {/* Session Setup Tab */}
+                            <TabsContent value="session" className="space-y-4">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Session Configuration */}
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                      <Play className="h-5 w-5 text-green-500" />
+                                      New Pentest Session
+                                    </CardTitle>
+                                    <CardDescription>Configure comprehensive security assessment</CardDescription>
+                                  </CardHeader>
+                                  <CardContent className="space-y-4">
+                                    <div className="space-y-2">
+                                      <Label htmlFor="session-name">Session Name</Label>
+                                      <Input 
+                                        id="session-name"
+                                        value={pentestSession.name}
+                                        onChange={(e) => setPentestSession({...pentestSession, name: e.target.value})}
+                                        placeholder="K8s Security Assessment - Q1 2024"
+                                        className="glow-focus"
+                                      />
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                      <Label htmlFor="session-description">Description</Label>
+                                      <Textarea 
+                                        id="session-description"
+                                        value={pentestSession.description}
+                                        onChange={(e) => setPentestSession({...pentestSession, description: e.target.value})}
+                                        placeholder="Comprehensive security assessment of production K8s cluster including RBAC, network policies, and container security..."
+                                        className="glow-focus min-h-[100px]"
+                                      />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div className="space-y-2">
+                                        <Label>Methodology</Label>
+                                        <Select 
+                                          value={pentestSession.methodology} 
+                                          onValueChange={(value) => setPentestSession({...pentestSession, methodology: value})}
+                                        >
+                                          <SelectTrigger className="glow-focus">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="owasp">OWASP Testing Guide</SelectItem>
+                                            <SelectItem value="nist">NIST Cybersecurity Framework</SelectItem>
+                                            <SelectItem value="ptes">PTES Standard</SelectItem>
+                                            <SelectItem value="osstmm">OSSTMM</SelectItem>
+                                            <SelectItem value="custom">Custom Framework</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      <div className="space-y-2">
+                                        <Label>Current Phase</Label>
+                                        <Select 
+                                          value={pentestSession.phase} 
+                                          onValueChange={(value) => setPentestSession({...pentestSession, phase: value})}
+                                        >
+                                          <SelectTrigger className="glow-focus">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="reconnaissance">Reconnaissance</SelectItem>
+                                            <SelectItem value="scanning">Scanning & Enumeration</SelectItem>
+                                            <SelectItem value="enumeration">Service Enumeration</SelectItem>
+                                            <SelectItem value="exploitation">Exploitation</SelectItem>
+                                            <SelectItem value="post_exploitation">Post-Exploitation</SelectItem>
+                                            <SelectItem value="reporting">Reporting</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                      <Label>Team Members</Label>
+                                      <div className="flex gap-2">
+                                        <Input 
+                                          value={newTeamMember}
+                                          onChange={(e) => setNewTeamMember(e.target.value)}
+                                          placeholder="Enter team member name"
+                                          className="glow-focus"
+                                        />
+                                        <Button 
+                                          onClick={() => {
+                                            if (newTeamMember.trim()) {
+                                              setPentestSession({
+                                                ...pentestSession,
+                                                team: {
+                                                  ...pentestSession.team,
+                                                  members: [...pentestSession.team.members, newTeamMember.trim()]
+                                                }
+                                              });
+                                              setNewTeamMember('');
+                                            }
+                                          }}
+                                          size="sm"
+                                          className="glow-hover"
+                                        >
+                                          <User className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                      <div className="flex flex-wrap gap-2 mt-2">
+                                        {pentestSession.team.members.map((member, index) => (
+                                          <Badge key={index} variant="secondary" className="text-xs">
+                                            {member}
+                                            <X 
+                                              className="h-3 w-3 ml-1 cursor-pointer hover:text-red-500" 
+                                              onClick={() => {
+                                                setPentestSession({
+                                                  ...pentestSession,
+                                                  team: {
+                                                    ...pentestSession.team,
+                                                    members: pentestSession.team.members.filter((_, i) => i !== index)
+                                                  }
+                                                });
+                                              }}
+                                            />
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    </div>
+
+                                    <Button 
+                                      className="w-full glow-hover group" 
+                                      onClick={handleCreatePentestSession}
+                                      disabled={!pentestSession.name.trim()}
+                                    >
+                                      <Play className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                                      Start Penetration Test Session
+                                    </Button>
+                                  </CardContent>
+                                </Card>
+
+                                {/* Active Sessions */}
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                      <Activity className="h-5 w-5 text-blue-500" />
+                                      Active Sessions
+                                      <Badge variant="outline" className="text-xs">
+                                        {activePentestSessions.length} Running
+                                      </Badge>
+                                    </CardTitle>
+                                    <CardDescription>Monitor ongoing penetration tests</CardDescription>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <ScrollArea className="h-[400px]">
+                                      <div className="space-y-3">
+                                        {activePentestSessions.map((session) => (
+                                          <div key={session.id} className="border rounded-lg p-4 hover:bg-primary/5 transition-colors group">
+                                            <div className="flex items-center justify-between mb-2">
+                                              <h4 className="font-medium group-hover:text-primary transition-colors">
+                                                {session.name}
+                                              </h4>
+                                              <Badge 
+                                                variant={session.status === 'active' ? 'default' : 'secondary'}
+                                                className="text-xs animate-pulse"
+                                              >
+                                                {session.status}
+                                              </Badge>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mb-3">{session.description}</p>
+                                            
+                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                              <div>
+                                                <span className="text-muted-foreground">Phase:</span>
+                                                <Badge variant="outline" className="ml-2 text-xs">
+                                                  {session.phase}
+                                                </Badge>
+                                              </div>
+                                              <div>
+                                                <span className="text-muted-foreground">Findings:</span>
+                                                <span className="ml-2 font-medium text-red-500">
+                                                  {session.findings.filter(f => f.severity === 'critical' || f.severity === 'high').length} Critical/High
+                                                </span>
+                                              </div>
+                                              <div>
+                                                <span className="text-muted-foreground">Targets:</span>
+                                                <span className="ml-2 font-medium">{session.targets.length}</span>
+                                              </div>
+                                              <div>
+                                                <span className="text-muted-foreground">Duration:</span>
+                                                <span className="ml-2 font-medium">
+                                                  {Math.round((Date.now() - new Date(session.timeline.started).getTime()) / (1000 * 60 * 60))}h
+                                                </span>
+                                              </div>
+                                            </div>
+
+                                            <div className="flex justify-end gap-2 mt-3">
+                                              <Button 
+                                                size="sm" 
+                                                variant="outline" 
+                                                onClick={() => handleLoadSession(session.id)}
+                                                className="glow-hover"
+                                              >
+                                                <Eye className="h-3 w-3 mr-1" />
+                                                View
+                                              </Button>
+                                              <Button 
+                                                size="sm" 
+                                                variant="destructive" 
+                                                onClick={() => handleStopSession(session.id)}
+                                                className="glow-hover"
+                                              >
+                                                <X className="h-3 w-3 mr-1" />
+                                                Stop
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        ))}
+                                        
+                                        {activePentestSessions.length === 0 && (
+                                          <div className="text-center py-8 text-muted-foreground">
+                                            <Target className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                                            <p>No active penetration test sessions</p>
+                                            <p className="text-sm">Create a new session to begin security assessment</p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </ScrollArea>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            </TabsContent>
+
+                            {/* Additional tabs will be implemented next... */}
+                          </Tabs>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </TabsContent>
                   

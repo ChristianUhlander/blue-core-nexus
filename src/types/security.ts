@@ -90,6 +90,7 @@ export interface WazuhAgent {
   };
   status: 'active' | 'disconnected' | 'never_connected';
   lastKeepAlive: string;
+  lastSeen: string; // Added missing property
   version: string;
   manager: string;
   group: string[];
