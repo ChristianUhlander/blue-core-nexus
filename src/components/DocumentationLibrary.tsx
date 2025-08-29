@@ -249,7 +249,263 @@ graph TD
             'Grasp the security model and data flow',
             'Identify integration points for custom tools'
           ]
+    },
+    {
+      id: 'osint-mastery',
+      title: 'OSINT Mastery',
+      description: 'Open Source Intelligence gathering techniques and methodologies',
+      icon: Search,
+      badge: 'Updated 2024',
+      items: [
+        {
+          id: 'osint-methodology',
+          title: 'OSINT Methodology & Best Practices',
+          description: 'Comprehensive guide to professional OSINT investigation techniques',
+          type: 'guide',
+          difficulty: 'intermediate',
+          estimatedTime: '45 minutes',
+          content: `# OSINT Methodology & Best Practices 2024
+
+## Intelligence Collection Framework
+
+### Phase 1: Requirements Definition
+- **Intelligence Requirements**: Define specific intelligence needs
+- **Collection Priorities**: Establish priority levels for different data types
+- **Legal & Ethical Boundaries**: Ensure compliance with local laws and regulations
+- **Operational Security**: Protect investigation from detection
+
+### Phase 2: Source Identification
+- **Social Media Platforms**: Facebook, LinkedIn, Twitter, Instagram, TikTok
+- **Professional Networks**: Corporate websites, employee directories
+- **Public Records**: Court documents, business registrations, property records
+- **Technical Infrastructure**: Domain records, IP allocations, certificates
+
+### Phase 3: Collection Techniques
+\`\`\`bash
+# Domain enumeration example
+subfinder -d target.com -o subdomains.txt
+amass enum -d target.com -o amass_results.txt
+dnsrecon -d target.com -t std
+
+# Social media intelligence
+# Use tools like Sherlock for username enumeration
+sherlock username --timeout 10
+\`\`\`
+
+### Phase 4: Analysis & Correlation
+- **Timeline Analysis**: Establish chronological relationships
+- **Network Mapping**: Identify connections and relationships  
+- **Pattern Recognition**: Detect behavioral patterns and anomalies
+- **Credibility Assessment**: Evaluate source reliability and information accuracy
+
+## Professional OSINT Tools Suite
+
+### Automated Collection Tools
+- **Maltego**: Visual link analysis and data mining
+- **SpiderFoot**: Automated OSINT collection platform
+- **Recon-ng**: Web reconnaissance framework
+- **TheHarvester**: Email, subdomain and people name harvester
+
+### Manual Investigation Techniques
+- **Google Dorking**: Advanced search operators for targeted information
+- **Wayback Machine**: Historical website analysis
+- **Social Engineering**: Human intelligence gathering (ethical boundaries)
+- **Physical Reconnaissance**: Location intelligence gathering
+
+## Quality Assurance & Validation
+
+### Source Verification
+- **Primary vs Secondary Sources**: Distinguish between original and reported information
+- **Cross-Reference Validation**: Verify information across multiple independent sources
+- **Temporal Verification**: Confirm timeline accuracy and currency
+- **Bias Assessment**: Identify potential source bias and motivations
+
+### Chain of Custody
+- **Evidence Preservation**: Maintain integrity of collected information
+- **Documentation Standards**: Record collection methods and timestamps
+- **Legal Admissibility**: Ensure evidence meets legal standards
+- **Privacy Protection**: Anonymize and protect sensitive information`,
+          prerequisites: ['Basic understanding of internet technologies', 'Legal awareness of privacy laws'],
+          expectedOutcomes: [
+            'Master professional OSINT collection methodologies',
+            'Understand legal and ethical boundaries in intelligence gathering',
+            'Develop systematic approach to information validation',
+            'Create comprehensive intelligence reports'
+          ]
         }
+      ]
+    },
+    {
+      id: 'incident-response',
+      title: 'Incident Response',
+      description: 'Comprehensive incident response and digital forensics procedures',
+      icon: AlertTriangle,
+      badge: 'NIST Compliant',
+      items: [
+        {
+          id: 'ir-playbook',
+          title: 'Incident Response Playbook',
+          description: 'Step-by-step procedures for cybersecurity incident management',
+          type: 'guide',
+          difficulty: 'advanced',
+          estimatedTime: '60 minutes',
+          content: `# Incident Response Playbook
+
+## IR Framework Overview
+Based on NIST SP 800-61 Rev. 3 and industry best practices
+
+### Phase 1: Preparation
+- **IR Team Formation**: Roles, responsibilities, and contact information
+- **Tools & Resources**: Pre-positioned incident response tools and systems
+- **Communication Plans**: Internal and external communication procedures
+- **Legal Considerations**: Data protection, breach notification requirements
+
+### Phase 2: Detection & Analysis
+\`\`\`bash
+# Initial triage commands
+ps aux | grep -E '(nc|netcat|telnet|ssh)'
+netstat -tulpn | grep LISTEN
+ls -la /tmp /var/tmp /etc/cron*
+find / -name "*.sh" -mtime -1 -type f 2>/dev/null
+\`\`\`
+
+**Threat Classification Matrix:**
+- **Category 1**: Confirmed malicious activity with active threat
+- **Category 2**: Suspicious activity requiring investigation  
+- **Category 3**: Policy violations or security concerns
+- **Category 4**: False positive or benign activity
+
+### Phase 3: Containment, Eradication & Recovery
+- **Short-term Containment**: Immediate threat isolation
+- **Long-term Containment**: System rebuild and restoration
+- **Evidence Preservation**: Forensic imaging and chain of custody
+- **System Recovery**: Validated clean system restoration
+
+### Phase 4: Post-Incident Activity
+- **Lessons Learned**: Incident analysis and improvement identification
+- **Documentation**: Complete incident timeline and actions taken
+- **Process Updates**: Playbook and procedure improvements
+- **Training Updates**: Team knowledge and skill enhancement
+
+## DFIR Tool Commands
+
+### Memory Analysis
+\`\`\`bash
+# Volatility Framework
+volatility -f memory.dmp --profile=Win10x64 pslist
+volatility -f memory.dmp --profile=Win10x64 netscan
+volatility -f memory.dmp --profile=Win10x64 malfind
+\`\`\`
+
+### Disk Forensics
+\`\`\`bash
+# FTK Imager alternative commands
+dd if=/dev/sda of=/evidence/disk_image.dd bs=4096 conv=noerror,sync
+md5sum /evidence/disk_image.dd > /evidence/disk_image.md5
+\`\`\`
+
+### Network Traffic Analysis
+\`\`\`bash
+# Wireshark/tshark commands
+tshark -r capture.pcap -Y "ip.addr==suspicious_ip" -T fields -e frame.time -e ip.src -e ip.dst -e tcp.port
+\`\`\``,
+          expectedOutcomes: [
+            'Execute systematic incident response procedures',
+            'Properly preserve and analyze digital evidence',
+            'Coordinate multi-team incident response efforts',
+            'Generate comprehensive incident reports'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'threat-intelligence',
+      title: 'Threat Intelligence',
+      description: 'MITRE ATT&CK framework implementation and threat hunting',
+      icon: Target,
+      badge: 'MITRE Certified',
+      items: [
+        {
+          id: 'mitre-attack',
+          title: 'MITRE ATT&CK Framework Implementation',
+          description: 'Practical guide to implementing threat-informed defense',
+          type: 'tutorial',
+          difficulty: 'advanced',
+          estimatedTime: '90 minutes',
+          content: `# MITRE ATT&CK Framework Implementation
+
+## ATT&CK Matrix Navigation
+
+### Tactics (The "Why")
+1. **Initial Access**: How adversaries gain entry
+2. **Execution**: How adversaries run malicious code
+3. **Persistence**: How adversaries maintain presence
+4. **Privilege Escalation**: How adversaries gain higher permissions
+5. **Defense Evasion**: How adversaries avoid detection
+6. **Credential Access**: How adversaries steal credentials
+7. **Discovery**: How adversaries learn about systems
+8. **Lateral Movement**: How adversaries move through networks
+9. **Collection**: How adversaries gather information
+10. **Command and Control**: How adversaries communicate
+11. **Exfiltration**: How adversaries steal data
+12. **Impact**: How adversaries disrupt operations
+
+### Implementation Strategy
+
+#### Step 1: Threat Landscape Mapping
+\`\`\`json
+{
+  "threat_groups": ["APT29", "APT28", "Lazarus Group"],
+  "techniques_used": ["T1566.001", "T1055", "T1083"],
+  "detection_coverage": {
+    "T1566.001": "High",
+    "T1055": "Medium", 
+    "T1083": "Low"
+  }
+}
+\`\`\`
+
+#### Step 2: Detection Development
+- **Sigma Rules**: Create detection rules based on ATT&CK techniques
+- **YARA Rules**: Develop malware detection signatures
+- **Custom Analytics**: Build behavioral detection logic
+
+#### Step 3: Hunt Hypothesis Creation
+\`\`\`yaml
+hunt_hypothesis:
+  name: "Credential Dumping Detection"
+  technique: "T1003"
+  description: "Hunt for LSASS memory dumping activities"
+  data_sources:
+    - "Process monitoring"
+    - "Windows Event Logs"
+  analytics:
+    - "Unusual process accessing LSASS"
+    - "Suspicious PowerShell execution"
+\`\`\`
+
+## Threat Hunting Methodology
+
+### Hunt Cycle
+1. **Hypothesis Formation**: Create testable threat assumptions
+2. **Data Collection**: Gather relevant security telemetry
+3. **Analysis**: Apply analytical techniques to identify threats
+4. **Response**: Take appropriate action on identified threats
+
+### Advanced Hunting Techniques
+- **Behavioral Analysis**: Identify anomalous user/system behavior
+- **Stack Counting**: Find rare occurrences in large datasets
+- **Clustering**: Group similar activities for pattern analysis
+- **Time Series Analysis**: Detect temporal anomalies`,
+          expectedOutcomes: [
+            'Map organizational threats to ATT&CK framework',
+            'Develop detection capabilities for specific techniques',
+            'Create effective threat hunting hypotheses',
+            'Implement threat-informed defense strategies'
+          ]
+        }
+      ]
+    }
       ]
     },
     {
