@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +21,10 @@ const SecurityDashboard = () => {
   const { getConnectionIndicator } = useSecurityStatus();
   const [isAgentStatusOpen, setIsAgentStatusOpen] = useState(false);
   const [isAgentConfigOpen, setIsAgentConfigOpen] = useState(false);
+  const [isCveAssessmentOpen, setIsCveAssessmentOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<string>('001');
+  const [cveScanning, setCveScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
   const [agentConfig, setAgentConfig] = useState({
     logLevel: 'info',
     scanFrequency: '1h',
@@ -145,6 +148,111 @@ const SecurityDashboard = () => {
    */
   const getSelectedAgentData = () => {
     return agentData.find(agent => agent.id === selectedAgent) || agentData[0];
+  };
+
+  /**
+   * Mock CVE vulnerability data
+   * In production, this would come from OpenVAS/GVM API and CVE databases
+   */
+  const cveVulnerabilities = [
+    {
+      id: "CVE-2023-44487",
+      title: "HTTP/2 Rapid Reset Attack",
+      severity: "HIGH",
+      score: 7.5,
+      description: "The HTTP/2 protocol allows a denial of service (server resource consumption) because request cancellation can reset many streams quickly.",
+      affected: ["nginx", "apache", "nodejs"],
+      hosts: ["192.168.1.10", "192.168.1.11"],
+      status: "open",
+      published: "2023-10-10",
+      solution: "Update to patched versions: nginx 1.25.2+, Apache 2.4.58+"
+    },
+    {
+      id: "CVE-2023-4911",
+      title: "Looney Tunables - glibc Buffer Overflow",
+      severity: "CRITICAL",
+      score: 9.8,
+      description: "A buffer overflow was discovered in the GNU C Library's dynamic loader ld.so while processing the GLIBC_TUNABLES environment variable.",
+      affected: ["glibc"],
+      hosts: ["192.168.1.10", "192.168.1.12"],
+      status: "open",
+      published: "2023-10-03",
+      solution: "Update glibc to version 2.39 or apply security patches"
+    },
+    {
+      id: "CVE-2023-38545",
+      title: "curl SOCKS5 heap buffer overflow",
+      severity: "HIGH",
+      score: 8.8,
+      description: "This flaw makes curl overflow a heap based buffer in the SOCKS5 proxy handshake.",
+      affected: ["curl", "libcurl"],
+      hosts: ["192.168.1.11"],
+      status: "patched",
+      published: "2023-10-11",
+      solution: "Update curl to version 8.4.0 or later"
+    },
+    {
+      id: "CVE-2023-22515",
+      title: "Confluence Data Center Privilege Escalation",
+      severity: "CRITICAL",
+      score: 10.0,
+      description: "Broken access control vulnerability in Confluence Data Center and Server allows an unauthenticated attacker to reset Confluence.",
+      affected: ["atlassian-confluence"],
+      hosts: ["192.168.1.15"],
+      status: "open",
+      published: "2023-10-04",
+      solution: "Upgrade to fixed versions: 8.3.4, 8.4.4, 8.5.3, or later"
+    },
+    {
+      id: "CVE-2023-34362",
+      title: "MOVEit Transfer SQL Injection",
+      severity: "CRITICAL",
+      score: 9.8,
+      description: "In Progress MOVEit Transfer before 2021.0.6, 2021.1.4, 2022.0.4, 2022.1.5, and 2023.0.1, a SQL injection vulnerability has been found.",
+      affected: ["moveit-transfer"],
+      hosts: ["192.168.1.20"],
+      status: "mitigated",
+      published: "2023-06-02",
+      solution: "Upgrade MOVEit Transfer to the latest patched version"
+    }
+  ];
+
+  /**
+   * Handles starting a CVE assessment scan
+   */
+  const handleStartCveScan = () => {
+    setCveScanning(true);
+    setScanProgress(0);
+    
+    // Simulate scan progress
+    const interval = setInterval(() => {
+      setScanProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setCveScanning(false);
+          toast({
+            title: "CVE Scan Complete",
+            description: `Found ${cveVulnerabilities.length} vulnerabilities across ${new Set(cveVulnerabilities.flatMap(v => v.hosts)).size} hosts.`,
+          });
+          return 100;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 500);
+  };
+
+  /**
+   * Gets vulnerability statistics
+   */
+  const getVulnStats = () => {
+    const critical = cveVulnerabilities.filter(v => v.severity === 'CRITICAL').length;
+    const high = cveVulnerabilities.filter(v => v.severity === 'HIGH').length;
+    const medium = cveVulnerabilities.filter(v => v.severity === 'MEDIUM').length;
+    const low = cveVulnerabilities.filter(v => v.severity === 'LOW').length;
+    const open = cveVulnerabilities.filter(v => v.status === 'open').length;
+    const patched = cveVulnerabilities.filter(v => v.status === 'patched').length;
+    
+    return { critical, high, medium, low, open, patched, total: cveVulnerabilities.length };
   };
   const tools = [
     {
@@ -788,9 +896,264 @@ const SecurityDashboard = () => {
                       >
                         Manage GVM/OpenVAS
                       </Button>
-                      <Button variant="outline" size="sm">
-                        CVE Assessment
-                      </Button>
+                      
+                      <Dialog open={isCveAssessmentOpen} onOpenChange={setIsCveAssessmentOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="glow-hover group">
+                            <Bug className="h-4 w-4 mr-2 group-hover:animate-bounce" />
+                            CVE Assessment
+                            <div className="ml-2 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1100px] max-h-[90vh] gradient-card border-primary/20">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <div className="relative">
+                                <ShieldAlert className="h-6 w-6 text-red-500 animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+                              </div>
+                              CVE Vulnerability Assessment
+                              <Badge variant="destructive" className="ml-2 animate-pulse-glow">
+                                {getVulnStats().critical + getVulnStats().high} HIGH RISK
+                              </Badge>
+                            </DialogTitle>
+                            <DialogDescription className="text-base">
+                              Comprehensive vulnerability assessment using CVE database and OpenVAS scanning
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="space-y-6">
+                            {/* Scan Controls and Statistics */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                              {/* Scan Control Panel */}
+                              <Card className="lg:col-span-1 gradient-card border border-primary/20">
+                                <CardHeader className="pb-3">
+                                  <CardTitle className="text-lg flex items-center gap-2">
+                                    <Scan className="h-5 w-5 text-primary animate-pulse" />
+                                    Vulnerability Scan
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                  <Button 
+                                    onClick={handleStartCveScan}
+                                    disabled={cveScanning}
+                                    className="w-full glow-hover group"
+                                    variant={cveScanning ? "secondary" : "default"}
+                                  >
+                                    {cveScanning ? (
+                                      <>
+                                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                        Scanning...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Scan className="h-4 w-4 mr-2 group-hover:animate-bounce" />
+                                        Start CVE Scan
+                                      </>
+                                    )}
+                                  </Button>
+                                  
+                                  {cveScanning && (
+                                    <div className="space-y-2">
+                                      <div className="flex justify-between text-sm">
+                                        <span>Scan Progress</span>
+                                        <span>{Math.round(scanProgress)}%</span>
+                                      </div>
+                                      <Progress value={scanProgress} className="glow animate-pulse" />
+                                      <p className="text-xs text-muted-foreground">
+                                        Analyzing {agentData.length} hosts for vulnerabilities...
+                                      </p>
+                                    </div>
+                                  )}
+                                  
+                                  <div className="pt-2 border-t border-border/50">
+                                    <div className="text-sm text-muted-foreground mb-2">Last Scan</div>
+                                    <div className="text-sm font-medium">2 hours ago</div>
+                                    <div className="text-xs text-muted-foreground">Coverage: All hosts</div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+
+                              {/* Vulnerability Statistics */}
+                              <Card className="lg:col-span-2 gradient-card border border-red-500/20 bg-gradient-to-br from-red-500/5 to-orange-500/5">
+                                <CardHeader className="pb-3">
+                                  <CardTitle className="text-lg flex items-center gap-2">
+                                    <TrendingUp className="h-5 w-5 text-red-500 animate-pulse" />
+                                    Vulnerability Overview
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="relative mb-2">
+                                        <div className="text-3xl font-bold text-red-500 group-hover:scale-110 transition-transform animate-pulse">
+                                          {getVulnStats().critical}
+                                        </div>
+                                        <div className="absolute inset-0 bg-red-500/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      </div>
+                                      <div className="text-sm font-medium text-red-400">Critical</div>
+                                      <div className="text-xs text-muted-foreground">Score 9.0+</div>
+                                    </div>
+                                    
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="relative mb-2">
+                                        <div className="text-3xl font-bold text-orange-500 group-hover:scale-110 transition-transform">
+                                          {getVulnStats().high}
+                                        </div>
+                                        <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      </div>
+                                      <div className="text-sm font-medium text-orange-400">High</div>
+                                      <div className="text-xs text-muted-foreground">Score 7.0-8.9</div>
+                                    </div>
+                                    
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="relative mb-2">
+                                        <div className="text-3xl font-bold text-yellow-500 group-hover:scale-110 transition-transform">
+                                          {getVulnStats().medium}
+                                        </div>
+                                        <div className="absolute inset-0 bg-yellow-500/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      </div>
+                                      <div className="text-sm font-medium text-yellow-400">Medium</div>
+                                      <div className="text-xs text-muted-foreground">Score 4.0-6.9</div>
+                                    </div>
+                                    
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="relative mb-2">
+                                        <div className="text-3xl font-bold text-green-500 group-hover:scale-110 transition-transform">
+                                          {getVulnStats().patched}
+                                        </div>
+                                        <div className="absolute inset-0 bg-green-500/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      </div>
+                                      <div className="text-sm font-medium text-green-400">Patched</div>
+                                      <div className="text-xs text-muted-foreground">Remediated</div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </div>
+
+                            {/* Vulnerability Details Table */}
+                            <Card className="gradient-card border border-red-500/20">
+                              <CardHeader className="pb-3">
+                                <div className="flex items-center justify-between">
+                                  <CardTitle className="text-lg flex items-center gap-2">
+                                    <AlertTriangle className="h-5 w-5 text-red-500 animate-pulse" />
+                                    Detected Vulnerabilities
+                                    <Badge variant="outline" className="text-xs">
+                                      {getVulnStats().total} Total
+                                    </Badge>
+                                  </CardTitle>
+                                  <Button variant="outline" size="sm" className="glow-hover">
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Export Report
+                                  </Button>
+                                </div>
+                              </CardHeader>
+                              <CardContent>
+                                <ScrollArea className="h-[400px] rounded-md border">
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow className="border-border/50">
+                                        <TableHead className="font-semibold">CVE ID</TableHead>
+                                        <TableHead className="font-semibold">Severity</TableHead>
+                                        <TableHead className="font-semibold">Title</TableHead>
+                                        <TableHead className="font-semibold">Affected Hosts</TableHead>
+                                        <TableHead className="font-semibold">Status</TableHead>
+                                        <TableHead className="font-semibold">CVSS Score</TableHead>
+                                        <TableHead className="font-semibold">Published</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {cveVulnerabilities.map((vuln, index) => (
+                                        <TableRow key={vuln.id} className="hover:bg-primary/5 transition-colors group animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
+                                          <TableCell className="font-mono text-sm font-semibold text-primary group-hover:text-accent transition-colors">
+                                            {vuln.id}
+                                          </TableCell>
+                                          <TableCell>
+                                            <div className="flex items-center gap-2">
+                                              <div className={`w-3 h-3 rounded-full ${
+                                                vuln.severity === 'CRITICAL' 
+                                                  ? 'bg-red-500 shadow-lg shadow-red-500/50 animate-pulse' 
+                                                  : vuln.severity === 'HIGH'
+                                                  ? 'bg-orange-500 shadow-lg shadow-orange-500/50 animate-pulse'
+                                                  : vuln.severity === 'MEDIUM'
+                                                  ? 'bg-yellow-500 shadow-lg shadow-yellow-500/50'
+                                                  : 'bg-blue-500 shadow-lg shadow-blue-500/50'
+                                              }`} />
+                                              <Badge 
+                                                variant={
+                                                  vuln.severity === 'CRITICAL' ? 'destructive' : 
+                                                  vuln.severity === 'HIGH' ? 'destructive' : 'secondary'
+                                                }
+                                                className="text-xs animate-pulse-glow"
+                                              >
+                                                {vuln.severity}
+                                              </Badge>
+                                            </div>
+                                          </TableCell>
+                                          <TableCell className="max-w-[300px]">
+                                            <div className="font-medium group-hover:text-foreground transition-colors">
+                                              {vuln.title}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                              {vuln.description}
+                                            </div>
+                                          </TableCell>
+                                          <TableCell>
+                                            <div className="space-y-1">
+                                              {vuln.hosts.map((host, i) => (
+                                                <Badge key={i} variant="outline" className="text-xs font-mono">
+                                                  {host}
+                                                </Badge>
+                                              ))}
+                                            </div>
+                                          </TableCell>
+                                          <TableCell>
+                                            <Badge 
+                                              variant={vuln.status === 'open' ? 'destructive' : vuln.status === 'patched' ? 'default' : 'secondary'}
+                                              className="text-xs"
+                                            >
+                                              {vuln.status.toUpperCase()}
+                                            </Badge>
+                                          </TableCell>
+                                          <TableCell>
+                                            <div className={`font-bold text-sm ${
+                                              vuln.score >= 9 ? 'text-red-500' :
+                                              vuln.score >= 7 ? 'text-orange-500' :
+                                              vuln.score >= 4 ? 'text-yellow-500' : 'text-blue-500'
+                                            }`}>
+                                              {vuln.score}/10
+                                            </div>
+                                          </TableCell>
+                                          <TableCell className="text-sm">
+                                            {vuln.published}
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </ScrollArea>
+                              </CardContent>
+                            </Card>
+                          </div>
+
+                          <div className="flex justify-between items-center gap-2 pt-6 border-t border-border/50">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse-glow" />
+                              <span>Real-time CVE monitoring active</span>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button variant="outline" onClick={() => setIsCveAssessmentOpen(false)} className="glow-hover">
+                                Close Assessment
+                              </Button>
+                              <Button className="glow-hover group">
+                                <ShieldAlert className="h-4 w-4 mr-2 group-hover:animate-bounce" />
+                                Generate Report
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                       <Button variant="outline" size="sm">
                         Scan Results
                       </Button>
