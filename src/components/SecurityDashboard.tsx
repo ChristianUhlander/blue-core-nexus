@@ -20,7 +20,7 @@ import { useRealTimeSecurityData } from "@/hooks/useRealTimeSecurityData";
 import { k8sSecurityApi } from "@/services/k8sSecurityApi";
 import { securityIntegration, type WazuhAgent, type WazuhAlert, type SecurityServiceHealth } from "@/services/securityIntegrationService";
 import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
-import { AgenticPentestInterface } from "./AgenticPentestInterface";
+import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterface";
 import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 import heroImage from "@/assets/security-hero.jpg";
