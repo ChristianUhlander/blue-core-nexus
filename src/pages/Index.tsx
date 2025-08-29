@@ -1,13 +1,7 @@
 import SecurityDashboard from "@/components/SecurityDashboard";
-import QualityControl from "@/components/QualityControl";
 
 const Index = () => {
-  return (
-    <>
-      <SecurityDashboard />
-      <QualityControl />
-    </>
-  );
+  return <SecurityDashboard />;
 };
 
 export default Index;
