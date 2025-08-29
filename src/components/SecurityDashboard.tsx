@@ -2653,6 +2653,43 @@ const SecurityDashboard = () => {
             <Shield className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg">IPS Security Center</span>
           </div>
+          
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center gap-6">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => document.getElementById('agentic-pentest')?.scrollIntoView({ behavior: 'smooth' })}
+              className="hover:text-primary transition-colors"
+            >
+              AI Pentest
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => document.getElementById('security-admin')?.scrollIntoView({ behavior: 'smooth' })}
+              className="hover:text-primary transition-colors"
+            >
+              Administration
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => document.getElementById('services-status')?.scrollIntoView({ behavior: 'smooth' })}
+              className="hover:text-primary transition-colors"
+            >
+              Services
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => document.getElementById('alert-feed')?.scrollIntoView({ behavior: 'smooth' })}
+              className="hover:text-primary transition-colors"
+            >
+              Alerts
+            </Button>
+          </nav>
+          
           <Button
             onClick={() => setIsIppsYOpen(!isIppsYOpen)}
             variant={isIppsYOpen ? "default" : "outline"}
@@ -2692,7 +2729,7 @@ const SecurityDashboard = () => {
             </p>
             
             {/* SUPER PROMINENT AGENTIC PENTEST BUTTON - IMPOSSIBLE TO MISS */}
-            <div className="mb-12 relative">
+            <div id="agentic-pentest" className="mb-12 relative">
               <Card className="overflow-hidden border-none bg-gradient-to-br from-blue-600/10 via-slate-600/10 to-blue-800/10 backdrop-blur-sm relative group hover:scale-[1.01] transition-all duration-1000">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-slate-500/5 to-blue-500/5 opacity-30 animate-[pulse_4s_ease-in-out_infinite]" />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/3 to-transparent" />
@@ -2766,7 +2803,7 @@ const SecurityDashboard = () => {
             </div>
             
             {/* Security Administration Panel */}
-            <Card className="gradient-card glow-hover mt-6">
+            <Card id="security-admin" className="gradient-card glow-hover mt-6">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl text-glow">Security Administration</CardTitle>
                 <CardDescription>Manage all security tools from one central location</CardDescription>
@@ -6234,7 +6271,7 @@ const SecurityDashboard = () => {
         </Card>
 
         {/* Real-time Alert Feed */}
-        <Card className="gradient-card glow mb-12">
+        <Card id="alert-feed" className="gradient-card glow mb-12">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-glow">
               <div className="relative">
