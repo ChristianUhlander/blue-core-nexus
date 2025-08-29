@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,9 +22,12 @@ const SecurityDashboard = () => {
   const [isAgentStatusOpen, setIsAgentStatusOpen] = useState(false);
   const [isAgentConfigOpen, setIsAgentConfigOpen] = useState(false);
   const [isCveAssessmentOpen, setIsCveAssessmentOpen] = useState(false);
+  const [isScanResultsOpen, setIsScanResultsOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<string>('001');
   const [cveScanning, setCveScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
+  const [selectedScanType, setSelectedScanType] = useState('all');
+  const [resultFilter, setResultFilter] = useState('all');
   const [agentConfig, setAgentConfig] = useState({
     logLevel: 'info',
     scanFrequency: '1h',
@@ -253,6 +256,125 @@ const SecurityDashboard = () => {
     const patched = cveVulnerabilities.filter(v => v.status === 'patched').length;
     
     return { critical, high, medium, low, open, patched, total: cveVulnerabilities.length };
+  };
+
+  /**
+   * Mock scan results data
+   * In production, this would come from OpenVAS/GVM scan results API
+   */
+  const scanResults = [
+    {
+      id: "scan_001",
+      name: "Network Infrastructure Scan",
+      type: "network",
+      target: "192.168.1.0/24",
+      status: "completed",
+      startTime: "2024-01-20 09:00:00",
+      endTime: "2024-01-20 11:30:00",
+      duration: "2h 30m",
+      vulnerabilities: {
+        critical: 2,
+        high: 5,
+        medium: 12,
+        low: 8,
+        info: 15
+      },
+      hostsCovered: 24,
+      ports: 1024,
+      progress: 100
+    },
+    {
+      id: "scan_002", 
+      name: "Web Application Security Test",
+      type: "web",
+      target: "https://webapp.company.com",
+      status: "completed",
+      startTime: "2024-01-20 14:00:00",
+      endTime: "2024-01-20 15:45:00",
+      duration: "1h 45m",
+      vulnerabilities: {
+        critical: 1,
+        high: 3,
+        medium: 7,
+        low: 4,
+        info: 11
+      },
+      hostsCovered: 1,
+      ports: 443,
+      progress: 100
+    },
+    {
+      id: "scan_003",
+      name: "Database Server Assessment",
+      type: "database",
+      target: "192.168.1.11:3306,5432",
+      status: "running",
+      startTime: "2024-01-20 16:00:00",
+      endTime: null,
+      duration: "45m (ongoing)",
+      vulnerabilities: {
+        critical: 0,
+        high: 2,
+        medium: 5,
+        low: 3,
+        info: 8
+      },
+      hostsCovered: 2,
+      ports: 2,
+      progress: 67
+    },
+    {
+      id: "scan_004",
+      name: "Full Network Compliance Scan",
+      type: "compliance",
+      target: "All Network Assets",
+      status: "scheduled",
+      startTime: "2024-01-21 02:00:00",
+      endTime: null,
+      duration: "Estimated 4h",
+      vulnerabilities: {
+        critical: 0,
+        high: 0,
+        medium: 0,
+        low: 0,
+        info: 0
+      },
+      hostsCovered: 45,
+      ports: 65535,
+      progress: 0
+    }
+  ];
+
+  /**
+   * Filter scan results based on selected criteria
+   */
+  const getFilteredScans = () => {
+    let filtered = scanResults;
+    
+    if (selectedScanType !== 'all') {
+      filtered = filtered.filter(scan => scan.type === selectedScanType);
+    }
+    
+    if (resultFilter !== 'all') {
+      filtered = filtered.filter(scan => scan.status === resultFilter);
+    }
+    
+    return filtered;
+  };
+
+  /**
+   * Get scan statistics
+   */
+  const getScanStats = () => {
+    const completed = scanResults.filter(s => s.status === 'completed').length;
+    const running = scanResults.filter(s => s.status === 'running').length;
+    const scheduled = scanResults.filter(s => s.status === 'scheduled').length;
+    const totalVulns = scanResults.reduce((acc, scan) => 
+      acc + scan.vulnerabilities.critical + scan.vulnerabilities.high + 
+      scan.vulnerabilities.medium + scan.vulnerabilities.low, 0
+    );
+    
+    return { completed, running, scheduled, totalVulns, total: scanResults.length };
   };
   const tools = [
     {
@@ -1154,9 +1276,283 @@ const SecurityDashboard = () => {
                           </div>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="sm">
-                        Scan Results
-                      </Button>
+                      
+                      <Dialog open={isScanResultsOpen} onOpenChange={setIsScanResultsOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="glow-hover group">
+                            <BarChart3 className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                            Scan Results
+                            <div className="ml-2 w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1200px] max-h-[90vh] gradient-card border-primary/20">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <div className="relative">
+                                <Target className="h-6 w-6 text-primary animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-ping" />
+                              </div>
+                              Vulnerability Scan Results
+                              <Badge variant="default" className="ml-2 animate-pulse-glow">
+                                {getScanStats().completed} COMPLETED
+                              </Badge>
+                            </DialogTitle>
+                            <DialogDescription className="text-base">
+                              Comprehensive vulnerability scan results and security assessments across your infrastructure
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="space-y-6">
+                            {/* Filter Controls and Statistics */}
+                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                              {/* Filter Controls */}
+                              <Card className="gradient-card border border-primary/20">
+                                <CardHeader className="pb-3">
+                                  <CardTitle className="text-sm flex items-center gap-2">
+                                    <Filter className="h-4 w-4 text-primary" />
+                                    Filter Results
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-3">
+                                  <div className="space-y-2">
+                                    <Label className="text-xs">Scan Type</Label>
+                                    <Select value={selectedScanType} onValueChange={setSelectedScanType}>
+                                      <SelectTrigger className="glow-hover h-8">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-popover border border-border z-50">
+                                        <SelectItem value="all">All Types</SelectItem>
+                                        <SelectItem value="network">Network Scans</SelectItem>
+                                        <SelectItem value="web">Web Application</SelectItem>
+                                        <SelectItem value="database">Database</SelectItem>
+                                        <SelectItem value="compliance">Compliance</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  
+                                  <div className="space-y-2">
+                                    <Label className="text-xs">Status</Label>
+                                    <Select value={resultFilter} onValueChange={setResultFilter}>
+                                      <SelectTrigger className="glow-hover h-8">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-popover border border-border z-50">
+                                        <SelectItem value="all">All Status</SelectItem>
+                                        <SelectItem value="completed">Completed</SelectItem>
+                                        <SelectItem value="running">Running</SelectItem>
+                                        <SelectItem value="scheduled">Scheduled</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </CardContent>
+                              </Card>
+
+                              {/* Statistics Cards */}
+                              <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <Card className="gradient-card border border-green-500/20 bg-gradient-to-br from-green-500/5 to-green-600/5 hover-scale">
+                                  <CardContent className="p-4 text-center">
+                                    <div className="text-2xl font-bold text-green-500 animate-pulse">
+                                      {getScanStats().completed}
+                                    </div>
+                                    <div className="text-xs text-green-400 font-medium">Completed</div>
+                                  </CardContent>
+                                </Card>
+                                
+                                <Card className="gradient-card border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-600/5 hover-scale">
+                                  <CardContent className="p-4 text-center">
+                                    <div className="text-2xl font-bold text-blue-500 animate-pulse">
+                                      {getScanStats().running}
+                                    </div>
+                                    <div className="text-xs text-blue-400 font-medium">Running</div>
+                                  </CardContent>
+                                </Card>
+                                
+                                <Card className="gradient-card border border-yellow-500/20 bg-gradient-to-br from-yellow-500/5 to-yellow-600/5 hover-scale">
+                                  <CardContent className="p-4 text-center">
+                                    <div className="text-2xl font-bold text-yellow-500">
+                                      {getScanStats().scheduled}
+                                    </div>
+                                    <div className="text-xs text-yellow-400 font-medium">Scheduled</div>
+                                  </CardContent>
+                                </Card>
+                                
+                                <Card className="gradient-card border border-red-500/20 bg-gradient-to-br from-red-500/5 to-red-600/5 hover-scale">
+                                  <CardContent className="p-4 text-center">
+                                    <div className="text-2xl font-bold text-red-500 animate-pulse">
+                                      {getScanStats().totalVulns}
+                                    </div>
+                                    <div className="text-xs text-red-400 font-medium">Total Vulns</div>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            </div>
+
+                            {/* Scan Results Table */}
+                            <Card className="gradient-card border border-primary/20">
+                              <CardHeader className="pb-3">
+                                <div className="flex items-center justify-between">
+                                  <CardTitle className="text-lg flex items-center gap-2">
+                                    <Scan className="h-5 w-5 text-primary animate-pulse" />
+                                    Scan Results
+                                    <Badge variant="outline" className="text-xs">
+                                      {getFilteredScans().length} Results
+                                    </Badge>
+                                  </CardTitle>
+                                  <div className="flex gap-2">
+                                    <Button variant="outline" size="sm" className="glow-hover">
+                                      <RefreshCw className="h-4 w-4 mr-2" />
+                                      Refresh
+                                    </Button>
+                                    <Button variant="outline" size="sm" className="glow-hover">
+                                      <Download className="h-4 w-4 mr-2" />
+                                      Export
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardHeader>
+                              <CardContent>
+                                <ScrollArea className="h-[450px] rounded-md border">
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow className="border-border/50">
+                                        <TableHead className="font-semibold">Scan Name</TableHead>
+                                        <TableHead className="font-semibold">Type</TableHead>
+                                        <TableHead className="font-semibold">Target</TableHead>
+                                        <TableHead className="font-semibold">Status</TableHead>
+                                        <TableHead className="font-semibold">Vulnerabilities</TableHead>
+                                        <TableHead className="font-semibold">Duration</TableHead>
+                                        <TableHead className="font-semibold">Coverage</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {getFilteredScans().map((scan, index) => (
+                                        <TableRow key={scan.id} className="hover:bg-primary/5 transition-colors group animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
+                                          <TableCell>
+                                            <div className="font-medium group-hover:text-primary transition-colors">
+                                              {scan.name}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground font-mono">
+                                              {scan.id}
+                                            </div>
+                                          </TableCell>
+                                          <TableCell>
+                                            <Badge 
+                                              variant="outline" 
+                                              className={`text-xs ${
+                                                scan.type === 'network' ? 'border-blue-500/50 text-blue-400' :
+                                                scan.type === 'web' ? 'border-green-500/50 text-green-400' :
+                                                scan.type === 'database' ? 'border-purple-500/50 text-purple-400' :
+                                                'border-orange-500/50 text-orange-400'
+                                              }`}
+                                            >
+                                              {scan.type.toUpperCase()}
+                                            </Badge>
+                                          </TableCell>
+                                          <TableCell>
+                                            <div className="font-mono text-sm max-w-[200px] truncate" title={scan.target}>
+                                              {scan.target}
+                                            </div>
+                                          </TableCell>
+                                          <TableCell>
+                                            <div className="flex items-center gap-2">
+                                              <div className={`w-2 h-2 rounded-full ${
+                                                scan.status === 'completed' 
+                                                  ? 'bg-green-500 shadow-lg shadow-green-500/50' 
+                                                  : scan.status === 'running'
+                                                  ? 'bg-blue-500 shadow-lg shadow-blue-500/50 animate-pulse'
+                                                  : 'bg-yellow-500 shadow-lg shadow-yellow-500/50'
+                                              }`} />
+                                              <Badge 
+                                                variant={
+                                                  scan.status === 'completed' ? 'default' : 
+                                                  scan.status === 'running' ? 'secondary' : 'outline'
+                                                }
+                                                className="text-xs"
+                                              >
+                                                {scan.status.toUpperCase()}
+                                              </Badge>
+                                            </div>
+                                            {scan.status === 'running' && (
+                                              <Progress value={scan.progress} className="mt-1 h-1" />
+                                            )}
+                                          </TableCell>
+                                          <TableCell>
+                                            <div className="space-y-1">
+                                              <div className="flex gap-1 flex-wrap">
+                                                {scan.vulnerabilities.critical > 0 && (
+                                                  <Badge variant="destructive" className="text-xs px-1 animate-pulse">
+                                                    C:{scan.vulnerabilities.critical}
+                                                  </Badge>
+                                                )}
+                                                {scan.vulnerabilities.high > 0 && (
+                                                  <Badge variant="destructive" className="text-xs px-1">
+                                                    H:{scan.vulnerabilities.high}
+                                                  </Badge>
+                                                )}
+                                                {scan.vulnerabilities.medium > 0 && (
+                                                  <Badge variant="secondary" className="text-xs px-1">
+                                                    M:{scan.vulnerabilities.medium}
+                                                  </Badge>
+                                                )}
+                                                {scan.vulnerabilities.low > 0 && (
+                                                  <Badge variant="outline" className="text-xs px-1">
+                                                    L:{scan.vulnerabilities.low}
+                                                  </Badge>
+                                                )}
+                                              </div>
+                                              <div className="text-xs text-muted-foreground">
+                                                Total: {Object.values(scan.vulnerabilities).reduce((a, b) => a + b, 0)}
+                                              </div>
+                                            </div>
+                                          </TableCell>
+                                          <TableCell>
+                                            <div className="text-sm">
+                                              {scan.duration}
+                                            </div>
+                                            {scan.startTime && (
+                                              <div className="text-xs text-muted-foreground">
+                                                Started: {scan.startTime.split(' ')[1]}
+                                              </div>
+                                            )}
+                                          </TableCell>
+                                          <TableCell>
+                                            <div className="text-sm">
+                                              <div className="flex items-center gap-1">
+                                                <Server className="h-3 w-3 text-muted-foreground" />
+                                                {scan.hostsCovered} hosts
+                                              </div>
+                                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                <Target className="h-3 w-3" />
+                                                {scan.ports} ports
+                                              </div>
+                                            </div>
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </ScrollArea>
+                              </CardContent>
+                            </Card>
+                          </div>
+
+                          <div className="flex justify-between items-center gap-2 pt-6 border-t border-border/50">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse-glow" />
+                              <span>Last updated: 2 minutes ago</span>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button variant="outline" onClick={() => setIsScanResultsOpen(false)} className="glow-hover">
+                                Close Results
+                              </Button>
+                              <Button className="glow-hover group">
+                                <Calendar className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                                Schedule New Scan
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </TabsContent>
                   
