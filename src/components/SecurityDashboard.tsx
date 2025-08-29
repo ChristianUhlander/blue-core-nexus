@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle, Brain } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,7 @@ import { securityIntegration, type WazuhAgent, type WazuhAlert, type SecuritySer
 import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
 import { AgenticPentestInterface } from "./AgenticPentestInterface";
 import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
+import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import * as React from "react";
@@ -80,6 +81,9 @@ const SecurityDashboard = () => {
   
   // Production Security Config state
   const [isProductionConfigOpen, setIsProductionConfigOpen] = useState(false);
+  
+  // Intelligent Reporting state
+  const [isReportingOpen, setIsReportingOpen] = useState(false);
   
   // Scan and configuration state
   const [selectedAgent, setSelectedAgent] = useState<string>('');
@@ -2697,6 +2701,15 @@ const SecurityDashboard = () => {
               Alerts
             </Button>
           </nav>
+          
+          <Button
+            onClick={() => setIsReportingOpen(true)}
+            variant="outline"
+            className="flex items-center gap-2 glow-hover transition-all duration-200"
+          >
+            <Brain className="h-4 w-4" />
+            AI Reports
+          </Button>
           
           <Button
             onClick={() => setIsProductionConfigOpen(true)}
@@ -6427,6 +6440,21 @@ const SecurityDashboard = () => {
           </Dialog>
         )}
         </div>
+
+        {/* Intelligent Reporting System */}
+        {isReportingOpen && (
+          <Dialog open={isReportingOpen} onOpenChange={setIsReportingOpen}>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Intelligent Reporting System</DialogTitle>
+                <DialogDescription>
+                  Generate AI-powered security reports adapted for your target audience with online research integration.
+                </DialogDescription>
+              </DialogHeader>
+              <IntelligentReportingSystem />
+            </DialogContent>
+          </Dialog>
+        )}
 
         {/* Production Security Configuration */}
         {isProductionConfigOpen && (
