@@ -725,18 +725,18 @@ const WazuhManagement = () => {
                         Create Rule
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto gradient-card">
+                    <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto gradient-card">
                       <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                           <FileText className="h-5 w-5 text-primary" />
                           Create Detection Rule
                         </DialogTitle>
                         <DialogDescription>
-                          Create custom detection rules or use predefined templates based on common security scenarios and threat levels.
+                          Create custom detection rules or use predefined templates based on common security scenarios.
                         </DialogDescription>
                       </DialogHeader>
                       
-                      <div className="grid gap-6 py-4">
+                      <div className="grid gap-4 py-4">
                         {/* Rule Basic Information */}
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
@@ -755,67 +755,64 @@ const WazuhManagement = () => {
                               <SelectTrigger className="glow-hover">
                                 <SelectValue />
                               </SelectTrigger>
-                              <SelectContent className="bg-background border z-50">
+                              <SelectContent className="bg-popover border border-border z-50">
                                 <SelectItem value="low">
-                                  <div className="flex items-center gap-2">
+                                  <span className="flex items-center gap-2">
                                     <Badge variant="outline" className="text-xs">LOW</Badge>
-                                    <span>Informational & Audit</span>
-                                  </div>
+                                    Informational & Audit
+                                  </span>
                                 </SelectItem>
                                 <SelectItem value="medium">
-                                  <div className="flex items-center gap-2">
+                                  <span className="flex items-center gap-2">
                                     <Badge variant="secondary" className="text-xs">MEDIUM</Badge>
-                                    <span>Security Events</span>
-                                  </div>
+                                    Security Events
+                                  </span>
                                 </SelectItem>
                                 <SelectItem value="high">
-                                  <div className="flex items-center gap-2">
+                                  <span className="flex items-center gap-2">
                                     <Badge variant="destructive" className="text-xs">HIGH</Badge>
-                                    <span>Critical Threats</span>
-                                  </div>
+                                    Critical Threats
+                                  </span>
                                 </SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
                         </div>
                         
-                        {/* Category and Template Selection */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="rule-category">Security Category</Label>
-                            <Select value={ruleForm.category} onValueChange={(value) => setRuleForm({...ruleForm, category: value, template: ''})}>
-                              <SelectTrigger className="glow-hover">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="bg-background border z-50">
-                                <SelectItem value="authentication">Authentication & Access</SelectItem>
-                                <SelectItem value="system">System Integrity</SelectItem>
-                                <SelectItem value="network">Network Security</SelectItem>
-                                <SelectItem value="web">Web Application</SelectItem>
-                                <SelectItem value="malware">Malware Detection</SelectItem>
-                                <SelectItem value="exfiltration">Data Exfiltration</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="rule-template">Predefined Template</Label>
-                            <Select value={ruleForm.template} onValueChange={(value) => setRuleForm({...ruleForm, template: value})}>
-                              <SelectTrigger className="glow-hover">
-                                <SelectValue placeholder="Choose a template or create custom" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-background border z-50">
-                                <SelectItem value="">Custom Rule (No Template)</SelectItem>
-                                {getAvailableTemplates().map((template) => (
-                                  <SelectItem key={template.id} value={template.id}>
-                                    <div className="flex flex-col">
-                                      <span className="font-medium">{template.name}</span>
-                                      <span className="text-xs text-muted-foreground">{template.description}</span>
-                                    </div>
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
+                        {/* Category Selection */}
+                        <div className="space-y-2">
+                          <Label htmlFor="rule-category">Security Category</Label>
+                          <Select value={ruleForm.category} onValueChange={(value) => setRuleForm({...ruleForm, category: value, template: ''})}>
+                            <SelectTrigger className="glow-hover">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-popover border border-border z-50">
+                              <SelectItem value="authentication">Authentication & Access</SelectItem>
+                              <SelectItem value="system">System Integrity</SelectItem>
+                              <SelectItem value="network">Network Security</SelectItem>
+                              <SelectItem value="web">Web Application</SelectItem>
+                              <SelectItem value="malware">Malware Detection</SelectItem>
+                              <SelectItem value="exfiltration">Data Exfiltration</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Template Selection */}
+                        <div className="space-y-2">
+                          <Label htmlFor="rule-template">Predefined Template (Optional)</Label>
+                          <Select value={ruleForm.template} onValueChange={(value) => setRuleForm({...ruleForm, template: value})}>
+                            <SelectTrigger className="glow-hover">
+                              <SelectValue placeholder="Choose a template or create custom rule" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-popover border border-border z-50 max-h-[200px] overflow-y-auto">
+                              <SelectItem value="">Custom Rule (No Template)</SelectItem>
+                              {getAvailableTemplates().map((template) => (
+                                <SelectItem key={template.id} value={template.id}>
+                                  {template.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                         
                         {/* Description */}
@@ -841,10 +838,8 @@ const WazuhManagement = () => {
                                 Copy
                               </Button>
                             </div>
-                            <div className="relative">
-                              <pre className="bg-muted p-4 rounded-md text-sm overflow-x-auto border max-h-[300px] overflow-y-auto">
-                                <code>{getSelectedTemplate()?.rule}</code>
-                              </pre>
+                            <div className="bg-muted p-3 rounded-md text-sm overflow-x-auto border max-h-[250px] overflow-y-auto">
+                              <pre><code>{getSelectedTemplate()?.rule}</code></pre>
                             </div>
                             <div className="bg-muted/50 p-3 rounded-md">
                               <p className="text-sm text-muted-foreground">
@@ -869,35 +864,35 @@ const WazuhManagement = () => {
                               value={ruleForm.customRule}
                               onChange={(e) => setRuleForm({...ruleForm, customRule: e.target.value})}
                               className="glow-hover font-mono text-sm"
-                              rows={10}
+                              rows={8}
                             />
                             <p className="text-xs text-muted-foreground">
-                              Enter your custom Wazuh rule in XML format. Make sure to use unique rule IDs and appropriate log source references.
+                              Enter your custom Wazuh rule in XML format. Use unique rule IDs and appropriate log source references.
                             </p>
                           </div>
                         )}
                         
-                        {/* Security Level Information */}
-                        <div className="bg-muted/50 p-4 rounded-md space-y-2">
-                          <h4 className="text-sm font-semibold">Threat Level Guide</h4>
-                          <div className="grid gap-2 text-xs">
+                        {/* Security Level Guide */}
+                        <div className="bg-muted/50 p-3 rounded-md">
+                          <h4 className="text-sm font-semibold mb-2">Threat Level Guide</h4>
+                          <div className="grid gap-1 text-xs">
                             <div className="flex items-center gap-2">
-                              <Badge variant="outline" className="text-xs">LOW (1-4)</Badge>
-                              <span>Informational events, successful operations, audit trails</span>
+                              <Badge variant="outline" className="text-xs px-1">LOW</Badge>
+                              <span>Levels 1-4: Informational events, audit trails</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Badge variant="secondary" className="text-xs">MEDIUM (5-8)</Badge>
-                              <span>Security events requiring attention, potential threats</span>
+                              <Badge variant="secondary" className="text-xs px-1">MED</Badge>
+                              <span>Levels 5-8: Security events requiring attention</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Badge variant="destructive" className="text-xs">HIGH (9+)</Badge>
-                              <span>Critical security incidents requiring immediate response</span>
+                              <Badge variant="destructive" className="text-xs px-1">HIGH</Badge>
+                              <span>Levels 9+: Critical incidents requiring immediate response</span>
                             </div>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-end gap-2 pt-4">
                         <Button variant="outline" onClick={() => setIsCreateRuleOpen(false)}>
                           Cancel
                         </Button>
