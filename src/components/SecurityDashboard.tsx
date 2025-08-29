@@ -254,161 +254,290 @@ const SecurityDashboard = () => {
                       </Button>
                       <Dialog open={isAgentStatusOpen} onOpenChange={setIsAgentStatusOpen}>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="glow-hover">
-                            <Users className="h-4 w-4 mr-2" />
+                          <Button variant="outline" size="sm" className="glow-hover group">
+                            <Users className="h-4 w-4 mr-2 group-hover:animate-pulse" />
                             View Agent Status
+                            <div className="ml-2 w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[900px] max-h-[80vh] gradient-card">
+                        <DialogContent className="sm:max-w-[1000px] max-h-[85vh] gradient-card border-primary/20">
                           <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
-                              <Server className="h-5 w-5 text-primary" />
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <div className="relative">
+                                <Server className="h-6 w-6 text-primary animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-ping" />
+                              </div>
                               Security Agent Status Dashboard
+                              <Badge variant="default" className="ml-2 animate-pulse-glow">
+                                LIVE
+                              </Badge>
                             </DialogTitle>
-                            <DialogDescription>
-                              Monitor all security agents and API connections across your infrastructure
+                            <DialogDescription className="text-base">
+                              Real-time monitoring of security agents and API connections across your infrastructure
                             </DialogDescription>
                           </DialogHeader>
 
                           <div className="space-y-6">
-                            {/* API Connection Status */}
-                            <div className="space-y-3">
-                              <h3 className="text-lg font-semibold flex items-center gap-2">
-                                <Wifi className="h-5 w-5 text-primary" />
-                                API Connection Status
-                              </h3>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {apiConnections.map((connection) => (
-                                  <Card key={connection.service} className="gradient-card border">
+                            {/* Enhanced API Connection Status with Visual Indicators */}
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-semibold flex items-center gap-2">
+                                  <div className="relative">
+                                    <Wifi className="h-5 w-5 text-primary" />
+                                    <div className="absolute inset-0 w-5 h-5 border-2 border-primary rounded-full animate-ping opacity-20" />
+                                  </div>
+                                  API Connection Status
+                                </h3>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                                  <span className="text-sm text-muted-foreground">All services offline</span>
+                                </div>
+                              </div>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {apiConnections.map((connection, index) => (
+                                  <Card key={connection.service} className="gradient-card border hover:border-primary/50 transition-all duration-300 group">
                                     <CardContent className="p-4">
-                                      <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-2">
-                                          <div className={`w-3 h-3 rounded-full ${
-                                            connection.status === 'connected' 
-                                              ? 'bg-green-500 animate-pulse-glow shadow-glow' 
-                                              : 'bg-red-500 animate-pulse shadow-red-500/50'
-                                          }`} />
-                                          <span className="font-medium text-sm">{connection.service}</span>
+                                      <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-3">
+                                          <div className="relative">
+                                            <div className={`w-4 h-4 rounded-full ${
+                                              connection.status === 'connected' 
+                                                ? 'bg-green-500 shadow-lg shadow-green-500/50' 
+                                                : 'bg-red-500 shadow-lg shadow-red-500/50'
+                                            } animate-pulse`} />
+                                            <div className={`absolute inset-0 w-4 h-4 rounded-full ${
+                                              connection.status === 'connected' 
+                                                ? 'border-2 border-green-500 animate-ping' 
+                                                : 'border-2 border-red-500 animate-ping'
+                                            } opacity-30`} />
+                                          </div>
+                                          <div>
+                                            <span className="font-semibold text-sm group-hover:text-primary transition-colors">
+                                              {connection.service}
+                                            </span>
+                                            <div className="flex items-center gap-1 mt-1">
+                                              <Badge 
+                                                variant={connection.status === 'connected' ? 'default' : 'destructive'}
+                                                className="text-xs animate-pulse-glow"
+                                              >
+                                                {connection.status === 'connected' ? 'ONLINE' : 'OFFLINE'}
+                                              </Badge>
+                                              <span className="text-xs text-muted-foreground font-mono">
+                                                {connection.endpoint}
+                                              </span>
+                                            </div>
+                                          </div>
                                         </div>
-                                        <Badge 
-                                          variant={connection.status === 'connected' ? 'default' : 'destructive'}
-                                          className="text-xs"
-                                        >
-                                          {connection.status === 'connected' ? 'ONLINE' : 'OFFLINE'}
-                                        </Badge>
+                                        <div className={`p-2 rounded-full ${
+                                          connection.status === 'connected' 
+                                            ? 'bg-green-500/10 text-green-500' 
+                                            : 'bg-red-500/10 text-red-500'
+                                        }`}>
+                                          {connection.status === 'connected' ? (
+                                            <CheckCircle className="h-4 w-4" />
+                                          ) : (
+                                            <WifiOff className="h-4 w-4" />
+                                          )}
+                                        </div>
                                       </div>
-                                      <p className="text-xs text-muted-foreground mb-1">{connection.endpoint}</p>
                                       <p className="text-xs text-muted-foreground">{connection.description}</p>
+                                      
+                                      {/* Connection Progress Bar */}
+                                      <div className="mt-3">
+                                        <div className="flex justify-between text-xs mb-1">
+                                          <span>Connection Health</span>
+                                          <span>{connection.status === 'connected' ? '100%' : '0%'}</span>
+                                        </div>
+                                        <Progress 
+                                          value={connection.status === 'connected' ? 100 : 0} 
+                                          className={`h-2 ${connection.status === 'connected' ? 'glow' : ''}`}
+                                        />
+                                      </div>
                                     </CardContent>
                                   </Card>
                                 ))}
                               </div>
                             </div>
 
-                            {/* Agent Status Table */}
-                            <div className="space-y-3">
+                            {/* Enhanced Agent Status with Interactive Elements */}
+                            <div className="space-y-4">
                               <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
-                                  <Server className="h-5 w-5 text-primary" />
-                                  Wazuh Agents ({agentData.length} Total)
+                                  <div className="relative">
+                                    <Server className="h-5 w-5 text-primary animate-pulse" />
+                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-bounce" />
+                                  </div>
+                                  Wazuh Agents
+                                  <Badge variant="outline" className="text-xs">
+                                    {agentData.length} Total
+                                  </Badge>
                                 </h3>
-                                <div className="flex gap-2 text-sm">
-                                  <Badge variant="default" className="text-xs">
-                                    {agentData.filter(a => a.status === 'active').length} Active
-                                  </Badge>
-                                  <Badge variant="destructive" className="text-xs">
-                                    {agentData.filter(a => a.status === 'disconnected').length} Disconnected
-                                  </Badge>
-                                  <Badge variant="secondary" className="text-xs">
-                                    {agentData.filter(a => a.status === 'never_connected').length} Never Connected
-                                  </Badge>
+                                
+                                {/* Real-time Status Indicators */}
+                                <div className="flex gap-3 text-sm">
+                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20">
+                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse-glow" />
+                                    <span className="text-green-400 font-medium">
+                                      {agentData.filter(a => a.status === 'active').length} Active
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20">
+                                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                    <span className="text-red-400 font-medium">
+                                      {agentData.filter(a => a.status === 'disconnected').length} Offline
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20">
+                                    <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
+                                    <span className="text-yellow-400 font-medium">
+                                      {agentData.filter(a => a.status === 'never_connected').length} Pending
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
 
-                              <ScrollArea className="h-[350px] rounded-md border">
-                                <Table>
-                                  <TableHeader>
-                                    <TableRow>
-                                      <TableHead>Agent ID</TableHead>
-                                      <TableHead>Name</TableHead>
-                                      <TableHead>IP Address</TableHead>
-                                      <TableHead>OS</TableHead>
-                                      <TableHead>Status</TableHead>
-                                      <TableHead>Last Seen</TableHead>
-                                      <TableHead>Version</TableHead>
-                                      <TableHead>Group</TableHead>
-                                    </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                    {agentData.map((agent) => (
-                                      <TableRow key={agent.id}>
-                                        <TableCell className="font-mono text-sm">{agent.id}</TableCell>
-                                        <TableCell className="font-medium">{agent.name}</TableCell>
-                                        <TableCell className="font-mono text-sm">{agent.ip}</TableCell>
-                                        <TableCell className="text-sm">{agent.os}</TableCell>
-                                        <TableCell>
-                                          <div className="flex items-center gap-2">
-                                            <div className={`w-2 h-2 rounded-full ${
-                                              agent.status === 'active' 
-                                                ? 'bg-green-500 animate-pulse-glow shadow-glow' 
-                                                : agent.status === 'disconnected'
-                                                ? 'bg-red-500 animate-pulse shadow-red-500/50'
-                                                : 'bg-yellow-500 animate-pulse shadow-yellow-500/50'
-                                            }`} />
-                                            <Badge 
-                                              variant={
-                                                agent.status === 'active' ? 'default' : 
-                                                agent.status === 'disconnected' ? 'destructive' : 'secondary'
-                                              }
-                                              className="text-xs"
-                                            >
-                                              {agent.status.replace('_', ' ').toUpperCase()}
-                                            </Badge>
-                                          </div>
-                                        </TableCell>
-                                        <TableCell className="text-sm">{agent.lastSeen}</TableCell>
-                                        <TableCell className="font-mono text-sm">{agent.version}</TableCell>
-                                        <TableCell className="text-sm">
-                                          <Badge variant="outline" className="text-xs">
-                                            {agent.group}
-                                          </Badge>
-                                        </TableCell>
+                              {/* Enhanced Agent Table */}
+                              <Card className="gradient-card border border-primary/20 overflow-hidden">
+                                <ScrollArea className="h-[400px]">
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow className="border-border/50">
+                                        <TableHead className="font-semibold">Status</TableHead>
+                                        <TableHead className="font-semibold">Agent ID</TableHead>
+                                        <TableHead className="font-semibold">Name</TableHead>
+                                        <TableHead className="font-semibold">IP Address</TableHead>
+                                        <TableHead className="font-semibold">OS</TableHead>
+                                        <TableHead className="font-semibold">Last Seen</TableHead>
+                                        <TableHead className="font-semibold">Version</TableHead>
+                                        <TableHead className="font-semibold">Group</TableHead>
                                       </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </ScrollArea>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {agentData.map((agent, index) => (
+                                        <TableRow key={agent.id} className="hover:bg-primary/5 transition-colors group">
+                                          <TableCell>
+                                            <div className="flex items-center gap-2">
+                                              <div className="relative">
+                                                <div className={`w-3 h-3 rounded-full ${
+                                                  agent.status === 'active' 
+                                                    ? 'bg-green-500 shadow-lg shadow-green-500/50' 
+                                                    : agent.status === 'disconnected'
+                                                    ? 'bg-red-500 shadow-lg shadow-red-500/50'
+                                                    : 'bg-yellow-500 shadow-lg shadow-yellow-500/50'
+                                                } animate-pulse`} />
+                                                <div className={`absolute inset-0 w-3 h-3 rounded-full ${
+                                                  agent.status === 'active' 
+                                                    ? 'border-2 border-green-500 animate-ping' 
+                                                    : agent.status === 'disconnected'
+                                                    ? 'border-2 border-red-500 animate-ping'
+                                                    : 'border-2 border-yellow-500 animate-ping'
+                                                } opacity-20`} />
+                                              </div>
+                                            </div>
+                                          </TableCell>
+                                          <TableCell className="font-mono text-sm font-semibold text-primary group-hover:text-accent transition-colors">
+                                            {agent.id}
+                                          </TableCell>
+                                          <TableCell className="font-medium group-hover:text-foreground transition-colors">
+                                            {agent.name}
+                                          </TableCell>
+                                          <TableCell className="font-mono text-sm">{agent.ip}</TableCell>
+                                          <TableCell className="text-sm">{agent.os}</TableCell>
+                                          <TableCell className="text-sm">
+                                            <div className="flex items-center gap-1">
+                                              <Clock className="h-3 w-3 text-muted-foreground" />
+                                              {agent.lastSeen}
+                                            </div>
+                                          </TableCell>
+                                          <TableCell>
+                                            <Badge variant="outline" className="font-mono text-xs">
+                                              {agent.version}
+                                            </Badge>
+                                          </TableCell>
+                                          <TableCell>
+                                            <Badge variant="secondary" className="text-xs">
+                                              {agent.group}
+                                            </Badge>
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </ScrollArea>
+                              </Card>
                             </div>
 
-                            {/* Quick Stats */}
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t">
-                              <div className="text-center">
-                                <div className="text-2xl font-bold text-green-500">{agentData.filter(a => a.status === 'active').length}</div>
-                                <div className="text-xs text-muted-foreground">Active Agents</div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-2xl font-bold text-red-500">{agentData.filter(a => a.status === 'disconnected').length}</div>
-                                <div className="text-xs text-muted-foreground">Disconnected</div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-2xl font-bold text-yellow-500">{agentData.filter(a => a.status === 'never_connected').length}</div>
-                                <div className="text-xs text-muted-foreground">Never Connected</div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-2xl font-bold text-primary">{apiConnections.filter(c => c.status === 'connected').length}/{apiConnections.length}</div>
-                                <div className="text-xs text-muted-foreground">APIs Online</div>
-                              </div>
-                            </div>
+                            {/* Enhanced Statistics Dashboard */}
+                            <Card className="gradient-card border border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
+                              <CardContent className="p-6">
+                                <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                                  <Activity className="h-5 w-5 text-primary animate-pulse" />
+                                  Real-time Infrastructure Health
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                  <div className="text-center group cursor-pointer">
+                                    <div className="relative mb-2">
+                                      <div className="text-3xl font-bold text-green-500 group-hover:scale-110 transition-transform">
+                                        {agentData.filter(a => a.status === 'active').length}
+                                      </div>
+                                      <div className="absolute inset-0 bg-green-500/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">Active Agents</div>
+                                    <Progress value={75} className="mt-2 h-2 glow" />
+                                  </div>
+                                  
+                                  <div className="text-center group cursor-pointer">
+                                    <div className="relative mb-2">
+                                      <div className="text-3xl font-bold text-red-500 group-hover:scale-110 transition-transform">
+                                        {agentData.filter(a => a.status === 'disconnected').length}
+                                      </div>
+                                      <div className="absolute inset-0 bg-red-500/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">Disconnected</div>
+                                    <Progress value={20} className="mt-2 h-2" />
+                                  </div>
+                                  
+                                  <div className="text-center group cursor-pointer">
+                                    <div className="relative mb-2">
+                                      <div className="text-3xl font-bold text-yellow-500 group-hover:scale-110 transition-transform">
+                                        {agentData.filter(a => a.status === 'never_connected').length}
+                                      </div>
+                                      <div className="absolute inset-0 bg-yellow-500/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">Never Connected</div>
+                                    <Progress value={5} className="mt-2 h-2" />
+                                  </div>
+                                  
+                                  <div className="text-center group cursor-pointer">
+                                    <div className="relative mb-2">
+                                      <div className="text-3xl font-bold text-primary group-hover:scale-110 transition-transform">
+                                        {apiConnections.filter(c => c.status === 'connected').length}/{apiConnections.length}
+                                      </div>
+                                      <div className="absolute inset-0 bg-primary/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">APIs Online</div>
+                                    <Progress value={0} className="mt-2 h-2" />
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
                           </div>
 
-                          <div className="flex justify-end gap-2 pt-4">
-                            <Button variant="outline" onClick={() => setIsAgentStatusOpen(false)}>
-                              Close
-                            </Button>
-                            <Button className="glow-hover">
-                              <Settings className="h-4 w-4 mr-2" />
-                              Manage Agents
-                            </Button>
+                          <div className="flex justify-between items-center gap-2 pt-6 border-t border-border/50">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <div className="w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
+                              <span>Auto-refresh every 30s</span>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button variant="outline" onClick={() => setIsAgentStatusOpen(false)} className="glow-hover">
+                                Close Dashboard
+                              </Button>
+                              <Button className="glow-hover group">
+                                <Settings className="h-4 w-4 mr-2 group-hover:animate-spin" />
+                                Manage All Agents
+                              </Button>
+                            </div>
                           </div>
                         </DialogContent>
                       </Dialog>
