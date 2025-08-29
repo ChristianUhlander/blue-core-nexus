@@ -1123,6 +1123,329 @@ const SecurityDashboard = () => {
   };
 
   /**
+   * Enhanced API Connection Testing and Management
+   * Backend Integration: Real-time connection testing and configuration
+   * 
+   * BACKEND REQUIREMENTS:
+   * - POST /api/connections/test - Test individual service connections
+   * - PUT /api/connections/configure - Update connection settings
+   * - GET /api/connections/diagnostics - Detailed connection diagnostics
+   * - WebSocket /ws/connection-status - Real-time connection status updates
+   */
+
+  // Enhanced connection state management
+  const [connectionTesting, setConnectionTesting] = useState<Record<string, boolean>>({});
+  const [connectionConfig, setConnectionConfig] = useState<Record<string, any>>({});
+
+  /**
+   * Test individual service connection
+   * Backend Integration: POST /api/connections/test
+   */
+  const testServiceConnection = async (serviceKey: string, serviceEndpoint: string) => {
+    if (connectionTesting[serviceKey]) return; // Prevent multiple simultaneous tests
+
+    setConnectionTesting(prev => ({ ...prev, [serviceKey]: true }));
+
+    try {
+      // Backend should perform actual connection test
+      // This would replace the hardcoded localhost calls with proper API testing
+      let testResult = false;
+      
+      switch (serviceKey) {
+        case 'wazuh':
+          testResult = await testWazuhConnection(serviceEndpoint);
+          break;
+        case 'gvm':
+          testResult = await testGVMConnection(serviceEndpoint);
+          break;
+        case 'zap':
+          testResult = await testZAPConnection(serviceEndpoint);
+          break;
+        case 'spiderfoot':
+          testResult = await testSpiderfootConnection(serviceEndpoint);
+          break;
+      }
+
+      toast({
+        title: testResult ? "Connection Successful" : "Connection Failed",
+        description: `${serviceKey.toUpperCase()} service ${testResult ? 'is responding' : 'is not accessible'}`,
+        variant: testResult ? "default" : "destructive"
+      });
+
+      // Update service status based on test result
+      setServiceStatus(prev => ({
+        ...prev,
+        [serviceKey]: {
+          ...prev[serviceKey],
+          online: testResult,
+          lastCheck: new Date().toISOString(),
+          error: testResult ? null : "Connection test failed"
+        }
+      }));
+
+    } catch (error) {
+      console.error(`Connection test failed for ${serviceKey}:`, error);
+      toast({
+        title: "Test Failed",
+        description: `Unable to test ${serviceKey.toUpperCase()} connection: ${error.message}`,
+        variant: "destructive"
+      });
+    } finally {
+      setConnectionTesting(prev => ({ ...prev, [serviceKey]: false }));
+    }
+  };
+
+  /**
+   * Individual service connection test functions
+   * Backend Integration: These should be replaced with proper API calls
+   */
+  const testWazuhConnection = async (endpoint: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`http://${endpoint}/security/user/authenticate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(5000)
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  const testGVMConnection = async (endpoint: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`http://${endpoint}/gmp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/xml' },
+        signal: AbortSignal.timeout(5000)
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  const testZAPConnection = async (endpoint: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`http://${endpoint}/JSON/core/view/version/?apikey=`, {
+        signal: AbortSignal.timeout(5000)
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  const testSpiderfootConnection = async (endpoint: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`http://${endpoint}/api?func=ping&apikey=`, {
+        signal: AbortSignal.timeout(5000)
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  /**
+   * Enhanced Agent Management Functions
+   * Backend Integration: Wazuh agent lifecycle management
+   * 
+   * BACKEND REQUIREMENTS:
+   * - POST /api/agents/restart - Restart specific agent
+   * - POST /api/agents/update - Update agent configuration
+   * - DELETE /api/agents/{id} - Remove agent
+   * - GET /api/agents/{id}/logs - Get agent-specific logs
+   * - POST /api/agents/bulk-action - Perform bulk operations
+   */
+
+  const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
+  const [agentActionLoading, setAgentActionLoading] = useState<Record<string, boolean>>({});
+
+  /**
+   * Restart individual agent
+   * Backend Integration: POST /api/agents/restart
+   */
+  const restartAgent = async (agentId: string) => {
+    if (agentActionLoading[agentId]) return;
+
+    setAgentActionLoading(prev => ({ ...prev, [agentId]: true }));
+
+    try {
+      // Backend API call to restart agent
+      // const response = await fetch(`/api/agents/${agentId}/restart`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' }
+      // });
+
+      // Simulate restart process
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      toast({
+        title: "Agent Restart Initiated",
+        description: `Agent ${agentId} restart command sent successfully.`,
+      });
+
+      // Update agent status optimistically
+      // In production, this would be updated via WebSocket or polling
+      
+    } catch (error) {
+      toast({
+        title: "Restart Failed",
+        description: `Failed to restart agent ${agentId}: ${error.message}`,
+        variant: "destructive"
+      });
+    } finally {
+      setAgentActionLoading(prev => ({ ...prev, [agentId]: false }));
+    }
+  };
+
+  /**
+   * Remove agent from management
+   * Backend Integration: DELETE /api/agents/{id}
+   */
+  const removeAgent = async (agentId: string) => {
+    if (agentActionLoading[agentId]) return;
+
+    setAgentActionLoading(prev => ({ ...prev, [agentId]: true }));
+
+    try {
+      // Backend API call to remove agent
+      // const response = await fetch(`/api/agents/${agentId}`, {
+      //   method: 'DELETE'
+      // });
+
+      toast({
+        title: "Agent Removed",
+        description: `Agent ${agentId} has been removed from management.`,
+      });
+
+      // Remove from local state (in production, this would be handled by backend)
+      // This is just for UI demonstration
+      
+    } catch (error) {
+      toast({
+        title: "Removal Failed",
+        description: `Failed to remove agent ${agentId}: ${error.message}`,
+        variant: "destructive"
+      });
+    } finally {
+      setAgentActionLoading(prev => ({ ...prev, [agentId]: false }));
+    }
+  };
+
+  /**
+   * Toggle agent selection for bulk operations
+   */
+  const toggleAgentSelection = (agentId: string) => {
+    setSelectedAgents(prev => 
+      prev.includes(agentId) 
+        ? prev.filter(id => id !== agentId)
+        : [...prev, agentId]
+    );
+  };
+
+  /**
+   * Perform bulk agent operations
+   * Backend Integration: POST /api/agents/bulk-action
+   */
+  const performBulkAgentAction = async (action: 'restart' | 'update' | 'remove') => {
+    if (selectedAgents.length === 0) {
+      toast({
+        title: "No Agents Selected",
+        description: "Please select agents to perform bulk operations.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Backend API call for bulk operations
+      // const response = await fetch('/api/agents/bulk-action', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ action, agentIds: selectedAgents })
+      // });
+
+      toast({
+        title: "Bulk Operation Initiated",
+        description: `${action} operation started for ${selectedAgents.length} agents.`,
+      });
+
+      setSelectedAgents([]); // Clear selection
+      
+    } catch (error) {
+      toast({
+        title: "Bulk Operation Failed",
+        description: `Failed to perform ${action} on selected agents: ${error.message}`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  /**
+   * Get dynamic API connections with enhanced status
+   */
+  const getDynamicApiConnections = () => {
+    return [
+      {
+        service: "Wazuh Manager",
+        endpoint: "localhost:55000",
+        status: serviceStatus.wazuh.online ? "connected" : "disconnected",
+        description: "SIEM agent management and log analysis",
+        lastCheck: serviceStatus.wazuh.lastCheck,
+        error: serviceStatus.wazuh.error,
+        key: "wazuh"
+      },
+      {
+        service: "OpenVAS Scanner",
+        endpoint: "localhost:9392",
+        status: serviceStatus.gvm.online ? "connected" : "disconnected",
+        description: "Vulnerability assessment and network scanning",
+        lastCheck: serviceStatus.gvm.lastCheck,
+        error: serviceStatus.gvm.error,
+        key: "gvm"
+      },
+      {
+        service: "OWASP ZAP",
+        endpoint: "localhost:8080",
+        status: serviceStatus.zap.online ? "connected" : "disconnected",
+        description: "Web application security testing",
+        lastCheck: serviceStatus.zap.lastCheck,
+        error: serviceStatus.zap.error,
+        key: "zap"
+      },
+      {
+        service: "Spiderfoot OSINT",
+        endpoint: "localhost:5001",
+        status: serviceStatus.spiderfoot.online ? "connected" : "disconnected",
+        description: "Open source intelligence gathering",
+        lastCheck: serviceStatus.spiderfoot.lastCheck,
+        error: serviceStatus.spiderfoot.error,
+        key: "spiderfoot"
+      }
+    ];
+  };
+
+  /**
+   * Get agent statistics for dashboard
+   */
+  const getAgentStats = () => {
+    const activeAgents = agentData.filter(a => a.status === 'active').length;
+    const offlineAgents = agentData.filter(a => a.status === 'disconnected').length;
+    const pendingAgents = agentData.filter(a => a.status === 'never_connected').length;
+    const totalAgents = agentData.length;
+
+    return {
+      active: activeAgents,
+      offline: offlineAgents,
+      pending: pendingAgents,
+      total: totalAgents,
+      healthScore: totalAgents > 0 ? Math.round((activeAgents / totalAgents) * 100) : 0
+    };
+  };
+
+  /**
    * Mock CVE vulnerability data
    * In production, this would come from OpenVAS/GVM API and CVE databases
    */
