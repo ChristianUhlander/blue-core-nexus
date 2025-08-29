@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import SecurityChatbot from "./SecurityChatbot";
+import IppsYChatPane from "./SecurityChatbot";
 import { useRealTimeSecurityData } from "@/hooks/useRealTimeSecurityData";
 import { k8sSecurityApi } from "@/services/k8sSecurityApi";
 import { securityIntegration, type WazuhAgent, type WazuhAlert, type SecurityServiceHealth } from "@/services/securityIntegrationService";
@@ -69,6 +69,9 @@ const SecurityDashboard = () => {
   const [isSpiderfootOpen, setIsSpiderfootOpen] = useState(false);
   const [isOsintProfilesOpen, setIsOsintProfilesOpen] = useState(false);
   const [isThreatAnalysisOpen, setIsThreatAnalysisOpen] = useState(false);
+  
+  // IppsY chat pane state
+  const [isIppsYOpen, setIsIppsYOpen] = useState(false);
   
   // Scan and configuration state
   const [selectedAgent, setSelectedAgent] = useState<string>('');
@@ -2643,8 +2646,32 @@ const SecurityDashboard = () => {
 
   return (
     <div className="min-h-screen gradient-bg text-foreground">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      {/* Header with IppsY Toggle */}
+      <header className="sticky top-0 z-40 border-b border-border/30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto flex h-14 items-center justify-between px-6">
+          <div className="flex items-center gap-2">
+            <Shield className="h-6 w-6 text-primary" />
+            <span className="font-bold text-lg">IPS Security Center</span>
+          </div>
+          <Button
+            onClick={() => setIsIppsYOpen(!isIppsYOpen)}
+            variant={isIppsYOpen ? "default" : "outline"}
+            className="flex items-center gap-2 glow-hover transition-all duration-200"
+          >
+            <Bot className="h-4 w-4" />
+            IppsY
+            {isIppsYOpen && <X className="h-4 w-4" />}
+            {!isIppsYOpen && <MessageCircle className="h-4 w-4" />}
+          </Button>
+        </div>
+      </header>
+
+      {/* Main Layout */}
+      <div className="flex">
+        {/* Main Content */}
+        <div className={`flex-1 transition-all duration-300 ${isIppsYOpen ? 'mr-96' : ''}`}>
+          {/* Hero Section */}
+          <div className="relative overflow-hidden">
         <div 
           className="absolute inset-0 opacity-20"
           style={{
@@ -6315,8 +6342,6 @@ const SecurityDashboard = () => {
       
         {/* Remove the old agentic pentest button that was buried lower in the dashboard */}
 
-        {/* Security Chatbot */}
-        <SecurityChatbot />
         
         {/* Agentic Pentest Interface Modal */}
         {isAgenticPentestOpen && (
@@ -6338,8 +6363,20 @@ const SecurityDashboard = () => {
             </DialogContent>
           </Dialog>
         )}
+        </div>
+
+        {/* IppsY Chat Pane */}
+        {isIppsYOpen && (
+          <div className="fixed right-0 top-14 bottom-0 w-96 z-30 border-l border-border/30">
+            <IppsYChatPane 
+              isOpen={isIppsYOpen} 
+              onToggle={() => setIsIppsYOpen(!isIppsYOpen)} 
+            />
+          </div>
+        )}
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 export default SecurityDashboard;
