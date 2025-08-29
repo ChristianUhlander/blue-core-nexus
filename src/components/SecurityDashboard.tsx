@@ -2347,25 +2347,25 @@ const SecurityDashboard = () => {
             
             {/* SUPER PROMINENT AGENTIC PENTEST BUTTON - IMPOSSIBLE TO MISS */}
             <div className="mb-12 relative">
-              <Card className="overflow-hidden border-none bg-gradient-to-br from-orange-600/20 via-red-600/20 to-purple-600/20 backdrop-blur-sm relative group hover:scale-[1.02] transition-all duration-500 animate-pulse">
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-purple-500/10 opacity-50 animate-pulse" />
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-fade-in" />
+              <Card className="overflow-hidden border-none bg-gradient-to-br from-blue-600/10 via-slate-600/10 to-blue-800/10 backdrop-blur-sm relative group hover:scale-[1.01] transition-all duration-1000">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-slate-500/5 to-blue-500/5 opacity-30 animate-[pulse_4s_ease-in-out_infinite]" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/3 to-transparent" />
                 <CardContent className="p-8 relative z-10">
                   <div className="flex items-center justify-between">
                     <div className="space-y-4">
                       <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-lg animate-bounce">
-                          <BrainCircuit className="h-8 w-8 text-white" />
+                        <div className="p-3 rounded-full bg-gradient-to-r from-blue-600/20 to-slate-600/20 shadow-md">
+                          <BrainCircuit className="h-8 w-8 text-blue-400" />
                         </div>
                         <div>
-                          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-red-400 to-purple-400 animate-fade-in">
+                          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-slate-400 to-blue-500">
                             🤖 Full Agentic AI Pentest
                           </h2>
                           <div className="flex items-center gap-2 mt-2">
-                            <Badge className="bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-300 border-orange-500/50 animate-pulse">
+                            <Badge className="bg-blue-500/10 text-blue-300 border-blue-500/30">
                               EXPERIMENTAL
                             </Badge>
-                            <Badge className="bg-gradient-to-r from-green-500/20 to-blue-500/20 text-green-300 border-green-500/50">
+                            <Badge className="bg-slate-500/10 text-slate-300 border-slate-500/30">
                               PRODUCTION READY
                             </Badge>
                           </div>
@@ -2374,26 +2374,26 @@ const SecurityDashboard = () => {
                       
                       <div className="max-w-2xl">
                         <p className="text-lg text-muted-foreground leading-relaxed">
-                          <span className="text-orange-400 font-semibold">Revolutionary AI-powered</span> autonomous penetration testing with 
-                          <span className="text-red-400 font-semibold"> LLM integration</span>. Connect GPT-5, Claude, or Perplexity to automatically 
+                          <span className="text-blue-400 font-medium">Advanced AI-powered</span> autonomous penetration testing with 
+                          <span className="text-slate-400 font-medium"> LLM integration</span>. Connect GPT-5, Claude, or Perplexity to automatically 
                           analyze, plan, and execute security assessments using Kali Linux tools.
                         </p>
                         
                         <div className="grid grid-cols-2 gap-4 mt-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+                            <div className="w-2 h-2 rounded-full bg-blue-400/60 animate-[pulse_3s_ease-in-out_infinite]" />
                             <span>Autonomous Nmap → SQLMap → Nikto chains</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                            <div className="w-2 h-2 rounded-full bg-slate-400/60 animate-[pulse_3.5s_ease-in-out_infinite]" />
                             <span>OWASP & NIST methodology compliance</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+                            <div className="w-2 h-2 rounded-full bg-blue-500/60 animate-[pulse_4s_ease-in-out_infinite]" />
                             <span>Real-time AI decision making</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                            <div className="w-2 h-2 rounded-full bg-slate-500/60 animate-[pulse_4.5s_ease-in-out_infinite]" />
                             <span>Human oversight & approval gates</span>
                           </div>
                         </div>
@@ -2404,7 +2404,7 @@ const SecurityDashboard = () => {
                       <Button 
                         onClick={() => setIsAgenticPentestOpen(true)}
                         size="lg"
-                        className="bg-gradient-to-r from-orange-600 via-red-600 to-purple-600 hover:from-orange-700 hover:via-red-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-bold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 hover:scale-110 animate-bounce"
+                        className="bg-gradient-to-r from-blue-600/80 to-slate-600/80 hover:from-blue-700/90 hover:to-slate-700/90 text-white px-8 py-4 text-lg font-medium shadow-lg hover:shadow-blue-500/20 transition-all duration-500"
                       >
                         <Settings className="h-6 w-6 mr-3" />
                         Configure & Launch AI Pentest
