@@ -216,8 +216,12 @@ const SecurityDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button className="w-full glow-hover" variant="default">
-                Schedule NVT Scan
+              <Button 
+                className="w-full glow-hover" 
+                variant="default"
+                onClick={() => window.location.href = '/gvm'}
+              >
+                Manage GVM/OpenVAS
               </Button>
               <Button className="w-full" variant="outline">
                 CVE Assessment
