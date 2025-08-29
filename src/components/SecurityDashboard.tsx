@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import SecurityChatbot from "./SecurityChatbot";
 import { useSecurityStatus } from "@/hooks/useSecurityStatus";
 import heroImage from "@/assets/security-hero.jpg";
@@ -15,6 +20,19 @@ import { useState } from "react";
 const SecurityDashboard = () => {
   const { getConnectionIndicator } = useSecurityStatus();
   const [isAgentStatusOpen, setIsAgentStatusOpen] = useState(false);
+  const [isAgentConfigOpen, setIsAgentConfigOpen] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<string>('001');
+  const [agentConfig, setAgentConfig] = useState({
+    logLevel: 'info',
+    scanFrequency: '1h',
+    enableSyscheck: true,
+    enableRootcheck: true,
+    enableOpenscap: false,
+    enableSca: true,
+    customRules: '',
+    alertLevel: '7'
+  });
+  const { toast } = useToast();
 
   /**
    * Mock agent data with connection status indicators
@@ -107,6 +125,27 @@ const SecurityDashboard = () => {
       description: "Open source intelligence gathering"
     }
   ];
+
+  /**
+   * Handles saving agent configuration
+   * In production, this would make API calls to update the Wazuh agent configuration
+   */
+  const handleSaveAgentConfig = () => {
+    // In a real implementation, this would make an API call to the Wazuh manager
+    // PUT /agents/{agent_id}/config with the configuration data
+    toast({
+      title: "Configuration Updated",
+      description: `Agent ${selectedAgent} configuration has been updated successfully.`,
+    });
+    setIsAgentConfigOpen(false);
+  };
+
+  /**
+   * Gets the selected agent data for configuration
+   */
+  const getSelectedAgentData = () => {
+    return agentData.find(agent => agent.id === selectedAgent) || agentData[0];
+  };
   const tools = [
     {
       name: "Wazuh SIEM",
@@ -373,9 +412,240 @@ const SecurityDashboard = () => {
                           </div>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="sm">
-                        Agent Configuration
-                      </Button>
+                      
+                      <Dialog open={isAgentConfigOpen} onOpenChange={setIsAgentConfigOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="glow-hover">
+                            <Cog className="h-4 w-4 mr-2" />
+                            Agent Configuration
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto gradient-card">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                              <Settings className="h-5 w-5 text-primary" />
+                              Security Agent Configuration
+                            </DialogTitle>
+                            <DialogDescription>
+                              Configure monitoring settings and security policies for Wazuh agents
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="space-y-6 py-4">
+                            {/* Agent Selection */}
+                            <div className="space-y-3">
+                              <Label htmlFor="agent-select">Select Agent to Configure</Label>
+                              <Select value={selectedAgent} onValueChange={setSelectedAgent}>
+                                <SelectTrigger className="glow-hover">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border border-border z-50">
+                                  {agentData.map((agent) => (
+                                    <SelectItem key={agent.id} value={agent.id}>
+                                      <div className="flex items-center gap-2">
+                                        <div className={`w-2 h-2 rounded-full ${
+                                          agent.status === 'active' 
+                                            ? 'bg-green-500' 
+                                            : agent.status === 'disconnected'
+                                            ? 'bg-red-500'
+                                            : 'bg-yellow-500'
+                                        }`} />
+                                        <span className="font-mono text-sm">{agent.id}</span>
+                                        <span>{agent.name}</span>
+                                        <span className="text-muted-foreground">({agent.ip})</span>
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              
+                              {/* Selected Agent Info */}
+                              <Card className="gradient-card border">
+                                <CardContent className="p-4">
+                                  <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                      <span className="text-muted-foreground">Agent:</span>
+                                      <span className="ml-2 font-medium">{getSelectedAgentData()?.name}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-muted-foreground">IP:</span>
+                                      <span className="ml-2 font-mono">{getSelectedAgentData()?.ip}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-muted-foreground">OS:</span>
+                                      <span className="ml-2">{getSelectedAgentData()?.os}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-muted-foreground">Group:</span>
+                                      <Badge variant="outline" className="ml-2 text-xs">
+                                        {getSelectedAgentData()?.group}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </div>
+
+                            {/* Configuration Tabs */}
+                            <Tabs defaultValue="general" className="space-y-4">
+                              <TabsList className="grid w-full grid-cols-3">
+                                <TabsTrigger value="general">General Settings</TabsTrigger>
+                                <TabsTrigger value="monitoring">Monitoring Modules</TabsTrigger>
+                                <TabsTrigger value="custom">Custom Rules</TabsTrigger>
+                              </TabsList>
+
+                              <TabsContent value="general" className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="log-level">Log Level</Label>
+                                    <Select value={agentConfig.logLevel} onValueChange={(value) => setAgentConfig({...agentConfig, logLevel: value})}>
+                                      <SelectTrigger className="glow-hover">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-popover border border-border z-50">
+                                        <SelectItem value="debug">Debug (Most Verbose)</SelectItem>
+                                        <SelectItem value="info">Info (Recommended)</SelectItem>
+                                        <SelectItem value="warning">Warning</SelectItem>
+                                        <SelectItem value="error">Error (Least Verbose)</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  
+                                  <div className="space-y-2">
+                                    <Label htmlFor="scan-frequency">Scan Frequency</Label>
+                                    <Select value={agentConfig.scanFrequency} onValueChange={(value) => setAgentConfig({...agentConfig, scanFrequency: value})}>
+                                      <SelectTrigger className="glow-hover">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-popover border border-border z-50">
+                                        <SelectItem value="15m">Every 15 minutes</SelectItem>
+                                        <SelectItem value="30m">Every 30 minutes</SelectItem>
+                                        <SelectItem value="1h">Every hour (Recommended)</SelectItem>
+                                        <SelectItem value="6h">Every 6 hours</SelectItem>
+                                        <SelectItem value="12h">Every 12 hours</SelectItem>
+                                        <SelectItem value="24h">Daily</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="alert-level">Minimum Alert Level</Label>
+                                  <Select value={agentConfig.alertLevel} onValueChange={(value) => setAgentConfig({...agentConfig, alertLevel: value})}>
+                                    <SelectTrigger className="glow-hover">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-popover border border-border z-50">
+                                      <SelectItem value="1">Level 1+ (All Events)</SelectItem>
+                                      <SelectItem value="3">Level 3+ (Successful Events)</SelectItem>
+                                      <SelectItem value="5">Level 5+ (Low Priority)</SelectItem>
+                                      <SelectItem value="7">Level 7+ (Medium Priority) - Recommended</SelectItem>
+                                      <SelectItem value="10">Level 10+ (High Priority)</SelectItem>
+                                      <SelectItem value="12">Level 12+ (Critical Only)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </TabsContent>
+
+                              <TabsContent value="monitoring" className="space-y-4">
+                                <div className="space-y-4">
+                                  <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                      <Label className="text-base">File Integrity Monitoring (Syscheck)</Label>
+                                      <p className="text-sm text-muted-foreground">Monitor file system changes and integrity</p>
+                                    </div>
+                                    <Switch 
+                                      checked={agentConfig.enableSyscheck} 
+                                      onCheckedChange={(checked) => setAgentConfig({...agentConfig, enableSyscheck: checked})}
+                                    />
+                                  </div>
+
+                                  <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                      <Label className="text-base">Rootkit Detection (Rootcheck)</Label>
+                                      <p className="text-sm text-muted-foreground">Detect rootkits and system anomalies</p>
+                                    </div>
+                                    <Switch 
+                                      checked={agentConfig.enableRootcheck} 
+                                      onCheckedChange={(checked) => setAgentConfig({...agentConfig, enableRootcheck: checked})}
+                                    />
+                                  </div>
+
+                                  <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                      <Label className="text-base">OpenSCAP Integration</Label>
+                                      <p className="text-sm text-muted-foreground">Security compliance and vulnerability assessment</p>
+                                    </div>
+                                    <Switch 
+                                      checked={agentConfig.enableOpenscap} 
+                                      onCheckedChange={(checked) => setAgentConfig({...agentConfig, enableOpenscap: checked})}
+                                    />
+                                  </div>
+
+                                  <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                      <Label className="text-base">Security Configuration Assessment (SCA)</Label>
+                                      <p className="text-sm text-muted-foreground">Automated security policy compliance checks</p>
+                                    </div>
+                                    <Switch 
+                                      checked={agentConfig.enableSca} 
+                                      onCheckedChange={(checked) => setAgentConfig({...agentConfig, enableSca: checked})}
+                                    />
+                                  </div>
+                                </div>
+                              </TabsContent>
+
+                              <TabsContent value="custom" className="space-y-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor="custom-rules">Custom Detection Rules</Label>
+                                  <Textarea
+                                    id="custom-rules"
+                                    placeholder={`<!-- Add custom local rules for this agent -->
+<group name="local">
+  <rule id="100001" level="7">
+    <match>custom_pattern</match>
+    <description>Custom rule for agent ${selectedAgent}</description>
+  </rule>
+</group>`}
+                                    value={agentConfig.customRules}
+                                    onChange={(e) => setAgentConfig({...agentConfig, customRules: e.target.value})}
+                                    className="glow-hover font-mono text-sm min-h-[200px]"
+                                  />
+                                  <p className="text-xs text-muted-foreground">
+                                    Define custom rules specific to this agent. Rules will be applied locally on the agent.
+                                  </p>
+                                </div>
+
+                                <Card className="gradient-card border">
+                                  <CardContent className="p-4">
+                                    <h4 className="text-sm font-semibold mb-2">Configuration Preview</h4>
+                                    <div className="space-y-1 text-xs font-mono bg-muted/50 p-3 rounded max-h-[150px] overflow-y-auto">
+                                      <div>Log Level: {agentConfig.logLevel}</div>
+                                      <div>Scan Frequency: {agentConfig.scanFrequency}</div>
+                                      <div>Alert Level: {agentConfig.alertLevel}+</div>
+                                      <div>Syscheck: {agentConfig.enableSyscheck ? 'Enabled' : 'Disabled'}</div>
+                                      <div>Rootcheck: {agentConfig.enableRootcheck ? 'Enabled' : 'Disabled'}</div>
+                                      <div>OpenSCAP: {agentConfig.enableOpenscap ? 'Enabled' : 'Disabled'}</div>
+                                      <div>SCA: {agentConfig.enableSca ? 'Enabled' : 'Disabled'}</div>
+                                      {agentConfig.customRules && <div>Custom Rules: {agentConfig.customRules.split('\n').length} lines</div>}
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </TabsContent>
+                            </Tabs>
+                          </div>
+
+                          <div className="flex justify-end gap-2 pt-4">
+                            <Button variant="outline" onClick={() => setIsAgentConfigOpen(false)}>
+                              Cancel
+                            </Button>
+                            <Button onClick={handleSaveAgentConfig} className="glow-hover">
+                              <Settings className="h-4 w-4 mr-2" />
+                              Save Configuration
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </TabsContent>
                   
