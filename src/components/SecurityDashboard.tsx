@@ -182,6 +182,27 @@ const SecurityDashboard = () => {
     tags: []
   });
 
+  // ZAP Scan State Management
+  // Backend Integration: Terminal wrapper for OWASP ZAP automation
+  const [isZapScanOpen, setIsZapScanOpen] = useState(false);
+  const [zapScanRunning, setZapScanRunning] = useState(false);
+  const [zapScanProgress, setZapScanProgress] = useState(0);
+  const [zapScanConfig, setZapScanConfig] = useState({
+    target: 'https://',
+    scanType: 'baseline',
+    spiderEnabled: true,
+    activeScanEnabled: true,
+    authEnabled: false,
+    authUrl: '',
+    username: '',
+    password: '',
+    excludeUrls: [''],
+    includeAlphaRules: false,
+    includeBetaRules: false,
+    reportFormat: 'html',
+    maxDuration: 60 // minutes
+  });
+
   /**
    * Mock agent data with connection status indicators
    * In production, this would come from the Wazuh API
@@ -535,6 +556,157 @@ const SecurityDashboard = () => {
       case 'medium': return 'text-yellow-500 bg-yellow-500/10';
       case 'low': return 'text-green-500 bg-green-500/10';
       default: return 'text-gray-500 bg-gray-500/10';
+    }
+  };
+
+  /**
+   * OWASP ZAP Terminal Wrapper Integration Functions
+   * Backend Integration: Terminal/Shell commands to control ZAP daemon and scanning
+   * 
+   * BACKEND REQUIREMENTS:
+   * 1. ZAP daemon must be installed and accessible via command line
+   * 2. Backend API endpoints to handle terminal commands securely
+   * 3. File system access for report generation and storage
+   * 4. Process management for long-running scans
+   * 
+   * SECURITY CONSIDERATIONS:
+   * - All terminal commands must be sanitized to prevent injection
+   * - ZAP daemon should run in isolated environment
+   * - Scan results should be stored securely with access controls
+   * - Network access should be restricted to authorized targets
+   */
+
+  /**
+   * Handle ZAP scan execution via terminal wrapper
+   * Backend Integration: POST /api/security/zap/scan
+   * 
+   * Terminal Commands that backend should execute:
+   * 1. Start ZAP daemon: `zap.sh -daemon -host 0.0.0.0 -port 8080`
+   * 2. Spider scan: `zap-cli spider [target_url]`
+   * 3. Active scan: `zap-cli active-scan [target_url]`
+   * 4. Generate report: `zap-cli report -o [output_file] -f [format]`
+   * 5. Stop daemon: `zap-cli shutdown`
+   */
+  const handleZapScanLaunch = async () => {
+    // Validation
+    if (!zapScanConfig.target.trim() || !zapScanConfig.target.startsWith('http')) {
+      toast({
+        title: "Invalid Target",
+        description: "Please enter a valid HTTP/HTTPS URL to scan.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setZapScanRunning(true);
+    setZapScanProgress(0);
+
+    try {
+      // Backend API call to start ZAP scan via terminal wrapper
+      // POST /api/security/zap/scan
+      const scanPayload = {
+        target: zapScanConfig.target,
+        scanType: zapScanConfig.scanType,
+        options: {
+          spider: zapScanConfig.spiderEnabled,
+          activeScan: zapScanConfig.activeScanEnabled,
+          authentication: zapScanConfig.authEnabled ? {
+            url: zapScanConfig.authUrl,
+            username: zapScanConfig.username,
+            password: zapScanConfig.password // Backend should encrypt this
+          } : null,
+          exclusions: zapScanConfig.excludeUrls.filter(url => url.trim()),
+          includeAlphaRules: zapScanConfig.includeAlphaRules,
+          includeBetaRules: zapScanConfig.includeBetaRules,
+          reportFormat: zapScanConfig.reportFormat,
+          maxDuration: zapScanConfig.maxDuration
+        },
+        timestamp: new Date().toISOString(),
+        scanId: `zap-scan-${Date.now()}` // Unique identifier for tracking
+      };
+
+      // In production, this would be an actual API call:
+      // const response = await fetch('/api/security/zap/scan', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(scanPayload)
+      // });
+
+      console.log('ZAP Scan initiated with payload:', scanPayload);
+
+      // Simulate scan progress (backend should provide real-time updates via WebSocket or polling)
+      const progressInterval = setInterval(() => {
+        setZapScanProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(progressInterval);
+            setZapScanRunning(false);
+            
+            // Show completion notification
+            toast({
+              title: "ZAP Scan Complete",
+              description: `Security scan completed for ${zapScanConfig.target}. Report generated successfully.`,
+            });
+            
+            // Backend should return scan results and report download link
+            return 100;
+          }
+          return prev + Math.random() * 10;
+        });
+      }, 1000);
+
+      toast({
+        title: "ZAP Scan Started",
+        description: `OWASP ZAP scan initiated for ${zapScanConfig.target} via terminal wrapper.`,
+      });
+
+    } catch (error) {
+      console.error('ZAP scan failed:', error);
+      setZapScanRunning(false);
+      setZapScanProgress(0);
+      
+      toast({
+        title: "Scan Failed",
+        description: "Failed to start ZAP scan. Check backend terminal wrapper configuration.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  /**
+   * Handle stopping running ZAP scan
+   * Backend Integration: POST /api/security/zap/stop
+   */
+  const handleZapScanStop = async () => {
+    // Backend should execute: `zap-cli shutdown` or kill ZAP process
+    setZapScanRunning(false);
+    setZapScanProgress(0);
+    
+    toast({
+      title: "Scan Stopped",
+      description: "ZAP scan has been terminated.",
+    });
+  };
+
+  /**
+   * Handle updating exclude URLs array
+   */
+  const handleExcludeUrlChange = (index: number, value: string) => {
+    const updatedUrls = [...zapScanConfig.excludeUrls];
+    updatedUrls[index] = value;
+    setZapScanConfig({ ...zapScanConfig, excludeUrls: updatedUrls });
+  };
+
+  const addExcludeUrl = () => {
+    setZapScanConfig({ 
+      ...zapScanConfig, 
+      excludeUrls: [...zapScanConfig.excludeUrls, ''] 
+    });
+  };
+
+  const removeExcludeUrl = (index: number) => {
+    if (zapScanConfig.excludeUrls.length > 1) {
+      const updatedUrls = zapScanConfig.excludeUrls.filter((_, i) => i !== index);
+      setZapScanConfig({ ...zapScanConfig, excludeUrls: updatedUrls });
     }
   };
 
@@ -2701,9 +2873,365 @@ const SecurityDashboard = () => {
                         </DialogContent>
                       </Dialog>
                       
-                      <Button variant="outline" size="sm">
-                        Custom ZAP Scan
-                      </Button>
+                      <Dialog open={isZapScanOpen} onOpenChange={setIsZapScanOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="glow-hover group">
+                            <Zap className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                            Custom ZAP Scan
+                            {zapScanRunning && (
+                              <div className="ml-2 w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                            )}
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[900px] max-h-[90vh] gradient-card border-primary/20">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <div className="relative">
+                                <Zap className="h-6 w-6 text-orange-500 animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-ping" />
+                              </div>
+                              OWASP ZAP Terminal Wrapper
+                              <Badge variant="secondary" className="ml-2 animate-pulse-glow">
+                                AUTOMATED SECURITY TESTING
+                              </Badge>
+                            </DialogTitle>
+                            <DialogDescription className="text-base">
+                              Launch OWASP ZAP security scans via terminal wrapper integration. Configure and execute automated vulnerability assessments.
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="space-y-6">
+                            {/* Scan Configuration */}
+                            <Card className="gradient-card border border-primary/20">
+                              <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                  <Target className="h-5 w-5 text-primary" />
+                                  Scan Configuration
+                                </CardTitle>
+                                <CardDescription>
+                                  Configure ZAP scan parameters before launching terminal-based execution
+                                </CardDescription>
+                              </CardHeader>
+                              <CardContent className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="zap-target">Target URL *</Label>
+                                    <Input
+                                      id="zap-target"
+                                      placeholder="https://example.com"
+                                      value={zapScanConfig.target}
+                                      onChange={(e) => setZapScanConfig({ ...zapScanConfig, target: e.target.value })}
+                                      className="glow-hover"
+                                      disabled={zapScanRunning}
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label htmlFor="zap-scan-type">Scan Type</Label>
+                                    <Select value={zapScanConfig.scanType} onValueChange={(value) => setZapScanConfig({ ...zapScanConfig, scanType: value })} disabled={zapScanRunning}>
+                                      <SelectTrigger className="glow-hover">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-popover border border-border z-50">
+                                        <SelectItem value="baseline">Baseline Scan (Fast)</SelectItem>
+                                        <SelectItem value="full">Full Scan (Comprehensive)</SelectItem>
+                                        <SelectItem value="api">API Scan (REST/GraphQL)</SelectItem>
+                                        <SelectItem value="custom">Custom Configuration</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="zap-report-format">Report Format</Label>
+                                    <Select value={zapScanConfig.reportFormat} onValueChange={(value) => setZapScanConfig({ ...zapScanConfig, reportFormat: value })} disabled={zapScanRunning}>
+                                      <SelectTrigger className="glow-hover">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-popover border border-border z-50">
+                                        <SelectItem value="html">HTML Report</SelectItem>
+                                        <SelectItem value="xml">XML Report</SelectItem>
+                                        <SelectItem value="json">JSON Report</SelectItem>
+                                        <SelectItem value="md">Markdown Report</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label htmlFor="zap-max-duration">Max Duration (minutes)</Label>
+                                    <Input
+                                      id="zap-max-duration"
+                                      type="number"
+                                      min="5"
+                                      max="480"
+                                      value={zapScanConfig.maxDuration}
+                                      onChange={(e) => setZapScanConfig({ ...zapScanConfig, maxDuration: parseInt(e.target.value) || 60 })}
+                                      className="glow-hover"
+                                      disabled={zapScanRunning}
+                                    />
+                                  </div>
+                                </div>
+
+                                {/* Scan Options */}
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                      <Label className="text-base">Spider Crawling</Label>
+                                      <p className="text-sm text-muted-foreground">Crawl the application to discover URLs</p>
+                                    </div>
+                                    <Switch 
+                                      checked={zapScanConfig.spiderEnabled} 
+                                      onCheckedChange={(checked) => setZapScanConfig({...zapScanConfig, spiderEnabled: checked})}
+                                      disabled={zapScanRunning}
+                                    />
+                                  </div>
+
+                                  <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                      <Label className="text-base">Active Scanning</Label>
+                                      <p className="text-sm text-muted-foreground">Perform active vulnerability testing</p>
+                                    </div>
+                                    <Switch 
+                                      checked={zapScanConfig.activeScanEnabled} 
+                                      onCheckedChange={(checked) => setZapScanConfig({...zapScanConfig, activeScanEnabled: checked})}
+                                      disabled={zapScanRunning}
+                                    />
+                                  </div>
+
+                                  <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                      <Label className="text-base">Include Alpha Rules</Label>
+                                      <p className="text-sm text-muted-foreground">Enable experimental detection rules</p>
+                                    </div>
+                                    <Switch 
+                                      checked={zapScanConfig.includeAlphaRules} 
+                                      onCheckedChange={(checked) => setZapScanConfig({...zapScanConfig, includeAlphaRules: checked})}
+                                      disabled={zapScanRunning}
+                                    />
+                                  </div>
+
+                                  <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                      <Label className="text-base">Include Beta Rules</Label>
+                                      <p className="text-sm text-muted-foreground">Enable beta-stage detection rules</p>
+                                    </div>
+                                    <Switch 
+                                      checked={zapScanConfig.includeBetaRules} 
+                                      onCheckedChange={(checked) => setZapScanConfig({...zapScanConfig, includeBetaRules: checked})}
+                                      disabled={zapScanRunning}
+                                    />
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+
+                            {/* Authentication Configuration */}
+                            <Card className="gradient-card border border-primary/20">
+                              <CardHeader>
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <CardTitle className="flex items-center gap-2">
+                                      <Lock className="h-5 w-5 text-green-500" />
+                                      Authentication (Optional)
+                                    </CardTitle>
+                                    <CardDescription>
+                                      Configure authentication for protected areas
+                                    </CardDescription>
+                                  </div>
+                                  <Switch 
+                                    checked={zapScanConfig.authEnabled} 
+                                    onCheckedChange={(checked) => setZapScanConfig({...zapScanConfig, authEnabled: checked})}
+                                    disabled={zapScanRunning}
+                                  />
+                                </div>
+                              </CardHeader>
+                              {zapScanConfig.authEnabled && (
+                                <CardContent className="space-y-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="zap-auth-url">Login URL</Label>
+                                    <Input
+                                      id="zap-auth-url"
+                                      placeholder="https://example.com/login"
+                                      value={zapScanConfig.authUrl}
+                                      onChange={(e) => setZapScanConfig({ ...zapScanConfig, authUrl: e.target.value })}
+                                      className="glow-hover"
+                                      disabled={zapScanRunning}
+                                    />
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                      <Label htmlFor="zap-username">Username</Label>
+                                      <Input
+                                        id="zap-username"
+                                        placeholder="username"
+                                        value={zapScanConfig.username}
+                                        onChange={(e) => setZapScanConfig({ ...zapScanConfig, username: e.target.value })}
+                                        className="glow-hover"
+                                        disabled={zapScanRunning}
+                                      />
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                      <Label htmlFor="zap-password">Password</Label>
+                                      <Input
+                                        id="zap-password"
+                                        type="password"
+                                        placeholder="password"
+                                        value={zapScanConfig.password}
+                                        onChange={(e) => setZapScanConfig({ ...zapScanConfig, password: e.target.value })}
+                                        className="glow-hover"
+                                        disabled={zapScanRunning}
+                                      />
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              )}
+                            </Card>
+
+                            {/* URL Exclusions */}
+                            <Card className="gradient-card border border-primary/20">
+                              <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                                  URL Exclusions
+                                </CardTitle>
+                                <CardDescription>
+                                  Specify URLs or patterns to exclude from scanning
+                                </CardDescription>
+                              </CardHeader>
+                              <CardContent className="space-y-4">
+                                {zapScanConfig.excludeUrls.map((url, index) => (
+                                  <div key={index} className="flex items-center gap-2">
+                                    <div className="flex-1">
+                                      <Input
+                                        placeholder="/admin/, /logout, .*\\.pdf$"
+                                        value={url}
+                                        onChange={(e) => handleExcludeUrlChange(index, e.target.value)}
+                                        className="glow-hover font-mono text-sm"
+                                        disabled={zapScanRunning}
+                                      />
+                                    </div>
+                                    {zapScanConfig.excludeUrls.length > 1 && (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removeExcludeUrl(index)}
+                                        className="text-destructive hover:text-destructive glow-hover"
+                                        disabled={zapScanRunning}
+                                      >
+                                        <AlertTriangle className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                ))}
+                                
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={addExcludeUrl}
+                                  className="glow-hover"
+                                  disabled={zapScanRunning}
+                                >
+                                  <Target className="h-4 w-4 mr-2" />
+                                  Add Exclusion
+                                </Button>
+                              </CardContent>
+                            </Card>
+
+                            {/* Scan Progress */}
+                            {zapScanRunning && (
+                              <Card className="gradient-card border border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-orange-600/5">
+                                <CardHeader>
+                                  <CardTitle className="flex items-center gap-2">
+                                    <RefreshCw className="h-5 w-5 text-orange-500 animate-spin" />
+                                    Scan in Progress
+                                  </CardTitle>
+                                  <CardDescription>
+                                    ZAP is currently scanning {zapScanConfig.target}
+                                  </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                  <div className="space-y-2">
+                                    <div className="flex justify-between text-sm">
+                                      <span>Scan Progress</span>
+                                      <span>{Math.round(zapScanProgress)}%</span>
+                                    </div>
+                                    <Progress value={zapScanProgress} className="glow animate-pulse" />
+                                  </div>
+                                  
+                                  <div className="text-sm text-muted-foreground">
+                                    <p>Terminal commands being executed:</p>
+                                    <ul className="text-xs font-mono bg-muted/50 p-3 rounded mt-2 space-y-1">
+                                      <li>• zap.sh -daemon -host 0.0.0.0 -port 8080</li>
+                                      {zapScanConfig.spiderEnabled && <li>• zap-cli spider {zapScanConfig.target}</li>}
+                                      {zapScanConfig.activeScanEnabled && <li>• zap-cli active-scan {zapScanConfig.target}</li>}
+                                      <li>• zap-cli report -o scan-report.{zapScanConfig.reportFormat} -f {zapScanConfig.reportFormat}</li>
+                                    </ul>
+                                  </div>
+
+                                  <Button
+                                    variant="destructive"
+                                    onClick={handleZapScanStop}
+                                    className="glow-hover"
+                                  >
+                                    <AlertTriangle className="h-4 w-4 mr-2" />
+                                    Stop Scan
+                                  </Button>
+                                </CardContent>
+                              </Card>
+                            )}
+
+                            {/* Backend Integration Info */}
+                            <Card className="gradient-card border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-600/5">
+                              <CardContent className="p-4">
+                                <div className="flex items-start gap-3">
+                                  <Code className="h-5 w-5 text-blue-500 mt-0.5" />
+                                  <div className="space-y-2">
+                                    <div className="font-semibold text-blue-400">Backend Terminal Integration</div>
+                                    <div className="text-sm text-muted-foreground space-y-1">
+                                      <p><strong>API Endpoint:</strong> POST /api/security/zap/scan</p>
+                                      <p><strong>Required Dependencies:</strong> OWASP ZAP, zap-cli</p>
+                                      <p><strong>Terminal Commands:</strong> Sanitized shell execution</p>
+                                      <p><strong>Security:</strong> Process isolation, input validation</p>
+                                      <p><strong>Reports:</strong> Generated in secure directory with access controls</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </div>
+
+                          <div className="flex justify-end gap-2 pt-4 border-t border-border/50">
+                            <Button 
+                              variant="outline" 
+                              onClick={() => setIsZapScanOpen(false)}
+                              className="glow-hover"
+                              disabled={zapScanRunning}
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              onClick={handleZapScanLaunch}
+                              disabled={zapScanRunning || !zapScanConfig.target.trim()}
+                              className="glow-hover group"
+                            >
+                              {zapScanRunning ? (
+                                <>
+                                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                  Scanning...
+                                </>
+                              ) : (
+                                <>
+                                  <Zap className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                                  Launch ZAP Scan
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                       <Button variant="outline" size="sm">
                         Penetration Testing
                       </Button>
