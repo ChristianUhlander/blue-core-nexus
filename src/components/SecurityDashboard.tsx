@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
