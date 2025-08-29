@@ -54,17 +54,17 @@ const WazuhManagement = () => {
     <div className="min-h-screen gradient-bg p-6">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
+        <div className="mb-6">
           <Button
-            variant="ghost"
-            size="sm"
+            variant="outline"
             onClick={() => window.location.href = '/'}
-            className="glow-hover"
+            className="glow-hover border-primary/50 hover:border-primary text-primary hover:bg-primary/10"
           >
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            Back to Dashboard
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            ← Back to Main Dashboard
           </Button>
         </div>
+        
         <div className="flex items-center gap-3 mb-4">
           <Shield className="h-8 w-8 text-primary glow" />
           <h1 className="text-4xl font-bold text-glow">Wazuh SIEM Management</h1>
