@@ -16,7 +16,8 @@ import {
   Download,
   Upload,
   Eye,
-  RefreshCw
+  RefreshCw,
+  ArrowLeft
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,6 +54,17 @@ const WazuhManagement = () => {
     <div className="min-h-screen gradient-bg p-6">
       {/* Header */}
       <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => window.location.href = '/'}
+            className="glow-hover"
+          >
+            <ArrowLeft className="h-5 w-5 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
         <div className="flex items-center gap-3 mb-4">
           <Shield className="h-8 w-8 text-primary glow" />
           <h1 className="text-4xl font-bold text-glow">Wazuh SIEM Management</h1>
