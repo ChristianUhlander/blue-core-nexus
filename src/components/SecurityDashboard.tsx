@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import IppsYChatPane from "./IppsYChatPane";
+import { DocumentationLibrary } from "./DocumentationLibrary";
 import { useRealTimeSecurityData } from "@/hooks/useRealTimeSecurityData";
 import { k8sSecurityApi } from "@/services/k8sSecurityApi";
 import { securityIntegration, type WazuhAgent, type WazuhAlert, type SecurityServiceHealth } from "@/services/securityIntegrationService";
@@ -72,6 +73,9 @@ const SecurityDashboard = () => {
   
   // IppsY chat pane state
   const [isIppsYOpen, setIsIppsYOpen] = useState(false);
+  
+  // Documentation library state
+  const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   
   // Scan and configuration state
   const [selectedAgent, setSelectedAgent] = useState<string>('');
@@ -2689,6 +2693,15 @@ const SecurityDashboard = () => {
               Alerts
             </Button>
           </nav>
+          
+          <Button
+            onClick={() => setIsDocumentationOpen(true)}
+            variant="outline"
+            className="flex items-center gap-2 glow-hover transition-all duration-200"
+          >
+            <FileText className="h-4 w-4" />
+            Documentation
+          </Button>
           
           <Button
             onClick={() => setIsIppsYOpen(!isIppsYOpen)}
@@ -6401,6 +6414,11 @@ const SecurityDashboard = () => {
           </Dialog>
         )}
         </div>
+
+        {/* Documentation Library */}
+        {isDocumentationOpen && (
+          <DocumentationLibrary onClose={() => setIsDocumentationOpen(false)} />
+        )}
 
         {/* IppsY Chat Pane */}
         {isIppsYOpen && (
