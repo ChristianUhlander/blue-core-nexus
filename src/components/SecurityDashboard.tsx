@@ -29,6 +29,7 @@ const SecurityDashboard = () => {
   const [isOwaspScanOpen, setIsOwaspScanOpen] = useState(false);
   const [isSpiderfootOpen, setIsSpiderfootOpen] = useState(false);
   const [isOsintProfilesOpen, setIsOsintProfilesOpen] = useState(false);
+  const [isThreatAnalysisOpen, setIsThreatAnalysisOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<string>('001');
   const [cveScanning, setCveScanning] = useState(false);
   const [owaspScanning, setOwaspScanning] = useState(false);
@@ -93,6 +94,91 @@ const SecurityDashboard = () => {
     targets: [''],
     description: '',
     priority: 'medium',
+    tags: []
+  });
+
+  // Threat Analysis State Management
+  // Backend Integration: SQLite tables for threat data storage
+  const [threatAnalysisData, setThreatAnalysisData] = useState({
+    activeThreatCampaigns: [
+      {
+        id: 1,
+        name: "APT29 Phishing Campaign",
+        threatActor: "APT29 (Cozy Bear)",
+        category: "Advanced Persistent Threat",
+        severity: "critical",
+        status: "active",
+        firstSeen: "2024-01-15",
+        lastActivity: "2024-01-20",
+        targetedSectors: ["Government", "Healthcare", "Energy"],
+        ttps: ["T1566.001", "T1059.001", "T1055"], // MITRE ATT&CK techniques
+        iocs: ["malicious-domain.com", "192.168.1.100", "suspicious.exe"],
+        confidence: 85,
+        description: "Sophisticated spear-phishing campaign targeting government officials"
+      },
+      {
+        id: 2,
+        name: "Ransomware Infrastructure",
+        threatActor: "BlackCat/ALPHV",
+        category: "Ransomware",
+        severity: "high",
+        status: "monitoring",
+        firstSeen: "2024-01-10",
+        lastActivity: "2024-01-18",
+        targetedSectors: ["Healthcare", "Financial", "Manufacturing"],
+        ttps: ["T1486", "T1083", "T1027"],
+        iocs: ["ransom-payment.onion", "10.0.0.50", "encrypt.bat"],
+        confidence: 92,
+        description: "Active ransomware infrastructure with double extortion tactics"
+      }
+    ],
+    threatIntelligence: [
+      {
+        id: 1,
+        source: "OSINT",
+        type: "IOC",
+        indicator: "malicious-domain.com",
+        category: "domain",
+        threatType: "C2 Server",
+        severity: "high",
+        confidence: 90,
+        firstSeen: "2024-01-15",
+        description: "Command and control server for APT29 operations",
+        tags: ["apt29", "c2", "phishing"]
+      },
+      {
+        id: 2,
+        source: "Commercial Feed",
+        type: "IOC",
+        indicator: "c7a5c1e8f7b2d3a4e6f9b8c7d2a3e4f5",
+        category: "hash",
+        threatType: "Malware",
+        severity: "critical",
+        confidence: 95,
+        firstSeen: "2024-01-12",
+        description: "Malicious payload hash associated with ransomware campaign",
+        tags: ["ransomware", "payload", "blackcat"]
+      }
+    ],
+    riskAssessment: {
+      overallRiskScore: 78,
+      categories: {
+        malware: { score: 85, trend: "increasing" },
+        phishing: { score: 72, trend: "stable" },
+        insider: { score: 45, trend: "decreasing" },
+        supply_chain: { score: 60, trend: "increasing" },
+        ddos: { score: 35, trend: "stable" }
+      }
+    }
+  });
+
+  const [selectedThreatCategory, setSelectedThreatCategory] = useState('all');
+  const [threatHuntingQuery, setThreatHuntingQuery] = useState('');
+  const [newIOC, setNewIOC] = useState({
+    indicator: '',
+    type: 'domain',
+    severity: 'medium',
+    description: '',
     tags: []
   });
 
@@ -316,6 +402,139 @@ const SecurityDashboard = () => {
     if (newProfile.targets.length > 1) {
       const updatedTargets = newProfile.targets.filter((_, i) => i !== index);
       setNewProfile({ ...newProfile, targets: updatedTargets });
+    }
+  };
+
+  /**
+   * Threat Analysis Management Functions
+   * Backend Integration: SQLite database with tables for threat campaigns, IOCs, risk assessments
+   * Database Schema:
+   * - threat_campaigns: id, name, threat_actor, category, severity, status, first_seen, last_activity, ttps, iocs, confidence
+   * - threat_intelligence: id, source, type, indicator, category, threat_type, severity, confidence, first_seen, description, tags
+   * - risk_assessments: id, assessment_date, overall_score, category_scores, trends, analysis_notes
+   * - ioc_database: id, indicator_value, indicator_type, severity, source, first_seen, last_seen, status, description
+   */
+
+  /**
+   * Handle creating new IOC (Indicator of Compromise)
+   * Backend Integration: POST /api/threat/iocs
+   */
+  const handleCreateIOC = async () => {
+    if (!newIOC.indicator.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "IOC indicator value is required.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Backend would validate IOC format, check against existing database, and store
+    const iocData = {
+      id: Date.now(),
+      source: "Manual Entry",
+      type: "IOC",
+      indicator: newIOC.indicator,
+      category: newIOC.type,
+      threatType: "User Defined",
+      severity: newIOC.severity,
+      confidence: 75, // Default confidence for manual entries
+      firstSeen: new Date().toISOString().split('T')[0],
+      description: newIOC.description,
+      tags: newIOC.tags
+    };
+
+    // Frontend state update (backend would return enriched data)
+    setThreatAnalysisData({
+      ...threatAnalysisData,
+      threatIntelligence: [...threatAnalysisData.threatIntelligence, iocData]
+    });
+
+    // Reset form
+    setNewIOC({
+      indicator: '',
+      type: 'domain',
+      severity: 'medium',
+      description: '',
+      tags: []
+    });
+
+    toast({
+      title: "IOC Added",
+      description: `Indicator "${iocData.indicator}" has been added to threat intelligence database.`,
+    });
+  };
+
+  /**
+   * Handle threat hunting query execution
+   * Backend Integration: POST /api/threat/hunt
+   * This would query logs, network data, and system events for threat indicators
+   */
+  const handleThreatHunt = async () => {
+    if (!threatHuntingQuery.trim()) {
+      toast({
+        title: "Query Required",
+        description: "Please enter a threat hunting query.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Backend would execute query against SIEM, logs, and security tools
+    // Example queries: 
+    // - "process_name:powershell.exe AND command_line:*DownloadString*"
+    // - "network.destination.ip:192.168.1.100"
+    // - "file.hash.sha256:c7a5c1e8f7b2d3a4e6f9b8c7d2a3e4f5"
+
+    toast({
+      title: "Threat Hunt Initiated",
+      description: `Searching for: "${threatHuntingQuery}". Results will appear in the timeline.`,
+    });
+
+    // Simulate hunt results (backend would return actual findings)
+    setTimeout(() => {
+      toast({
+        title: "Hunt Complete",
+        description: "Found 3 potential matches. Check the threat timeline for details.",
+      });
+    }, 2000);
+  };
+
+  /**
+   * Get filtered threat campaigns based on category
+   */
+  const getFilteredThreats = () => {
+    if (selectedThreatCategory === 'all') {
+      return threatAnalysisData.activeThreatCampaigns;
+    }
+    return threatAnalysisData.activeThreatCampaigns.filter(
+      threat => threat.category.toLowerCase().includes(selectedThreatCategory.toLowerCase())
+    );
+  };
+
+  /**
+   * Calculate threat statistics for dashboard
+   */
+  const getThreatStats = () => {
+    const campaigns = threatAnalysisData.activeThreatCampaigns;
+    const critical = campaigns.filter(t => t.severity === 'critical').length;
+    const high = campaigns.filter(t => t.severity === 'high').length;
+    const active = campaigns.filter(t => t.status === 'active').length;
+    const iocCount = threatAnalysisData.threatIntelligence.length;
+    
+    return { critical, high, active, iocCount, total: campaigns.length };
+  };
+
+  /**
+   * Get risk level color for UI components
+   */
+  const getRiskColor = (severity) => {
+    switch (severity) {
+      case 'critical': return 'text-red-500 bg-red-500/10';
+      case 'high': return 'text-orange-500 bg-orange-500/10';
+      case 'medium': return 'text-yellow-500 bg-yellow-500/10';
+      case 'low': return 'text-green-500 bg-green-500/10';
+      default: return 'text-gray-500 bg-gray-500/10';
     }
   };
 
@@ -3206,9 +3425,577 @@ const SecurityDashboard = () => {
                           </Tabs>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="sm">
-                        Threat Analysis
-                      </Button>
+                      <Dialog open={isThreatAnalysisOpen} onOpenChange={setIsThreatAnalysisOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="glow-hover group">
+                            <AlertTriangle className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                            Threat Analysis
+                            <Badge variant="destructive" className="ml-2 animate-pulse">
+                              {getThreatStats().critical + getThreatStats().high}
+                            </Badge>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1400px] max-h-[90vh] gradient-card border-primary/20">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <div className="relative">
+                                <ShieldAlert className="h-6 w-6 text-red-500 animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+                              </div>
+                              Advanced Threat Analysis & Intelligence
+                              <Badge variant="destructive" className="ml-2 animate-pulse-glow">
+                                RISK SCORE: {threatAnalysisData.riskAssessment.overallRiskScore}
+                              </Badge>
+                            </DialogTitle>
+                            <DialogDescription className="text-base">
+                              Comprehensive threat intelligence analysis, IOC management, and risk assessment using industry-standard frameworks
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <Tabs defaultValue="overview" className="space-y-6">
+                            <TabsList className="grid w-full grid-cols-5">
+                              <TabsTrigger value="overview" className="flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4" />
+                                Overview
+                              </TabsTrigger>
+                              <TabsTrigger value="campaigns" className="flex items-center gap-2">
+                                <Target className="h-4 w-4" />
+                                Threat Campaigns
+                              </TabsTrigger>
+                              <TabsTrigger value="intelligence" className="flex items-center gap-2">
+                                <Database className="h-4 w-4" />
+                                Threat Intel
+                              </TabsTrigger>
+                              <TabsTrigger value="hunting" className="flex items-center gap-2">
+                                <Search className="h-4 w-4" />
+                                Threat Hunting
+                              </TabsTrigger>
+                              <TabsTrigger value="assessment" className="flex items-center gap-2">
+                                <BarChart3 className="h-4 w-4" />
+                                Risk Assessment
+                              </TabsTrigger>
+                            </TabsList>
+
+                            {/* Overview Tab */}
+                            <TabsContent value="overview" className="space-y-6">
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {/* Active Threats */}
+                                <Card className="gradient-card border border-red-500/20 bg-gradient-to-br from-red-500/5 to-red-600/5">
+                                  <CardContent className="p-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="text-2xl font-bold text-red-500 animate-pulse">
+                                        {getThreatStats().active}
+                                      </div>
+                                      <AlertTriangle className="h-6 w-6 text-red-500" />
+                                    </div>
+                                    <div className="text-sm font-medium">Active Threats</div>
+                                    <div className="text-xs text-muted-foreground">Requires immediate attention</div>
+                                  </CardContent>
+                                </Card>
+
+                                {/* Critical Severity */}
+                                <Card className="gradient-card border border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-orange-600/5">
+                                  <CardContent className="p-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="text-2xl font-bold text-orange-500">
+                                        {getThreatStats().critical}
+                                      </div>
+                                      <ShieldAlert className="h-6 w-6 text-orange-500" />
+                                    </div>
+                                    <div className="text-sm font-medium">Critical Severity</div>
+                                    <div className="text-xs text-muted-foreground">High impact threats</div>
+                                  </CardContent>
+                                </Card>
+
+                                {/* IOC Database */}
+                                <Card className="gradient-card border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-600/5">
+                                  <CardContent className="p-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="text-2xl font-bold text-blue-500">
+                                        {getThreatStats().iocCount}
+                                      </div>
+                                      <Database className="h-6 w-6 text-blue-500" />
+                                    </div>
+                                    <div className="text-sm font-medium">IOCs Tracked</div>
+                                    <div className="text-xs text-muted-foreground">Indicators of compromise</div>
+                                  </CardContent>
+                                </Card>
+
+                                {/* Risk Score */}
+                                <Card className="gradient-card border border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-purple-600/5">
+                                  <CardContent className="p-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="text-2xl font-bold text-purple-500">
+                                        {threatAnalysisData.riskAssessment.overallRiskScore}
+                                      </div>
+                                      <TrendingUp className="h-6 w-6 text-purple-500" />
+                                    </div>
+                                    <div className="text-sm font-medium">Risk Score</div>
+                                    <div className="text-xs text-muted-foreground">Overall threat level</div>
+                                  </CardContent>
+                                </Card>
+                              </div>
+
+                              {/* Recent Threat Activity Timeline */}
+                              <Card className="gradient-card border border-primary/20">
+                                <CardHeader>
+                                  <CardTitle className="flex items-center gap-2">
+                                    <Clock className="h-5 w-5 text-primary" />
+                                    Recent Threat Activity
+                                  </CardTitle>
+                                  <CardDescription>
+                                    Latest threat intelligence updates and campaign activities
+                                  </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                  <ScrollArea className="h-[300px] w-full">
+                                    <div className="space-y-4 pr-4">
+                                      {threatAnalysisData.activeThreatCampaigns.slice(0, 10).map((threat) => (
+                                        <div key={threat.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/20 border border-border/30">
+                                          <div className={`w-3 h-3 rounded-full mt-2 ${
+                                            threat.severity === 'critical' ? 'bg-red-500 animate-pulse' :
+                                            threat.severity === 'high' ? 'bg-orange-500' :
+                                            'bg-yellow-500'
+                                          }`} />
+                                          <div className="flex-1 space-y-1">
+                                            <div className="flex items-center justify-between">
+                                              <div className="font-medium">{threat.name}</div>
+                                              <Badge variant={threat.severity === 'critical' ? 'destructive' : 'default'} className="text-xs">
+                                                {threat.severity.toUpperCase()}
+                                              </Badge>
+                                            </div>
+                                            <div className="text-sm text-muted-foreground">
+                                              Actor: {threat.threatActor} | Category: {threat.category}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground">
+                                              Last Activity: {threat.lastActivity} | Confidence: {threat.confidence}%
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </ScrollArea>
+                                </CardContent>
+                              </Card>
+                            </TabsContent>
+
+                            {/* Threat Campaigns Tab */}
+                            <TabsContent value="campaigns" className="space-y-4">
+                              <div className="flex items-center gap-4 mb-4">
+                                <Select value={selectedThreatCategory} onValueChange={setSelectedThreatCategory}>
+                                  <SelectTrigger className="w-[200px] glow-hover">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-popover border border-border z-50">
+                                    <SelectItem value="all">All Categories</SelectItem>
+                                    <SelectItem value="apt">Advanced Persistent Threat</SelectItem>
+                                    <SelectItem value="ransomware">Ransomware</SelectItem>
+                                    <SelectItem value="malware">Malware</SelectItem>
+                                    <SelectItem value="phishing">Phishing</SelectItem>
+                                    <SelectItem value="ddos">DDoS</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Button className="glow-hover">
+                                  <RefreshCw className="h-4 w-4 mr-2" />
+                                  Refresh Intelligence
+                                </Button>
+                              </div>
+
+                              <ScrollArea className="h-[500px] w-full">
+                                <div className="space-y-4 pr-4">
+                                  {getFilteredThreats().map((threat) => (
+                                    <Card key={threat.id} className="gradient-card border border-primary/20 glow-hover">
+                                      <CardHeader className="pb-4">
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-3">
+                                            <div className={`w-4 h-4 rounded-full ${
+                                              threat.status === 'active' ? 'bg-red-500 animate-pulse' :
+                                              threat.status === 'monitoring' ? 'bg-yellow-500' :
+                                              'bg-gray-500'
+                                            }`} />
+                                            <div>
+                                              <CardTitle className="text-lg">{threat.name}</CardTitle>
+                                              <CardDescription className="flex items-center gap-2 mt-1">
+                                                <Badge variant="outline" className="text-xs">
+                                                  {threat.threatActor}
+                                                </Badge>
+                                                <Badge variant={threat.severity === 'critical' ? 'destructive' : 'default'} className="text-xs">
+                                                  {threat.severity.toUpperCase()}
+                                                </Badge>
+                                                <Badge variant="secondary" className="text-xs">
+                                                  {threat.confidence}% CONFIDENCE
+                                                </Badge>
+                                              </CardDescription>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </CardHeader>
+                                      <CardContent className="space-y-4">
+                                        <p className="text-sm text-muted-foreground">{threat.description}</p>
+                                        
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div>
+                                            <div className="text-sm font-medium mb-2">Targeted Sectors</div>
+                                            <div className="flex flex-wrap gap-1">
+                                              {threat.targetedSectors.map((sector, idx) => (
+                                                <Badge key={idx} variant="outline" className="text-xs">
+                                                  {sector}
+                                                </Badge>
+                                              ))}
+                                            </div>
+                                          </div>
+                                          
+                                          <div>
+                                            <div className="text-sm font-medium mb-2">MITRE ATT&CK TTPs</div>
+                                            <div className="flex flex-wrap gap-1">
+                                              {threat.ttps.map((ttp, idx) => (
+                                                <Badge key={idx} variant="secondary" className="text-xs font-mono">
+                                                  {ttp}
+                                                </Badge>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div>
+                                          <div className="text-sm font-medium mb-2">Indicators of Compromise (IOCs)</div>
+                                          <div className="space-y-1">
+                                            {threat.iocs.map((ioc, idx) => (
+                                              <div key={idx} className="text-xs font-mono bg-muted/50 p-2 rounded border">
+                                                {ioc}
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                                          <div className="text-xs text-muted-foreground">
+                                            First Seen: {threat.firstSeen} | Last Activity: {threat.lastActivity}
+                                          </div>
+                                          <div className="flex gap-2">
+                                            <Button variant="outline" size="sm" className="glow-hover">
+                                              <Eye className="h-4 w-4 mr-2" />
+                                              Details
+                                            </Button>
+                                            <Button variant="outline" size="sm" className="glow-hover">
+                                              <Target className="h-4 w-4 mr-2" />
+                                              Hunt
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                                </div>
+                              </ScrollArea>
+                            </TabsContent>
+
+                            {/* Threat Intelligence Tab */}
+                            <TabsContent value="intelligence" className="space-y-4">
+                              <div className="flex items-center gap-4 mb-4">
+                                <Button 
+                                  onClick={handleCreateIOC}
+                                  className="glow-hover"
+                                >
+                                  <Target className="h-4 w-4 mr-2" />
+                                  Add IOC
+                                </Button>
+                                <Button variant="outline" className="glow-hover">
+                                  <Download className="h-4 w-4 mr-2" />
+                                  Import IOCs
+                                </Button>
+                                <Button variant="outline" className="glow-hover">
+                                  <FileText className="h-4 w-4 mr-2" />
+                                  Export Report
+                                </Button>
+                              </div>
+
+                              {/* Add IOC Form */}
+                              <Card className="gradient-card border border-primary/20 mb-4">
+                                <CardHeader>
+                                  <CardTitle className="text-lg">Add New Indicator of Compromise</CardTitle>
+                                  <CardDescription>
+                                    Manually add threat indicators to the intelligence database
+                                  </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div className="space-y-2">
+                                      <Label htmlFor="ioc-indicator">Indicator Value</Label>
+                                      <Input
+                                        id="ioc-indicator"
+                                        placeholder="domain.com, IP, hash..."
+                                        value={newIOC.indicator}
+                                        onChange={(e) => setNewIOC({ ...newIOC, indicator: e.target.value })}
+                                        className="glow-hover font-mono"
+                                      />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                      <Label htmlFor="ioc-type">Indicator Type</Label>
+                                      <Select value={newIOC.type} onValueChange={(value) => setNewIOC({ ...newIOC, type: value })}>
+                                        <SelectTrigger className="glow-hover">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-popover border border-border z-50">
+                                          <SelectItem value="domain">Domain</SelectItem>
+                                          <SelectItem value="ip">IP Address</SelectItem>
+                                          <SelectItem value="hash">File Hash</SelectItem>
+                                          <SelectItem value="url">URL</SelectItem>
+                                          <SelectItem value="email">Email</SelectItem>
+                                          <SelectItem value="registry">Registry Key</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                      <Label htmlFor="ioc-severity">Severity</Label>
+                                      <Select value={newIOC.severity} onValueChange={(value) => setNewIOC({ ...newIOC, severity: value })}>
+                                        <SelectTrigger className="glow-hover">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-popover border border-border z-50">
+                                          <SelectItem value="critical">Critical</SelectItem>
+                                          <SelectItem value="high">High</SelectItem>
+                                          <SelectItem value="medium">Medium</SelectItem>
+                                          <SelectItem value="low">Low</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+
+                                    <div className="flex items-end">
+                                      <Button 
+                                        onClick={handleCreateIOC}
+                                        className="w-full glow-hover"
+                                      >
+                                        <Target className="h-4 w-4 mr-2" />
+                                        Add IOC
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+
+                              {/* IOC Database */}
+                              <ScrollArea className="h-[400px] w-full">
+                                <div className="space-y-2 pr-4">
+                                  {threatAnalysisData.threatIntelligence.map((intel) => (
+                                    <div key={intel.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30 glow-hover">
+                                      <div className="flex items-center gap-3">
+                                        <div className={`w-3 h-3 rounded-full ${getRiskColor(intel.severity).split(' ')[0].replace('text-', 'bg-')}`} />
+                                        <div className="font-mono text-sm">{intel.indicator}</div>
+                                        <Badge variant="outline" className="text-xs">
+                                          {intel.category.toUpperCase()}
+                                        </Badge>
+                                        <Badge variant={intel.severity === 'critical' ? 'destructive' : 'default'} className="text-xs">
+                                          {intel.severity.toUpperCase()}
+                                        </Badge>
+                                        <div className="text-xs text-muted-foreground">
+                                          {intel.confidence}% confidence
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <div className="text-xs text-muted-foreground">
+                                          {intel.firstSeen}
+                                        </div>
+                                        <Button variant="ghost" size="sm" className="glow-hover">
+                                          <Eye className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </ScrollArea>
+                            </TabsContent>
+
+                            {/* Threat Hunting Tab */}
+                            <TabsContent value="hunting" className="space-y-4">
+                              <Card className="gradient-card border border-primary/20">
+                                <CardHeader>
+                                  <CardTitle className="flex items-center gap-2">
+                                    <Search className="h-5 w-5 text-primary" />
+                                    Threat Hunting Query Interface
+                                  </CardTitle>
+                                  <CardDescription>
+                                    Execute custom queries against logs, network data, and system events to hunt for threats
+                                  </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                  <div className="flex gap-2">
+                                    <div className="flex-1">
+                                      <Input
+                                        placeholder="Enter threat hunting query (e.g., process_name:powershell.exe AND command_line:*DownloadString*)"
+                                        value={threatHuntingQuery}
+                                        onChange={(e) => setThreatHuntingQuery(e.target.value)}
+                                        className="glow-hover font-mono"
+                                      />
+                                    </div>
+                                    <Button 
+                                      onClick={handleThreatHunt}
+                                      className="glow-hover"
+                                    >
+                                      <Search className="h-4 w-4 mr-2" />
+                                      Hunt
+                                    </Button>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <Button variant="outline" size="sm" className="glow-hover justify-start">
+                                      <Code className="h-4 w-4 mr-2" />
+                                      PowerShell Activity
+                                    </Button>
+                                    <Button variant="outline" size="sm" className="glow-hover justify-start">
+                                      <Globe className="h-4 w-4 mr-2" />
+                                      Suspicious Network
+                                    </Button>
+                                    <Button variant="outline" size="sm" className="glow-hover justify-start">
+                                      <FileText className="h-4 w-4 mr-2" />
+                                      File Modifications
+                                    </Button>
+                                  </div>
+
+                                  <div className="text-sm text-muted-foreground">
+                                    <p className="mb-2"><strong>Example Queries:</strong></p>
+                                    <ul className="space-y-1 text-xs font-mono bg-muted/50 p-3 rounded">
+                                      <li>• process_name:cmd.exe AND command_line:*certutil* AND command_line:*decode*</li>
+                                      <li>• network.destination.port:443 AND network.destination.ip:192.168.1.100</li>
+                                      <li>• file.hash.sha256:c7a5c1e8f7b2d3a4e6f9b8c7d2a3e4f5</li>
+                                      <li>• user.name:admin AND authentication.result:failure</li>
+                                    </ul>
+                                  </div>
+                                </CardContent>
+                              </Card>
+
+                              {/* Hunt Results would be populated here by backend */}
+                              <Card className="gradient-card border border-primary/20">
+                                <CardHeader>
+                                  <CardTitle>Hunt Results</CardTitle>
+                                  <CardDescription>
+                                    Results from threat hunting queries will appear here
+                                  </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="text-center text-muted-foreground py-8">
+                                    <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                    <p>Execute a threat hunt query to see results</p>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </TabsContent>
+
+                            {/* Risk Assessment Tab */}
+                            <TabsContent value="assessment" className="space-y-6">
+                              {/* Overall Risk Score */}
+                              <Card className="gradient-card border border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-purple-600/5">
+                                <CardHeader>
+                                  <CardTitle className="flex items-center gap-2">
+                                    <TrendingUp className="h-5 w-5 text-purple-500" />
+                                    Overall Risk Assessment
+                                  </CardTitle>
+                                  <CardDescription>
+                                    Comprehensive risk analysis based on threat intelligence and security posture
+                                  </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="flex items-center justify-center mb-6">
+                                    <div className="text-center">
+                                      <div className="text-6xl font-bold text-purple-500 mb-2">
+                                        {threatAnalysisData.riskAssessment.overallRiskScore}
+                                      </div>
+                                      <div className="text-sm text-muted-foreground">Overall Risk Score</div>
+                                      <Badge variant="secondary" className="mt-2">
+                                        {threatAnalysisData.riskAssessment.overallRiskScore >= 80 ? 'HIGH RISK' :
+                                         threatAnalysisData.riskAssessment.overallRiskScore >= 60 ? 'MEDIUM RISK' :
+                                         'LOW RISK'}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                  
+                                  <Progress 
+                                    value={threatAnalysisData.riskAssessment.overallRiskScore} 
+                                    className="glow mb-4" 
+                                  />
+                                </CardContent>
+                              </Card>
+
+                              {/* Risk Categories */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {Object.entries(threatAnalysisData.riskAssessment.categories).map(([category, data]) => (
+                                  <Card key={category} className="gradient-card border border-primary/20 glow-hover">
+                                    <CardContent className="p-4">
+                                      <div className="flex items-center justify-between mb-3">
+                                        <div className="font-medium capitalize">
+                                          {category.replace('_', ' ')}
+                                        </div>
+                                        <Badge variant={
+                                          data.trend === 'increasing' ? 'destructive' :
+                                          data.trend === 'decreasing' ? 'default' :
+                                          'secondary'
+                                        } className="text-xs">
+                                          {data.trend.toUpperCase()}
+                                        </Badge>
+                                      </div>
+                                      
+                                      <div className="text-2xl font-bold text-primary mb-2">
+                                        {data.score}
+                                      </div>
+                                      
+                                      <Progress value={data.score} className="glow" />
+                                      
+                                      <div className="text-xs text-muted-foreground mt-2">
+                                        Trend: {data.trend} | Score: {data.score}/100
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                ))}
+                              </div>
+
+                              {/* Risk Recommendations */}
+                              <Card className="gradient-card border border-primary/20">
+                                <CardHeader>
+                                  <CardTitle>Risk Mitigation Recommendations</CardTitle>
+                                  <CardDescription>
+                                    Automated recommendations based on current threat landscape
+                                  </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="space-y-3">
+                                    <div className="flex items-start gap-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                                      <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5" />
+                                      <div>
+                                        <div className="font-medium text-red-400">Critical - APT Activity Detected</div>
+                                        <div className="text-sm text-muted-foreground">
+                                          Implement additional network segmentation and monitor C2 communications
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="flex items-start gap-3 p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                                      <Shield className="h-5 w-5 text-orange-500 mt-0.5" />
+                                      <div>
+                                        <div className="font-medium text-orange-400">High - Phishing Campaign Active</div>
+                                        <div className="text-sm text-muted-foreground">
+                                          Enhance email security controls and conduct user awareness training
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="flex items-start gap-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                                      <Settings className="h-5 w-5 text-yellow-500 mt-0.5" />
+                                      <div>
+                                        <div className="font-medium text-yellow-400">Medium - Update Security Policies</div>
+                                        <div className="text-sm text-muted-foreground">
+                                          Review and update incident response procedures for current threat landscape
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </TabsContent>
+                          </Tabs>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </TabsContent>
                 </Tabs>
