@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import SecurityChatbot from "./SecurityChatbot";
 import { useSecurityStatus } from "@/hooks/useSecurityStatus";
@@ -23,11 +25,17 @@ const SecurityDashboard = () => {
   const [isAgentConfigOpen, setIsAgentConfigOpen] = useState(false);
   const [isCveAssessmentOpen, setIsCveAssessmentOpen] = useState(false);
   const [isScanResultsOpen, setIsScanResultsOpen] = useState(false);
+  const [isOwaspScanOpen, setIsOwaspScanOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<string>('001');
   const [cveScanning, setCveScanning] = useState(false);
+  const [owaspScanning, setOwaspScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [selectedScanType, setSelectedScanType] = useState('all');
   const [resultFilter, setResultFilter] = useState('all');
+  const [owaspTarget, setOwaspTarget] = useState('https://');
+  const [selectedOwaspTests, setSelectedOwaspTests] = useState<string[]>([
+    'A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10'
+  ]);
   const [agentConfig, setAgentConfig] = useState({
     logLevel: 'info',
     scanFrequency: '1h',
@@ -375,6 +383,290 @@ const SecurityDashboard = () => {
     );
     
     return { completed, running, scheduled, totalVulns, total: scanResults.length };
+  };
+
+  /**
+   * OWASP Top 10 2021 Security Testing Categories
+   * Research-based test definitions with educational payloads
+   */
+  const owaspTop10Tests = [
+    {
+      id: 'A01',
+      category: 'Broken Access Control',
+      description: 'Testing for unauthorized access to resources and functions',
+      risk: 'CRITICAL',
+      tests: [
+        'Horizontal privilege escalation',
+        'Vertical privilege escalation', 
+        'Directory traversal',
+        'Force browsing',
+        'Missing function-level access control'
+      ],
+      payloads: [
+        '../../../etc/passwd',
+        '../../../../windows/system32/drivers/etc/hosts',
+        '/admin/users',
+        '/api/admin/delete_user',
+        'POST /api/users/1 with different user context'
+      ],
+      enabled: true
+    },
+    {
+      id: 'A02',
+      category: 'Cryptographic Failures',
+      description: 'Testing for weak cryptographic implementations',
+      risk: 'HIGH',
+      tests: [
+        'Weak encryption algorithms',
+        'Insufficient key lengths',
+        'Clear-text data transmission',
+        'Weak random number generation',
+        'Certificate validation issues'
+      ],
+      payloads: [
+        'SSL/TLS cipher suite analysis',
+        'HTTP vs HTTPS transmission check',
+        'Weak password hashing detection',
+        'Certificate chain validation',
+        'Random number predictability tests'
+      ],
+      enabled: true
+    },
+    {
+      id: 'A03',
+      category: 'Injection',
+      description: 'Testing for SQL, NoSQL, OS, and LDAP injection vulnerabilities',
+      risk: 'CRITICAL',
+      tests: [
+        'SQL injection',
+        'NoSQL injection',
+        'OS command injection',
+        'LDAP injection',
+        'XPath injection'
+      ],
+      payloads: [
+        "' OR '1'='1' --",
+        "'; DROP TABLE users; --",
+        '{"$gt": ""}',
+        '; ls -la',
+        '& ping 127.0.0.1',
+        "')(|(cn=*))",
+        "' or position()=1 or '"
+      ],
+      enabled: true
+    },
+    {
+      id: 'A04',
+      category: 'Insecure Design',
+      description: 'Testing for design flaws and missing security controls',
+      risk: 'MEDIUM',
+      tests: [
+        'Business logic flaws',
+        'Missing security controls',
+        'Insufficient threat modeling',
+        'Inadequate security architecture',
+        'Missing secure design patterns'
+      ],
+      payloads: [
+        'Business logic bypass attempts',
+        'Race condition tests',
+        'State manipulation tests',
+        'Workflow bypass attempts',
+        'Security control enumeration'
+      ],
+      enabled: true
+    },
+    {
+      id: 'A05',
+      category: 'Security Misconfiguration',
+      description: 'Testing for insecure default configurations',
+      risk: 'MEDIUM',
+      tests: [
+        'Default credentials',
+        'Directory listing',
+        'Unnecessary services',
+        'Error message disclosure',
+        'Missing security headers'
+      ],
+      payloads: [
+        'admin/admin login attempts',
+        '/server-status access test',
+        'HTTP OPTIONS method check',
+        'Forced SQL errors for info disclosure',
+        'Missing HSTS/CSP header detection'
+      ],
+      enabled: true
+    },
+    {
+      id: 'A06',
+      category: 'Vulnerable Components',
+      description: 'Testing for known vulnerable components and libraries',
+      risk: 'HIGH',
+      tests: [
+        'Outdated framework versions',
+        'Vulnerable JavaScript libraries',
+        'Known CVE exploitation',
+        'Component enumeration',
+        'License compliance checks'
+      ],
+      payloads: [
+        'Framework version fingerprinting',
+        'jQuery version detection',
+        'WordPress plugin enumeration',
+        'Known exploit payload testing',
+        'Dependency vulnerability scanning'
+      ],
+      enabled: true
+    },
+    {
+      id: 'A07',
+      category: 'Authentication Failures',
+      description: 'Testing for weak authentication and session management',
+      risk: 'HIGH',
+      tests: [
+        'Weak password policies',
+        'Brute force attacks',
+        'Session fixation',
+        'Session hijacking',
+        'Multi-factor authentication bypass'
+      ],
+      payloads: [
+        'Common password dictionary',
+        'Session token predictability tests',
+        'Cookie security analysis',
+        'Password reset token enumeration',
+        'Account lockout policy testing'
+      ],
+      enabled: true
+    },
+    {
+      id: 'A08',
+      category: 'Software Integrity Failures',
+      description: 'Testing for untrusted software updates and CI/CD security',
+      risk: 'MEDIUM',
+      tests: [
+        'Unsigned software updates',
+        'Insecure deserialization',
+        'Supply chain attacks',
+        'Code integrity verification',
+        'Auto-update mechanism security'
+      ],
+      payloads: [
+        'Malicious serialized objects',
+        'Update mechanism manipulation',
+        'Package repository poisoning tests',
+        'Code signing verification',
+        'Dependency confusion attacks'
+      ],
+      enabled: true
+    },
+    {
+      id: 'A09',
+      category: 'Logging & Monitoring Failures',
+      description: 'Testing for inadequate logging and monitoring',
+      risk: 'LOW',
+      tests: [
+        'Missing audit logs',
+        'Insufficient log data',
+        'Log injection attacks',
+        'Real-time monitoring gaps',
+        'Alert mechanism testing'
+      ],
+      payloads: [
+        'Log injection payloads',
+        'Event correlation tests',
+        'Log tampering attempts',
+        'Monitoring bypass techniques',
+        'Alert evasion methods'
+      ],
+      enabled: true
+    },
+    {
+      id: 'A10',
+      category: 'Server-Side Request Forgery',
+      description: 'Testing for SSRF vulnerabilities',
+      risk: 'MEDIUM',
+      tests: [
+        'Internal network scanning',
+        'Cloud metadata access',
+        'File system access',
+        'Service enumeration',
+        'Port scanning via SSRF'
+      ],
+      payloads: [
+        'http://127.0.0.1/admin',
+        'http://169.254.169.254/latest/meta-data/',
+        'file:///etc/passwd',
+        'http://localhost:22',
+        'gopher://127.0.0.1:3306/'
+      ],
+      enabled: true
+    }
+  ];
+
+  /**
+   * Handle OWASP Top 10 scan launch
+   */
+  const handleOwaspScan = () => {
+    if (!owaspTarget || !owaspTarget.startsWith('http')) {
+      toast({
+        title: "Invalid Target",
+        description: "Please enter a valid HTTP/HTTPS URL for scanning",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (selectedOwaspTests.length === 0) {
+      toast({
+        title: "No Tests Selected",
+        description: "Please select at least one OWASP Top 10 category to test",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setOwaspScanning(true);
+    setScanProgress(0);
+
+    // Simulate progressive scan
+    const interval = setInterval(() => {
+      setScanProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setOwaspScanning(false);
+          toast({
+            title: "OWASP Scan Complete",
+            description: `Completed testing ${selectedOwaspTests.length} categories against ${owaspTarget}`,
+          });
+          return 100;
+        }
+        return prev + Math.random() * 10;
+      });
+    }, 800);
+  };
+
+  /**
+   * Toggle OWASP test selection
+   */
+  const toggleOwaspTest = (testId: string) => {
+    setSelectedOwaspTests(prev => 
+      prev.includes(testId) 
+        ? prev.filter(id => id !== testId)
+        : [...prev, testId]
+    );
+  };
+
+  /**
+   * Get OWASP scan statistics
+   */
+  const getOwaspStats = () => {
+    const critical = owaspTop10Tests.filter(t => t.risk === 'CRITICAL' && selectedOwaspTests.includes(t.id)).length;
+    const high = owaspTop10Tests.filter(t => t.risk === 'HIGH' && selectedOwaspTests.includes(t.id)).length;
+    const medium = owaspTop10Tests.filter(t => t.risk === 'MEDIUM' && selectedOwaspTests.includes(t.id)).length;
+    const low = owaspTop10Tests.filter(t => t.risk === 'LOW' && selectedOwaspTests.includes(t.id)).length;
+    
+    return { critical, high, medium, low, total: selectedOwaspTests.length };
   };
   const tools = [
     {
@@ -1558,9 +1850,247 @@ const SecurityDashboard = () => {
                   
                   <TabsContent value="webapp" className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <Button className="glow-hover" variant="default" size="sm">
-                        OWASP Top 10 Scan
-                      </Button>
+                      <Dialog open={isOwaspScanOpen} onOpenChange={setIsOwaspScanOpen}>
+                        <DialogTrigger asChild>
+                          <Button className="glow-hover group" variant="default" size="sm">
+                            <Zap className="h-4 w-4 mr-2 group-hover:animate-bounce" />
+                            OWASP Top 10 Scan
+                            <div className="ml-2 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1200px] max-h-[90vh] gradient-card border-primary/20">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <div className="relative">
+                                <Shield className="h-6 w-6 text-red-500 animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+                              </div>
+                              OWASP Top 10 Security Assessment
+                              <Badge variant="destructive" className="ml-2 animate-pulse-glow">
+                                2021 STANDARD
+                              </Badge>
+                            </DialogTitle>
+                            <DialogDescription className="text-base">
+                              Comprehensive web application security testing based on OWASP Top 10 2021 vulnerabilities
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="space-y-6">
+                            {/* Target Configuration and Quick Stats */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                              {/* Target Configuration */}
+                              <Card className="lg:col-span-1 gradient-card border border-red-500/20">
+                                <CardHeader className="pb-3">
+                                  <CardTitle className="text-lg flex items-center gap-2">
+                                    <Target className="h-5 w-5 text-primary animate-pulse" />
+                                    Scan Configuration
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="owasp-target">Target URL *</Label>
+                                    <Input
+                                      id="owasp-target"
+                                      placeholder="https://example.com"
+                                      value={owaspTarget}
+                                      onChange={(e) => setOwaspTarget(e.target.value)}
+                                      className="glow-hover"
+                                    />
+                                  </div>
+                                  
+                                  <Button 
+                                    onClick={handleOwaspScan}
+                                    disabled={owaspScanning}
+                                    className="w-full glow-hover group"
+                                    variant={owaspScanning ? "secondary" : "destructive"}
+                                  >
+                                    {owaspScanning ? (
+                                      <>
+                                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                        Scanning...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Play className="h-4 w-4 mr-2 group-hover:animate-bounce" />
+                                        Launch OWASP Scan
+                                      </>
+                                    )}
+                                  </Button>
+                                  
+                                  {owaspScanning && (
+                                    <div className="space-y-2">
+                                      <div className="flex justify-between text-sm">
+                                        <span>Test Progress</span>
+                                        <span>{Math.round(scanProgress)}%</span>
+                                      </div>
+                                      <Progress value={scanProgress} className="glow animate-pulse" />
+                                      <p className="text-xs text-muted-foreground">
+                                        Testing {selectedOwaspTests.length} OWASP categories...
+                                      </p>
+                                    </div>
+                                  )}
+                                </CardContent>
+                              </Card>
+
+                              {/* Statistics */}
+                              <Card className="lg:col-span-2 gradient-card border border-red-500/20 bg-gradient-to-br from-red-500/5 to-orange-500/5">
+                                <CardHeader className="pb-3">
+                                  <CardTitle className="text-lg flex items-center gap-2">
+                                    <BarChart3 className="h-5 w-5 text-red-500 animate-pulse" />
+                                    Selected Test Categories
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="text-3xl font-bold text-red-500 animate-pulse">
+                                        {getOwaspStats().critical}
+                                      </div>
+                                      <div className="text-sm font-medium text-red-400">Critical Risk</div>
+                                    </div>
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="text-3xl font-bold text-orange-500">
+                                        {getOwaspStats().high}
+                                      </div>
+                                      <div className="text-sm font-medium text-orange-400">High Risk</div>
+                                    </div>
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="text-3xl font-bold text-yellow-500">
+                                        {getOwaspStats().medium}
+                                      </div>
+                                      <div className="text-sm font-medium text-yellow-400">Medium Risk</div>
+                                    </div>
+                                    <div className="text-center group cursor-pointer hover-scale">
+                                      <div className="text-3xl font-bold text-primary">
+                                        {getOwaspStats().total}
+                                      </div>
+                                      <div className="text-sm font-medium text-primary">Total Tests</div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </div>
+
+                            {/* OWASP Top 10 Test Selection */}
+                            <Card className="gradient-card border border-red-500/20">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center gap-2">
+                                  <Shield className="h-5 w-5 text-red-500 animate-pulse" />
+                                  OWASP Top 10 2021 Test Categories
+                                  <Badge variant="outline" className="text-xs">
+                                    {selectedOwaspTests.length}/10 Selected
+                                  </Badge>
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <ScrollArea className="h-[500px] rounded-md border">
+                                  <div className="space-y-4 p-4">
+                                    {owaspTop10Tests.map((test, index) => (
+                                      <Card key={test.id} className={`gradient-card border transition-all duration-300 ${
+                                        selectedOwaspTests.includes(test.id) 
+                                          ? 'border-primary/50 bg-primary/5' 
+                                          : 'border-border/30'
+                                      } animate-fade-in`} style={{animationDelay: `${index * 0.1}s`}}>
+                                        <CardContent className="p-4">
+                                          <div className="flex items-start gap-4">
+                                            <Checkbox
+                                              checked={selectedOwaspTests.includes(test.id)}
+                                              onCheckedChange={() => toggleOwaspTest(test.id)}
+                                              className="mt-1"
+                                            />
+                                            
+                                            <div className="flex-1 space-y-3">
+                                              <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                  <Badge variant="outline" className="font-mono text-xs">
+                                                    {test.id}:2021
+                                                  </Badge>
+                                                  <h3 className="font-semibold text-lg">{test.category}</h3>
+                                                  <Badge 
+                                                    variant={
+                                                      test.risk === 'CRITICAL' ? 'destructive' : 
+                                                      test.risk === 'HIGH' ? 'destructive' : 
+                                                      test.risk === 'MEDIUM' ? 'secondary' : 'outline'
+                                                    }
+                                                    className="text-xs animate-pulse-glow"
+                                                  >
+                                                    {test.risk}
+                                                  </Badge>
+                                                </div>
+                                                <Code className="h-4 w-4 text-muted-foreground" />
+                                              </div>
+                                              
+                                              <p className="text-sm text-muted-foreground">{test.description}</p>
+                                              
+                                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                  <h4 className="text-sm font-medium mb-2">Test Coverage:</h4>
+                                                  <div className="space-y-1">
+                                                    {test.tests.slice(0, 3).map((testType, i) => (
+                                                      <div key={i} className="text-xs text-muted-foreground flex items-center gap-1">
+                                                        <CheckCircle className="h-3 w-3 text-green-500" />
+                                                        {testType}
+                                                      </div>
+                                                    ))}
+                                                    {test.tests.length > 3 && (
+                                                      <div className="text-xs text-muted-foreground">
+                                                        +{test.tests.length - 3} more tests...
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                </div>
+                                                
+                                                <div>
+                                                  <h4 className="text-sm font-medium mb-2">Example Payloads:</h4>
+                                                  <div className="space-y-1">
+                                                    {test.payloads.slice(0, 2).map((payload, i) => (
+                                                      <div key={i} className="text-xs font-mono bg-muted/50 px-2 py-1 rounded border">
+                                                        {payload.length > 40 ? `${payload.substring(0, 40)}...` : payload}
+                                                      </div>
+                                                    ))}
+                                                    {test.payloads.length > 2 && (
+                                                      <div className="text-xs text-muted-foreground">
+                                                        +{test.payloads.length - 2} more payloads...
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </CardContent>
+                                      </Card>
+                                    ))}
+                                  </div>
+                                </ScrollArea>
+                              </CardContent>
+                            </Card>
+                          </div>
+
+                          <div className="flex justify-between items-center gap-2 pt-6 border-t border-border/50">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse-glow" />
+                              <span>Educational security testing framework</span>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button variant="outline" onClick={() => setIsOwaspScanOpen(false)} className="glow-hover">
+                                Close Scanner
+                              </Button>
+                              <Button 
+                                onClick={() => {
+                                  setSelectedOwaspTests(['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10']);
+                                }}
+                                variant="secondary" 
+                                className="glow-hover"
+                              >
+                                <CheckCircle className="h-4 w-4 mr-2" />
+                                Select All Tests
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      
                       <Button variant="outline" size="sm">
                         Custom ZAP Scan
                       </Button>
