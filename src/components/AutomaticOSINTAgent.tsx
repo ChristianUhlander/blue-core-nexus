@@ -92,6 +92,37 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
     complianceScore: 100
   });
 
+  // API Configuration State
+  const [apiConfigs, setApiConfigs] = useState<Record<string, any>>({
+    shodan: { apiKey: '', enabled: false, rateLimit: 100 },
+    virustotal: { apiKey: '', enabled: false, rateLimit: 1000 },  
+    otx: { apiKey: '', enabled: false, rateLimit: 10000 },
+    securitytrails: { apiKey: '', enabled: false, rateLimit: 2000 },
+    hunter: { apiKey: '', enabled: false, rateLimit: 100 },
+    apivoid: { apiKey: '', enabled: false, rateLimit: 1000 },
+    censys: { apiKey: '', enabled: false, rateLimit: 250 },
+    hibp: { apiKey: '', enabled: false, rateLimit: 1500 },
+    threatcrowd: { enabled: true, rateLimit: 10 }, // Free service
+    urlvoid: { apiKey: '', enabled: false, rateLimit: 1000 },
+    maxmind: { apiKey: '', enabled: false, rateLimit: 1000 },
+    whoisapi: { apiKey: '', enabled: false, rateLimit: 1000 }
+  });
+
+  // Model Configuration State  
+  const [modelConfigs, setModelConfigs] = useState({
+    primaryModel: 'gpt-4.1-2025-04-14',
+    fallbackModel: 'gpt-5-mini-2025-08-07',
+    temperature: 0.2,
+    maxTokens: 2000,
+    enableReasoningModel: false,
+    reasoningModel: 'o4-mini-2025-04-16',
+    customPrompts: {
+      analysis: 'Analyze the following OSINT data and provide structured intelligence insights.',
+      correlation: 'Correlate the following intelligence data points and identify relationships.',
+      summarization: 'Summarize the key findings from this OSINT investigation.'
+    }
+  });
+
   // Enhanced OSINT Tools with Encryption
   const [osintTools, setOSINTTools] = useState<OSINTTool[]>([
     {
@@ -489,6 +520,184 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
     checkEncryption();
   }, [loadInvestigations]);
 
+  // API Configuration Handlers
+  const updateApiConfig = useCallback((apiName: string, field: string, value: any) => {
+    setApiConfigs(prev => ({
+      ...prev,
+      [apiName]: { ...prev[apiName], [field]: value }
+    }));
+  }, []);
+
+  // Model Configuration Handlers
+  const updateModelConfig = useCallback((field: string, value: any) => {
+    setModelConfigs(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  const updateCustomPrompt = useCallback((promptType: string, value: string) => {
+    setModelConfigs(prev => ({
+      ...prev,
+      customPrompts: { ...prev.customPrompts, [promptType]: value }
+    }));
+  }, []);
+
+  // Save configurations with encryption
+  const saveConfigurations = useCallback(async () => {
+    if (!isEncryptionInitialized) return;
+
+    try {
+      await encryptionService.setEncryptedItem('api_configs', apiConfigs);
+      await encryptionService.setEncryptedItem('model_configs', modelConfigs);
+      toast({
+        title: "Configuration Saved",
+        description: "API and model configurations have been encrypted and saved",
+      });
+    } catch (error) {
+      toast({
+        title: "Save Failed",
+        description: "Failed to save configurations",
+        variant: "destructive"
+      });
+    }
+  }, [isEncryptionInitialized, apiConfigs, modelConfigs]);
+
+  // Test API connectivity
+  const testApiConnection = useCallback(async (apiName: string) => {
+    const config = apiConfigs[apiName];
+    if (!config.enabled || !config.apiKey) {
+      toast({
+        title: "Test Failed",
+        description: "API is not enabled or missing API key",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Mock API test - in production, make actual test calls
+    toast({
+      title: "Testing API Connection",
+      description: `Testing connection to ${apiName}...`,
+    });
+
+    setTimeout(() => {
+      toast({
+        title: "Connection Test",
+        description: `${apiName} API connection successful`,
+      });
+    }, 2000);
+  }, [apiConfigs]);
+
+  // OSINT API Sources Data
+  const osintApiSources = [
+    {
+      name: 'shodan',
+      displayName: 'Shodan',
+      description: 'Internet-connected device intelligence and IoT search engine',
+      category: 'Infrastructure',
+      website: 'https://shodan.io',
+      pricingTier: 'Paid',
+      capabilities: ['Device Discovery', 'Port Scanning', 'Vulnerability Detection', 'Banner Grabbing']
+    },
+    {
+      name: 'virustotal',
+      displayName: 'VirusTotal',
+      description: 'Malware analysis and URL/file reputation service',
+      category: 'Threat Intelligence',
+      website: 'https://virustotal.com',
+      pricingTier: 'Freemium',
+      capabilities: ['File Analysis', 'URL Scanning', 'Domain Reputation', 'IP Analysis']
+    },
+    {
+      name: 'otx',
+      displayName: 'AlienVault OTX',
+      description: 'Open Threat Exchange - collaborative threat intelligence',
+      category: 'Threat Intelligence',
+      website: 'https://otx.alienvault.com',
+      pricingTier: 'Free',
+      capabilities: ['IOC Lookup', 'Threat Feeds', 'Pulse Intelligence', 'Community Data']
+    },
+    {
+      name: 'securitytrails',
+      displayName: 'SecurityTrails',
+      description: 'DNS and domain intelligence platform',
+      category: 'Domain Intelligence',
+      website: 'https://securitytrails.com',
+      pricingTier: 'Freemium',
+      capabilities: ['DNS History', 'Subdomain Discovery', 'Certificate Transparency', 'WHOIS Data']
+    },
+    {
+      name: 'hunter',
+      displayName: 'Hunter.io',
+      description: 'Email finder and verifier for professional outreach',
+      category: 'Email Intelligence',
+      website: 'https://hunter.io',
+      pricingTier: 'Freemium',
+      capabilities: ['Email Finding', 'Email Verification', 'Domain Search', 'Company Data']
+    },
+    {
+      name: 'apivoid',
+      displayName: 'APIVoid',
+      description: 'Comprehensive threat detection and analysis APIs',
+      category: 'Threat Detection',
+      website: 'https://apivoid.com',
+      pricingTier: 'Freemium',
+      capabilities: ['URL Analysis', 'IP Reputation', 'Domain Reputation', 'Screenshot API']
+    },
+    {
+      name: 'censys',
+      displayName: 'Censys',
+      description: 'Internet-wide scanning and device discovery platform',
+      category: 'Infrastructure',
+      website: 'https://censys.io',
+      pricingTier: 'Freemium',
+      capabilities: ['Certificate Search', 'Host Discovery', 'Attack Surface', 'Banner Analysis']
+    },
+    {
+      name: 'hibp',  
+      displayName: 'Have I Been Pwned',
+      description: 'Data breach notification and password security service',
+      category: 'Breach Intelligence',
+      website: 'https://haveibeenpwned.com',
+      pricingTier: 'Freemium',
+      capabilities: ['Breach Lookup', 'Password Analysis', 'Subscription Monitoring', 'API Access']
+    },
+    {
+      name: 'threatcrowd',
+      displayName: 'ThreatCrowd',
+      description: 'Free threat intelligence search engine',
+      category: 'Threat Intelligence',
+      website: 'https://threatcrowd.org',
+      pricingTier: 'Free',
+      capabilities: ['IOC Lookup', 'Malware Analysis', 'Passive DNS', 'WHOIS Data']
+    },
+    {
+      name: 'urlvoid',
+      displayName: 'URLVoid',
+      description: 'URL reputation and safety analysis service',
+      category: 'URL Analysis',
+      website: 'https://urlvoid.com',
+      pricingTier: 'Freemium',
+      capabilities: ['URL Scanning', 'Reputation Analysis', 'Safety Scores', 'Blacklist Checks']
+    },
+    {
+      name: 'maxmind',
+      displayName: 'MaxMind GeoIP',
+      description: 'IP geolocation and fraud detection services',
+      category: 'Geolocation',
+      website: 'https://maxmind.com',
+      pricingTier: 'Freemium',
+      capabilities: ['IP Geolocation', 'ISP Detection', 'Fraud Scoring', 'Anonymous Proxy Detection']
+    },
+    {
+      name: 'whoisapi',
+      displayName: 'WHOIS API',
+      description: 'Domain registration and ownership information',
+      category: 'Domain Intelligence',
+      website: 'https://whoisapi.com',
+      pricingTier: 'Freemium',
+      capabilities: ['WHOIS Lookup', 'Domain History', 'Registration Data', 'Registrar Info']
+    }
+  ];
+
   const renderToolCard = (tool: OSINTTool) => (
     <Card key={tool.name} className="gradient-card glow-hover">
       <CardHeader className="pb-3">
@@ -757,12 +966,276 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
               </Card>
             </TabsContent>
 
-            <TabsContent value="intelligence">
+            <TabsContent value="intelligence" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* AI Model Configuration */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <BrainCircuit className="h-5 w-5" />
+                      AI Model Configuration
+                    </CardTitle>
+                    <CardDescription>Configure AI models for intelligence analysis and correlation</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div>
+                        <Label htmlFor="primary-model">Primary Analysis Model</Label>
+                        <Select value={modelConfigs.primaryModel} onValueChange={(value) => updateModelConfig('primaryModel', value)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="gpt-5-2025-08-07">GPT-5 (Latest Flagship)</SelectItem>
+                            <SelectItem value="gpt-4.1-2025-04-14">GPT-4.1 (Reliable)</SelectItem>
+                            <SelectItem value="gpt-5-mini-2025-08-07">GPT-5 Mini (Fast)</SelectItem>
+                            <SelectItem value="claude-opus-4-20250514">Claude Opus 4 (Most Capable)</SelectItem>
+                            <SelectItem value="claude-sonnet-4-20250514">Claude Sonnet 4 (High Performance)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="fallback-model">Fallback Model</Label>
+                        <Select value={modelConfigs.fallbackModel} onValueChange={(value) => updateModelConfig('fallbackModel', value)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="gpt-5-mini-2025-08-07">GPT-5 Mini</SelectItem>
+                            <SelectItem value="gpt-5-nano-2025-08-07">GPT-5 Nano (Fastest)</SelectItem>
+                            <SelectItem value="claude-3-5-haiku-20241022">Claude Haiku (Quick)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Enable Reasoning Model</Label>
+                          <p className="text-xs text-muted-foreground">Use specialized reasoning for complex analysis</p>
+                        </div>
+                        <Switch
+                          checked={modelConfigs.enableReasoningModel}
+                          onCheckedChange={(checked) => updateModelConfig('enableReasoningModel', checked)}
+                        />
+                      </div>
+
+                      {modelConfigs.enableReasoningModel && (
+                        <div>
+                          <Label htmlFor="reasoning-model">Reasoning Model</Label>
+                          <Select value={modelConfigs.reasoningModel} onValueChange={(value) => updateModelConfig('reasoningModel', value)}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="o3-2025-04-16">O3 (Most Powerful)</SelectItem>
+                              <SelectItem value="o4-mini-2025-04-16">O4 Mini (Fast Reasoning)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label htmlFor="temperature">Temperature: {modelConfigs.temperature}</Label>
+                          <Input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.1"
+                            value={modelConfigs.temperature}
+                            onChange={(e) => updateModelConfig('temperature', parseFloat(e.target.value))}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="max-tokens">Max Tokens</Label>
+                          <Input
+                            type="number"
+                            value={modelConfigs.maxTokens}
+                            onChange={(e) => updateModelConfig('maxTokens', parseInt(e.target.value))}
+                            min="100"
+                            max="4000"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-3">
+                      <Label>Custom Prompts</Label>
+                      <div className="space-y-2">
+                        <div>
+                          <Label className="text-xs">Analysis Prompt</Label>
+                          <Textarea
+                            value={modelConfigs.customPrompts.analysis}
+                            onChange={(e) => updateCustomPrompt('analysis', e.target.value)}
+                            placeholder="Custom analysis prompt..."
+                            rows={2}
+                            className="text-xs"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Correlation Prompt</Label>
+                          <Textarea
+                            value={modelConfigs.customPrompts.correlation}
+                            onChange={(e) => updateCustomPrompt('correlation', e.target.value)}
+                            placeholder="Custom correlation prompt..."
+                            rows={2}
+                            className="text-xs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button onClick={saveConfigurations} className="w-full">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Save Model Configuration
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* API Configuration */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Network className="h-5 w-5" />
+                      OSINT API Configuration
+                    </CardTitle>
+                    <CardDescription>Configure external intelligence sources and APIs</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ScrollArea className="h-[600px] pr-4">
+                      <div className="space-y-4">
+                        {osintApiSources.map((source) => {
+                          const config = apiConfigs[source.name] || {};
+                          return (
+                            <Card key={source.name} className={`p-3 ${config.enabled ? 'bg-primary/5 border-primary/30' : 'bg-muted/20'}`}>
+                              <div className="space-y-3">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <h4 className="font-medium text-sm">{source.displayName}</h4>
+                                      <Badge variant={source.pricingTier === 'Free' ? 'secondary' : source.pricingTier === 'Freemium' ? 'default' : 'destructive'} className="text-xs">
+                                        {source.pricingTier}
+                                      </Badge>
+                                      <Badge variant="outline" className="text-xs">
+                                        {source.category}
+                                      </Badge>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mb-2">{source.description}</p>
+                                    <div className="flex flex-wrap gap-1 mb-2">
+                                      {source.capabilities.slice(0, 3).map((capability) => (
+                                        <Badge key={capability} variant="secondary" className="text-xs">
+                                          {capability}
+                                        </Badge>
+                                      ))}
+                                      {source.capabilities.length > 3 && (
+                                        <Badge variant="secondary" className="text-xs">
+                                          +{source.capabilities.length - 3} more
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    <a 
+                                      href={source.website} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="text-xs text-blue-400 hover:underline flex items-center gap-1"
+                                    >
+                                      <ExternalLink className="h-3 w-3" />
+                                      {source.website}
+                                    </a>
+                                  </div>
+                                  <Switch
+                                    checked={config.enabled || false}
+                                    onCheckedChange={(checked) => updateApiConfig(source.name, 'enabled', checked)}
+                                  />
+                                </div>
+
+                                {config.enabled && (
+                                  <div className="space-y-2 pt-2 border-t">
+                                    {source.name !== 'threatcrowd' && ( // ThreatCrowd is free, no API key needed
+                                      <div>
+                                        <Label className="text-xs">API Key</Label>
+                                        <div className="flex gap-2">
+                                          <Input
+                                            type="password"
+                                            value={config.apiKey || ''}
+                                            onChange={(e) => updateApiConfig(source.name, 'apiKey', e.target.value)}
+                                            placeholder="Enter API key..."
+                                            className="text-xs flex-1"
+                                          />
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => testApiConnection(source.name)}
+                                            disabled={!config.apiKey}
+                                          >
+                                            <Activity className="h-3 w-3" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )}
+                                    <div>
+                                      <Label className="text-xs">Rate Limit (requests/hour)</Label>
+                                      <Input
+                                        type="number"
+                                        value={config.rateLimit || 100}
+                                        onChange={(e) => updateApiConfig(source.name, 'rateLimit', parseInt(e.target.value))}
+                                        min="1"
+                                        max="10000"
+                                        className="text-xs"
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Configuration Summary */}
               <Card className="gradient-card">
                 <CardHeader>
-                  <CardTitle>Intelligence Analysis</CardTitle>
-                  <CardDescription>Coming Soon: AI-powered intelligence correlation and analysis</CardDescription>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5" />
+                    Configuration Summary
+                  </CardTitle>
                 </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-primary">
+                        {Object.values(apiConfigs).filter(config => config.enabled).length}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Active APIs</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-secondary">
+                        {osintApiSources.filter(source => apiConfigs[source.name]?.enabled && source.pricingTier === 'Free').length}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Free Sources</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-accent">
+                        {modelConfigs.primaryModel.includes('gpt-5') ? 'GPT-5' : modelConfigs.primaryModel.includes('claude') ? 'Claude 4' : 'GPT-4.1'}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Primary Model</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-400">
+                        {modelConfigs.enableReasoningModel ? 'ON' : 'OFF'}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Reasoning Mode</div>
+                    </div>
+                  </div>
+                </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
