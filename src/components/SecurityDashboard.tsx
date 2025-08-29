@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import SecurityChatbot from "./SecurityChatbot";
 import heroImage from "@/assets/security-hero.jpg";
 
 const SecurityDashboard = () => {
@@ -244,6 +245,9 @@ const SecurityDashboard = () => {
           </Card>
         </div>
       </div>
+      
+      {/* Security Chatbot */}
+      <SecurityChatbot />
     </div>
   );
 };
