@@ -1276,48 +1276,6 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
                             </Card>
                           ))}
                         </div>
-                            <Card key={target.id} className="hover:shadow-md transition-shadow">
-                              <CardContent className="pt-4">
-                                <div className="flex items-start justify-between">
-                                  <div className="space-y-2">
-                                    <div className="flex items-center gap-2">
-                                      <Badge variant="outline">{target.type}</Badge>
-                                      <span className="font-medium">{target.value}</span>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">{target.description}</p>
-                                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                      <span>Added: {target.addedAt}</span>
-                                      <span>Priority: {target.priority}</span>
-                                      <span>Status: {target.status}</span>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Button variant="outline" size="sm">
-                                      <Search className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="outline" size="sm">
-                                      <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                </div>
-                                
-                                {target.relatedFindings && target.relatedFindings.length > 0 && (
-                                  <div className="mt-4 p-3 bg-muted/30 rounded-lg">
-                                    <Label className="text-xs font-medium">Related Findings</Label>
-                                    <div className="mt-2 space-y-1">
-                                      {target.relatedFindings.map((finding, idx) => (
-                                        <div key={idx} className="text-xs flex items-center gap-2">
-                                          <Badge variant="secondary" className="text-xs">{finding.source}</Badge>
-                                          <span className="text-muted-foreground">{finding.summary}</span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </div>
                       </TabsContent>
 
                       {/* OSINT Tools Configuration */}
@@ -1709,6 +1667,10 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
                 </div>
               </div>
             </TabsContent>
+
+            {/* Dashboard Tab */}
+            <TabsContent value="dashboard" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-base">Recent Investigations</CardTitle>
