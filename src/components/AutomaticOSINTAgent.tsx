@@ -45,7 +45,6 @@ import {
   BrainCircuit,
   Network,
   AlertTriangle,
-  CheckCircle,
   Loader2,
   Settings,
   PlayCircle,
@@ -57,7 +56,16 @@ import {
   ExternalLink,
   Trash2,
   RotateCcw,
-  Activity
+  Activity,
+  Plus,
+  FileText,
+  Share,
+  MoreHorizontal,
+  Filter,
+  Calendar,
+  Play,
+  Star,
+  CheckCircle
 } from "lucide-react";
 import type { 
   OSINTTool, 
@@ -67,6 +75,30 @@ import type {
   OSINTConfiguration,
   OSINTMetrics 
 } from "@/types/osintAgent";
+
+// Extended interfaces for the investigation management system
+interface ExtendedOSINTInvestigation extends OSINTInvestigation {
+  updatedAt?: string;
+  evidence?: any[];
+  tools?: any[];
+  phases?: Array<{
+    id: string;
+    name: string;
+    status: 'pending' | 'active' | 'completed';
+    progress: number;
+  }>;
+}
+
+interface ExtendedOSINTTarget extends OSINTTarget {
+  description?: string;
+  addedAt?: string;
+  priority?: string;
+  status?: string;
+  relatedFindings?: Array<{
+    source: string;
+    summary: string;
+  }>;
+}
 
 interface AutomaticOSINTAgentProps {
   onClose: () => void;
@@ -107,6 +139,41 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
     maxmind: { apiKey: '', enabled: false, rateLimit: 1000 },
     whoisapi: { apiKey: '', enabled: false, rateLimit: 1000 }
   });
+
+  // Investigation Management State
+  const [showNewInvestigationDialog, setShowNewInvestigationDialog] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState('person-profiling');
+  const [investigationPriority, setInvestigationPriority] = useState('medium');
+  const [selectedInvestigation, setSelectedInvestigation] = useState<ExtendedOSINTInvestigation | null>(null);
+  const [investigationTab, setInvestigationTab] = useState('overview');
+  const [activeInvestigations, setActiveInvestigations] = useState<ExtendedOSINTInvestigation[]>([]);
+  const [completedInvestigations, setCompletedInvestigations] = useState<ExtendedOSINTInvestigation[]>([]);
+  const [showAddTargetDialog, setShowAddTargetDialog] = useState(false);
+  const [showToolConfigDialog, setShowToolConfigDialog] = useState(false);
+  const [showEvidenceFilter, setShowEvidenceFilter] = useState(false);
+  const [showAddEvidenceDialog, setShowAddEvidenceDialog] = useState(false);
+  const [evidenceFilter, setEvidenceFilter] = useState({
+    type: 'all',
+    source: 'all', 
+    reliability: 'all'
+  });
+  const [filteredEvidence, setFilteredEvidence] = useState<any[]>([]);
+  const [timelineEvents, setTimelineEvents] = useState<any[]>([]);
+  const [reportSummary, setReportSummary] = useState('');
+  const [keyFindings, setKeyFindings] = useState<any[]>([]);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+
+  // Helper functions
+  const calculateInvestigationProgress = (investigation: any) => {
+    const completedPhases = investigation.phases?.filter((p: any) => p.status === 'completed').length || 0;
+    const totalPhases = investigation.phases?.length || 1;
+    return Math.round((completedPhases / totalPhases) * 100);
+  };
+
+  const toggleOSINTTool = (toolId: string, enabled: boolean) => {
+    // Implementation for toggling OSINT tools
+    console.log(`Toggle tool ${toolId}: ${enabled}`);
+  };
 
   // Model Configuration State  
   const [modelConfigs, setModelConfigs] = useState({
@@ -957,13 +1024,724 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
             </TabsContent>
 
             {/* Placeholder tabs for future implementation */}
-            <TabsContent value="investigations">
-              <Card className="gradient-card">
-                <CardHeader>
-                  <CardTitle>Investigation Management</CardTitle>
-                  <CardDescription>Coming Soon: Manage active and completed investigations</CardDescription>
-                </CardHeader>
-              </Card>
+            <TabsContent value="investigations" className="space-y-6">
+              <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+                {/* Investigation Control Panel */}
+                <div className="xl:col-span-1 space-y-4">
+                  <Card className="gradient-card">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Search className="h-5 w-5" />
+                        Active Investigations
+                      </CardTitle>
+                      <CardDescription>Manage ongoing OSINT operations</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <Button 
+                        onClick={() => setShowNewInvestigationDialog(true)}
+                        className="w-full"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        New Investigation
+                      </Button>
+                      
+                      <div className="space-y-2">
+                        <Label>Investigation Templates</Label>
+                        <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select template" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="person-profiling">Person Profiling</SelectItem>
+                            <SelectItem value="company-intel">Company Intelligence</SelectItem>
+                            <SelectItem value="domain-investigation">Domain Investigation</SelectItem>
+                            <SelectItem value="social-media-analysis">Social Media Analysis</SelectItem>
+                            <SelectItem value="threat-actor-tracking">Threat Actor Tracking</SelectItem>
+                            <SelectItem value="financial-investigation">Financial Investigation</SelectItem>
+                            <SelectItem value="infrastructure-mapping">Infrastructure Mapping</SelectItem>
+                            <SelectItem value="custom">Custom Investigation</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Priority Level</Label>
+                        <Select value={investigationPriority} onValueChange={setInvestigationPriority}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="critical">🔴 Critical</SelectItem>
+                            <SelectItem value="high">🟠 High</SelectItem>
+                            <SelectItem value="medium">🟡 Medium</SelectItem>
+                            <SelectItem value="low">🟢 Low</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Investigation Status</Label>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <Badge variant="outline" className="justify-center">
+                            <Activity className="h-3 w-3 mr-1" />
+                            Active: {activeInvestigations.length}
+                          </Badge>
+                          <Badge variant="secondary" className="justify-center">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Complete: {completedInvestigations.length}
+                          </Badge>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Quick Actions */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm">Quick Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <Button variant="outline" size="sm" className="w-full justify-start">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Generate Report
+                      </Button>
+                      <Button variant="outline" size="sm" className="w-full justify-start">
+                        <Download className="h-4 w-4 mr-2" />
+                        Export Evidence
+                      </Button>
+                      <Button variant="outline" size="sm" className="w-full justify-start">
+                        <Share className="h-4 w-4 mr-2" />
+                        Share Findings
+                      </Button>
+                      <Button variant="outline" size="sm" className="w-full justify-start">
+                        <AlertTriangle className="h-4 w-4 mr-2" />
+                        Flag Threats
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Main Investigation Dashboard */}
+                <div className="xl:col-span-3">
+                  {selectedInvestigation ? (
+                    <Tabs value={investigationTab} onValueChange={setInvestigationTab} className="w-full">
+                      <TabsList className="grid w-full grid-cols-6">
+                        <TabsTrigger value="overview">Overview</TabsTrigger>
+                        <TabsTrigger value="targets">Targets</TabsTrigger>
+                        <TabsTrigger value="tools">Tools</TabsTrigger>
+                        <TabsTrigger value="evidence">Evidence</TabsTrigger>
+                        <TabsTrigger value="timeline">Timeline</TabsTrigger>
+                        <TabsTrigger value="report">Report</TabsTrigger>
+                      </TabsList>
+
+                      {/* Investigation Overview */}
+                      <TabsContent value="overview" className="space-y-4">
+                        <Card>
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <CardTitle>{selectedInvestigation.name}</CardTitle>
+                                <CardDescription>{selectedInvestigation.description}</CardDescription>
+                              </div>
+                              <Badge variant={selectedInvestigation.priority === 'critical' ? 'destructive' : 'default'}>
+                                {selectedInvestigation.priority}
+                              </Badge>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="space-y-2">
+                                <Label className="text-sm text-muted-foreground">Status</Label>
+                                <Badge variant="outline">{selectedInvestigation.status}</Badge>
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm text-muted-foreground">Created</Label>
+                                <p className="text-sm">{selectedInvestigation.createdAt}</p>
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm text-muted-foreground">Last Updated</Label>
+                                <p className="text-sm">{selectedInvestigation.updatedAt}</p>
+                              </div>
+                            </div>
+                            
+                            <Separator className="my-4" />
+                            
+                            {/* Investigation Metrics */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                              <div className="text-center p-3 bg-muted/30 rounded-lg">
+                                <div className="text-2xl font-bold text-blue-600">{selectedInvestigation.targets.length}</div>
+                                <div className="text-xs text-muted-foreground">Targets</div>
+                              </div>
+                              <div className="text-center p-3 bg-muted/30 rounded-lg">
+                                <div className="text-2xl font-bold text-green-600">{selectedInvestigation.evidence.length}</div>
+                                <div className="text-xs text-muted-foreground">Evidence Items</div>
+                              </div>
+                              <div className="text-center p-3 bg-muted/30 rounded-lg">
+                                <div className="text-2xl font-bold text-orange-600">{selectedInvestigation.tools.length}</div>
+                                <div className="text-xs text-muted-foreground">Tools Used</div>
+                              </div>
+                              <div className="text-center p-3 bg-muted/30 rounded-lg">
+                                <div className="text-2xl font-bold text-purple-600">{calculateInvestigationProgress(selectedInvestigation)}%</div>
+                                <div className="text-xs text-muted-foreground">Complete</div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* Investigation Progress */}
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-base">Investigation Progress</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4">
+                              {selectedInvestigation.phases.map((phase, index) => (
+                                <div key={phase.id} className="flex items-center space-x-4">
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
+                                    phase.status === 'completed' ? 'bg-green-500 text-white' :
+                                    phase.status === 'active' ? 'bg-blue-500 text-white' :
+                                    'bg-muted text-muted-foreground'
+                                  }`}>
+                                    {index + 1}
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-medium">{phase.name}</span>
+                                      <Badge variant="outline" className="text-xs">
+                                        {phase.status}
+                                      </Badge>
+                                    </div>
+                                    {phase.status === 'active' && (
+                                      <Progress value={phase.progress} className="mt-2 h-2" />
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+
+                      {/* Target Management */}
+                      <TabsContent value="targets" className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold">Investigation Targets</h3>
+                          <Button onClick={() => setShowAddTargetDialog(true)}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Target
+                          </Button>
+                        </div>
+
+                        <div className="grid gap-4">
+                          {selectedInvestigation.targets.map((target: ExtendedOSINTTarget) => (
+                            <Card key={target.id} className="hover:shadow-md transition-shadow">
+                              <CardContent className="pt-4">
+                                <div className="flex items-start justify-between">
+                                  <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline">{target.type}</Badge>
+                                      <span className="font-medium">{target.value}</span>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">{target.description}</p>
+                                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                      <span>Added: {target.addedAt}</span>
+                                      <span>Priority: {target.priority}</span>
+                                      <span>Status: {target.status}</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm">
+                                      <Search className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                      <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                                
+                                {target.relatedFindings && target.relatedFindings.length > 0 && (
+                                  <div className="mt-4 p-3 bg-muted/30 rounded-lg">
+                                    <Label className="text-xs font-medium">Related Findings</Label>
+                                    <div className="mt-2 space-y-1">
+                                      {target.relatedFindings.map((finding, idx) => (
+                                        <div key={idx} className="text-xs flex items-center gap-2">
+                                          <Badge variant="secondary" className="text-xs">{finding.source}</Badge>
+                                          <span className="text-muted-foreground">{finding.summary}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                            <Card key={target.id} className="hover:shadow-md transition-shadow">
+                              <CardContent className="pt-4">
+                                <div className="flex items-start justify-between">
+                                  <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline">{target.type}</Badge>
+                                      <span className="font-medium">{target.value}</span>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">{target.description}</p>
+                                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                      <span>Added: {target.addedAt}</span>
+                                      <span>Priority: {target.priority}</span>
+                                      <span>Status: {target.status}</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm">
+                                      <Search className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                      <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                                
+                                {target.relatedFindings && target.relatedFindings.length > 0 && (
+                                  <div className="mt-4 p-3 bg-muted/30 rounded-lg">
+                                    <Label className="text-xs font-medium">Related Findings</Label>
+                                    <div className="mt-2 space-y-1">
+                                      {target.relatedFindings.map((finding, idx) => (
+                                        <div key={idx} className="text-xs flex items-center gap-2">
+                                          <Badge variant="secondary" className="text-xs">{finding.source}</Badge>
+                                          <span className="text-muted-foreground">{finding.summary}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </TabsContent>
+
+                      {/* OSINT Tools Configuration */}
+                      <TabsContent value="tools" className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold">OSINT Tool Suite</h3>
+                          <Button onClick={() => setShowToolConfigDialog(true)}>
+                            <Settings className="h-4 w-4 mr-2" />
+                            Configure Tools
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {osintTools.map((tool, index) => (
+                        <Card key={index} className={`transition-all ${tool.enabled ? 'ring-1 ring-blue-500' : ''}`}>
+                              <CardHeader className="pb-3">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className={`w-3 h-3 rounded-full ${tool.enabled ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                                    <CardTitle className="text-sm">{tool.name}</CardTitle>
+                                  </div>
+                          <Switch
+                            checked={tool.enabled}
+                            onCheckedChange={(checked) => toggleOSINTTool(tool.name, checked)}
+                          />
+                                </div>
+                                <CardDescription className="text-xs">{tool.description}</CardDescription>
+                              </CardHeader>
+                              <CardContent className="pt-0">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-xs">
+                            <span>Category:</span>
+                            <Badge variant="outline" className="text-xs">{tool.category}</Badge>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span>Reliability:</span>
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                              ))}
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span>Last Run:</span>
+                            <span className="text-muted-foreground">Never</span>
+                          </div>
+                        </div>
+                                
+                        {tool.enabled && (
+                          <div className="mt-3 space-y-2">
+                            <Button variant="outline" size="sm" className="w-full">
+                              <Play className="h-3 w-3 mr-2" />
+                              Run Tool
+                            </Button>
+                            <div className="text-xs">
+                              <span className="text-muted-foreground">Latest findings: </span>
+                              <span className="font-medium">0 results</span>
+                            </div>
+                          </div>
+                        )}
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </TabsContent>
+
+                      {/* Evidence Management */}
+                      <TabsContent value="evidence" className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold">Evidence Collection</h3>
+                          <div className="flex gap-2">
+                            <Button variant="outline" onClick={() => setShowEvidenceFilter(!showEvidenceFilter)}>
+                              <Filter className="h-4 w-4 mr-2" />
+                              Filter
+                            </Button>
+                            <Button onClick={() => setShowAddEvidenceDialog(true)}>
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add Evidence
+                            </Button>
+                          </div>
+                        </div>
+
+                        {showEvidenceFilter && (
+                          <Card>
+                            <CardContent className="pt-4">
+                              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <Select value={evidenceFilter.type} onValueChange={(value) => setEvidenceFilter({...evidenceFilter, type: value})}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Evidence Type" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="all">All Types</SelectItem>
+                                    <SelectItem value="document">Documents</SelectItem>
+                                    <SelectItem value="image">Images</SelectItem>
+                                    <SelectItem value="data">Data</SelectItem>
+                                    <SelectItem value="communication">Communications</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                
+                                <Select value={evidenceFilter.source} onValueChange={(value) => setEvidenceFilter({...evidenceFilter, source: value})}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Source" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="all">All Sources</SelectItem>
+                                    <SelectItem value="social-media">Social Media</SelectItem>
+                                    <SelectItem value="public-records">Public Records</SelectItem>
+                                    <SelectItem value="technical">Technical Analysis</SelectItem>
+                                    <SelectItem value="manual">Manual Collection</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                
+                                <Select value={evidenceFilter.reliability} onValueChange={(value) => setEvidenceFilter({...evidenceFilter, reliability: value})}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Reliability" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="all">All Levels</SelectItem>
+                                    <SelectItem value="high">High</SelectItem>
+                                    <SelectItem value="medium">Medium</SelectItem>
+                                    <SelectItem value="low">Low</SelectItem>
+                                    <SelectItem value="unverified">Unverified</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                
+                                <Button variant="outline" onClick={() => setEvidenceFilter({type: 'all', source: 'all', reliability: 'all'})}>
+                                  Clear Filters
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+
+                        <div className="grid gap-4">
+                          {filteredEvidence.map((evidence) => (
+                            <Card key={evidence.id} className="hover:shadow-md transition-shadow">
+                              <CardContent className="pt-4">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1 space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline">{evidence.type}</Badge>
+                                      <Badge variant="secondary">{evidence.source}</Badge>
+                                      <Badge 
+                                        variant={evidence.reliability === 'high' ? 'default' : 
+                                               evidence.reliability === 'medium' ? 'secondary' : 'outline'}
+                                      >
+                                        {evidence.reliability} reliability
+                                      </Badge>
+                                    </div>
+                                    <h4 className="font-medium">{evidence.title}</h4>
+                                    <p className="text-sm text-muted-foreground">{evidence.description}</p>
+                                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                      <span>Collected: {evidence.collectedAt}</span>
+                                      <span>Size: {evidence.size}</span>
+                                      <span>Hash: {evidence.hash?.substring(0, 16)}...</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm">
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                      <Download className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                      <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                                
+                                {evidence.tags && evidence.tags.length > 0 && (
+                                  <div className="mt-3 flex flex-wrap gap-1">
+                                    {evidence.tags.map((tag, idx) => (
+                                      <Badge key={idx} variant="outline" className="text-xs">
+                                        {tag}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                )}
+                                
+                                {evidence.analysis && (
+                                  <div className="mt-3 p-3 bg-muted/30 rounded-lg">
+                                    <Label className="text-xs font-medium">Analysis Notes</Label>
+                                    <p className="mt-1 text-xs text-muted-foreground">{evidence.analysis}</p>
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </TabsContent>
+
+                      {/* Investigation Timeline */}
+                      <TabsContent value="timeline" className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold">Investigation Timeline</h3>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Calendar className="h-4 w-4 mr-2" />
+                              Date Range
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Download className="h-4 w-4 mr-2" />
+                              Export Timeline
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Card>
+                          <CardContent className="pt-4">
+                            <ScrollArea className="h-[500px]">
+                              <div className="space-y-4">
+                                {timelineEvents.map((event, index) => (
+                                  <div key={event.id} className="flex items-start space-x-4">
+                                    <div className="flex flex-col items-center">
+                                      <div className={`w-3 h-3 rounded-full ${
+                                        event.type === 'target-added' ? 'bg-blue-500' :
+                                        event.type === 'evidence-collected' ? 'bg-green-500' :
+                                        event.type === 'tool-executed' ? 'bg-orange-500' :
+                                        event.type === 'analysis-completed' ? 'bg-purple-500' :
+                                        'bg-gray-500'
+                                      }`}></div>
+                                      {index < timelineEvents.length - 1 && (
+                                        <div className="w-px h-12 bg-border mt-2"></div>
+                                      )}
+                                    </div>
+                                    <div className="flex-1 pb-4">
+                                      <div className="flex items-center justify-between">
+                                        <h4 className="font-medium text-sm">{event.title}</h4>
+                                        <span className="text-xs text-muted-foreground">{event.timestamp}</span>
+                                      </div>
+                                      <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
+                                      {event.metadata && (
+                                        <div className="mt-2 flex flex-wrap gap-1">
+                                          {Object.entries(event.metadata).map(([key, value]) => (
+                                            <Badge key={key} variant="outline" className="text-xs">
+                                              {key}: {String(value)}
+                                            </Badge>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </ScrollArea>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+
+                      {/* Investigation Report */}
+                      <TabsContent value="report" className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold">Investigation Report</h3>
+                          <div className="flex gap-2">
+                            <Button variant="outline">
+                              <FileText className="h-4 w-4 mr-2" />
+                              Generate PDF
+                            </Button>
+                            <Button>
+                              <Share className="h-4 w-4 mr-2" />
+                              Share Report
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="grid gap-6">
+                          {/* Executive Summary */}
+                          <Card>
+                            <CardHeader>
+                              <CardTitle className="text-base">Executive Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <Textarea
+                                value={reportSummary}
+                                onChange={(e) => setReportSummary(e.target.value)}
+                                placeholder="Provide a high-level summary of the investigation findings..."
+                                rows={4}
+                              />
+                            </CardContent>
+                          </Card>
+
+                          {/* Key Findings */}
+                          <Card>
+                            <CardHeader>
+                              <CardTitle className="text-base">Key Findings</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-4">
+                                {keyFindings.map((finding, index) => (
+                                  <div key={index} className="flex items-start space-x-3 p-3 bg-muted/30 rounded-lg">
+                                    <Badge variant={finding.severity === 'high' ? 'destructive' : finding.severity === 'medium' ? 'default' : 'secondary'}>
+                                      {finding.severity}
+                                    </Badge>
+                                    <div className="flex-1">
+                                      <h4 className="font-medium">{finding.title}</h4>
+                                      <p className="text-sm text-muted-foreground mt-1">{finding.description}</p>
+                                      <div className="mt-2 flex items-center gap-2">
+                                        <Badge variant="outline" className="text-xs">{finding.source}</Badge>
+                                        <span className="text-xs text-muted-foreground">Confidence: {finding.confidence}%</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                                <Button variant="outline" className="w-full">
+                                  <Plus className="h-4 w-4 mr-2" />
+                                  Add Finding
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          {/* Evidence Summary */}
+                          <Card>
+                            <CardHeader>
+                              <CardTitle className="text-base">Evidence Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="text-center p-3 bg-muted/30 rounded-lg">
+                                  <div className="text-2xl font-bold">{selectedInvestigation.evidence.length}</div>
+                                  <div className="text-xs text-muted-foreground">Total Items</div>
+                                </div>
+                                <div className="text-center p-3 bg-muted/30 rounded-lg">
+                                  <div className="text-2xl font-bold text-green-600">
+                                    {selectedInvestigation.evidence.filter(e => e.reliability === 'high').length}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">High Reliability</div>
+                                </div>
+                                <div className="text-center p-3 bg-muted/30 rounded-lg">
+                                  <div className="text-2xl font-bold text-blue-600">
+                                    {selectedInvestigation.evidence.filter(e => e.type === 'document').length}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">Documents</div>
+                                </div>
+                                <div className="text-center p-3 bg-muted/30 rounded-lg">
+                                  <div className="text-2xl font-bold text-purple-600">
+                                    {selectedInvestigation.evidence.filter(e => e.source === 'social-media').length}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">Social Media</div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          {/* Recommendations */}
+                          <Card>
+                            <CardHeader>
+                              <CardTitle className="text-base">Recommendations</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-3">
+                                {recommendations.map((rec, index) => (
+                                  <div key={index} className="flex items-start space-x-3">
+                                    <div className="w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-medium">
+                                      {index + 1}
+                                    </div>
+                                    <div className="flex-1">
+                                      <h4 className="font-medium">{rec.title}</h4>
+                                      <p className="text-sm text-muted-foreground mt-1">{rec.description}</p>
+                                      <Badge variant="outline" className="text-xs mt-2">{rec.priority}</Badge>
+                                    </div>
+                                  </div>
+                                ))}
+                                <Button variant="outline" className="w-full">
+                                  <Plus className="h-4 w-4 mr-2" />
+                                  Add Recommendation
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                  ) : (
+                    <Card className="h-[600px] flex items-center justify-center">
+                      <div className="text-center space-y-4">
+                        <Search className="h-16 w-16 text-muted-foreground mx-auto" />
+                        <div>
+                          <h3 className="text-lg font-semibold">No Investigation Selected</h3>
+                          <p className="text-muted-foreground">Create a new investigation or select an existing one to get started</p>
+                        </div>
+                        <Button onClick={() => setShowNewInvestigationDialog(true)}>
+                          Start New Investigation
+                        </Button>
+                      </div>
+                    </Card>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Recent Investigations</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ScrollArea className="h-[300px]">
+                      <div className="space-y-2">
+                        {[...activeInvestigations, ...completedInvestigations].map((investigation) => (
+                          <div
+                            key={investigation.id}
+                            className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                              selectedInvestigation?.id === investigation.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-muted/50'
+                            }`}
+                            onClick={() => setSelectedInvestigation(investigation)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-sm">{investigation.name}</span>
+                              <Badge variant={investigation.status === 'active' ? 'default' : 'secondary'} className="text-xs">
+                                {investigation.status}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{investigation.description}</p>
+                            <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
+                              <span>{investigation.targets.length} targets</span>
+                              <span>{investigation.updatedAt}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             <TabsContent value="intelligence" className="space-y-6">
