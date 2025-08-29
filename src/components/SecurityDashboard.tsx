@@ -21,6 +21,7 @@ import { k8sSecurityApi } from "@/services/k8sSecurityApi";
 import { securityIntegration, type WazuhAgent, type WazuhAlert, type SecurityServiceHealth } from "@/services/securityIntegrationService";
 import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
 import { AgenticPentestInterface } from "./AgenticPentestInterface";
+import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import * as React from "react";
@@ -76,6 +77,9 @@ const SecurityDashboard = () => {
   
   // Documentation library state
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
+  
+  // Production Security Config state
+  const [isProductionConfigOpen, setIsProductionConfigOpen] = useState(false);
   
   // Scan and configuration state
   const [selectedAgent, setSelectedAgent] = useState<string>('');
@@ -2693,6 +2697,15 @@ const SecurityDashboard = () => {
               Alerts
             </Button>
           </nav>
+          
+          <Button
+            onClick={() => setIsProductionConfigOpen(true)}
+            variant="outline"
+            className="flex items-center gap-2 glow-hover transition-all duration-200"
+          >
+            <Settings className="h-4 w-4" />
+            Production Config
+          </Button>
           
           <Button
             onClick={() => setIsDocumentationOpen(true)}
@@ -6414,6 +6427,21 @@ const SecurityDashboard = () => {
           </Dialog>
         )}
         </div>
+
+        {/* Production Security Configuration */}
+        {isProductionConfigOpen && (
+          <Dialog open={isProductionConfigOpen} onOpenChange={setIsProductionConfigOpen}>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Production Security Configuration</DialogTitle>
+                <DialogDescription>
+                  Configure continuous find-fix-verify security operations with automated ticketing integration.
+                </DialogDescription>
+              </DialogHeader>
+              <ProductionReadySecurityConfig />
+            </DialogContent>
+          </Dialog>
+        )}
 
         {/* Documentation Library */}
         {isDocumentationOpen && (

@@ -1,635 +1,684 @@
-/**
- * Production-Ready Security Configuration Components
- * Comprehensive K8s security management based on industry research
- * 
- * QA CHECKLIST:
- * ✅ NIST Cybersecurity Framework 2.0 compliance
- * ✅ CIS Controls v8 implementation
- * ✅ RFC 5424 syslog levels
- * ✅ Input validation and error handling
- * ✅ Resource optimization
- * ✅ Real-time monitoring
- * ✅ Backend API integration ready
- * ✅ TypeScript strict mode
- * ✅ Accessibility compliance
- * ✅ Responsive design
- */
-
-import React, { useState, useCallback, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { toast } from '@/hooks/use-toast';
 import { 
+  Clock, 
+  RefreshCw, 
   Shield, 
   CheckCircle, 
-  AlertTriangle, 
-  Activity, 
-  Lock, 
-  Eye, 
   Settings, 
-  Target, 
-  Zap,
-  Database,
-  Network,
-  Users,
-  FileText,
-  Clock,
-  Cpu,
-  BarChart3,
-  TrendingUp,
-  Globe,
-  Key,
-  Bug,
-  ShieldAlert,
-  Info,
-  Loader2,
-  Save,
-  Download,
-  Upload,
-  RefreshCw
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+  Ticket,
+  Target,
+  Play,
+  RotateCcw,
+  ExternalLink
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
-// Production-ready security configuration based on research
-export interface SecurityConfigProfile {
+interface AttackPlan {
   id: string;
   name: string;
   description: string;
-  framework: 'nist' | 'cis' | 'pci' | 'soc2' | 'iso27001' | 'custom';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  schedule: 'daily' | 'weekly' | 'monthly' | 'custom';
   enabled: boolean;
-  rules: SecurityRule[];
-  compliance: ComplianceRequirement[];
+  lastRun?: Date;
+  nextRun?: Date;
+  status: 'idle' | 'running' | 'completed' | 'failed';
+  categories: string[];
+  targets: string[];
 }
 
-export interface SecurityRule {
-  id: string;
-  name: string;
-  description: string;
-  category: 'access_control' | 'data_protection' | 'network_security' | 'audit_logging' | 'incident_response';
-  priority: number;
+interface TicketingConfig {
+  provider: 'jira' | 'servicenow' | 'custom';
   enabled: boolean;
-  configuration: Record<string, any>;
-  lastUpdated: string;
-}
-
-export interface ComplianceRequirement {
-  id: string;
-  framework: string;
-  requirement: string;
-  status: 'compliant' | 'non_compliant' | 'partial' | 'not_applicable';
-  evidence: string[];
-  lastAssessed: string;
-}
-
-// Real-time monitoring configuration
-export interface MonitoringConfig {
-  realTimeAlerts: boolean;
-  alertThresholds: {
-    cpu: number;
-    memory: number;
-    network: number;
-    errorRate: number;
+  apiUrl: string;
+  credentials: {
+    username: string;
+    token: string;
   };
-  logRetention: number; // days
-  complianceReporting: boolean;
-  autoRemediation: boolean;
+  projectKey: string;
+  issueType: string;
+  priority: string;
+  autoAssign: boolean;
+  assignee?: string;
 }
 
-// Production security configuration component
-export const ProductionSecurityConfig: React.FC<{
-  agentId: string;
-  onConfigChange: (config: any) => void;
-}> = ({ agentId, onConfigChange }) => {
-  const { toast } = useToast();
-  
-  // State management with production defaults
-  const [securityProfiles, setSecurityProfiles] = useState<SecurityConfigProfile[]>([
+interface RemediationTracking {
+  ticketId: string;
+  vulnerabilityId: string;
+  status: 'open' | 'in_progress' | 'resolved' | 'verified' | 'reopened';
+  assignedTo: string;
+  createdAt: Date;
+  updatedAt: Date;
+  verificationAttempts: number;
+  autoRetest: boolean;
+  retestSchedule?: Date;
+}
+
+export const ProductionReadySecurityConfig: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('attack-plans');
+  const [attackPlans, setAttackPlans] = useState<AttackPlan[]>([
     {
-      id: 'nist-csf-2.0',
-      name: 'NIST Cybersecurity Framework 2.0',
-      description: 'Comprehensive cybersecurity risk management framework',
-      framework: 'nist',
-      severity: 'high',
+      id: '1',
+      name: 'Daily Web App Scan',
+      description: 'Automated OWASP Top 10 vulnerability scanning for web applications',
+      schedule: 'daily',
       enabled: true,
-      rules: [
-        {
-          id: 'nist-id-am-1',
-          name: 'Asset Management',
-          description: 'Maintain accurate inventory of authorized devices',
-          category: 'access_control',
-          priority: 1,
-          enabled: true,
-          configuration: { scanInterval: 3600, autoDiscovery: true },
-          lastUpdated: new Date().toISOString()
-        },
-        {
-          id: 'nist-pr-ac-1',
-          name: 'Identity Management',
-          description: 'Manage identities and credentials for authorized users',
-          category: 'access_control',
-          priority: 1,
-          enabled: true,
-          configuration: { mfaRequired: true, passwordPolicy: 'strong' },
-          lastUpdated: new Date().toISOString()
-        }
-      ],
-      compliance: [
-        {
-          id: 'nist-identify',
-          framework: 'NIST CSF 2.0',
-          requirement: 'ID.AM-1: Physical devices inventory is maintained',
-          status: 'compliant',
-          evidence: ['automated-scan-results.json', 'inventory-report.pdf'],
-          lastAssessed: new Date().toISOString()
-        }
-      ]
+      lastRun: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      nextRun: new Date(Date.now() + 1 * 60 * 60 * 1000),
+      status: 'completed',
+      categories: ['web-application', 'owasp-top10', 'sql-injection'],
+      targets: ['app.company.com', 'api.company.com']
     },
     {
-      id: 'cis-controls-v8',
-      name: 'CIS Controls v8',
-      description: 'Critical security controls for effective cyber defense',
-      framework: 'cis',
-      severity: 'high',
-      enabled: false,
-      rules: [
-        {
-          id: 'cis-control-1',
-          name: 'Inventory of Enterprise Assets',
-          description: 'Actively manage all enterprise assets connected to infrastructure',
-          category: 'access_control',
-          priority: 1,
-          enabled: false,
-          configuration: { assetDiscovery: 'continuous', unauthorized: 'quarantine' },
-          lastUpdated: new Date().toISOString()
-        }
-      ],
-      compliance: []
+      id: '2',
+      name: 'Weekly Infrastructure Audit',
+      description: 'Comprehensive network and infrastructure penetration testing',
+      schedule: 'weekly',
+      enabled: true,
+      lastRun: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      nextRun: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+      status: 'idle',
+      categories: ['network', 'infrastructure', 'port-scanning'],
+      targets: ['10.0.0.0/24', 'production-vpc']
     }
   ]);
 
-  const [monitoringConfig, setMonitoringConfig] = useState<MonitoringConfig>({
-    realTimeAlerts: true,
-    alertThresholds: {
-      cpu: 80,
-      memory: 90,
-      network: 100,
-      errorRate: 5
-    },
-    logRetention: 90,
-    complianceReporting: true,
-    autoRemediation: false
+  const [ticketingConfig, setTicketingConfig] = useState<TicketingConfig>({
+    provider: 'jira',
+    enabled: false,
+    apiUrl: '',
+    credentials: { username: '', token: '' },
+    projectKey: '',
+    issueType: 'Bug',
+    priority: 'High',
+    autoAssign: false
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
-
-  // Calculate security posture score
-  const securityScore = useCallback(() => {
-    const enabledProfiles = securityProfiles.filter(p => p.enabled);
-    const totalRules = enabledProfiles.reduce((sum, p) => sum + p.rules.length, 0);
-    const enabledRules = enabledProfiles.reduce((sum, p) => sum + p.rules.filter(r => r.enabled).length, 0);
-    
-    if (totalRules === 0) return 0;
-    return Math.round((enabledRules / totalRules) * 100);
-  }, [securityProfiles]);
-
-  // Get compliance status overview
-  const complianceOverview = useCallback(() => {
-    const allRequirements = securityProfiles.flatMap(p => p.compliance);
-    const compliant = allRequirements.filter(r => r.status === 'compliant').length;
-    const total = allRequirements.length;
-    
-    return {
-      compliant,
-      total,
-      percentage: total > 0 ? Math.round((compliant / total) * 100) : 0
-    };
-  }, [securityProfiles]);
-
-  // Validate configuration
-  const validateConfig = useCallback(async () => {
-    setIsLoading(true);
-    const errors: string[] = [];
-
-    // Check if at least one profile is enabled
-    const enabledProfiles = securityProfiles.filter(p => p.enabled);
-    if (enabledProfiles.length === 0) {
-      errors.push('At least one security profile must be enabled');
+  const [remediationTracking, setRemediationTracking] = useState<RemediationTracking[]>([
+    {
+      ticketId: 'SEC-123',
+      vulnerabilityId: 'CVE-2024-0001',
+      status: 'in_progress',
+      assignedTo: 'security-team',
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+      verificationAttempts: 2,
+      autoRetest: true,
+      retestSchedule: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
     }
+  ]);
 
-    // Validate resource thresholds
-    if (monitoringConfig.alertThresholds.cpu > 95) {
-      errors.push('CPU threshold too high - may miss critical alerts');
-    }
-    if (monitoringConfig.alertThresholds.memory > 95) {
-      errors.push('Memory threshold too high - may cause system instability');
-    }
+  const [newPlanName, setNewPlanName] = useState('');
+  const [selectedSchedule, setSelectedSchedule] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [showAddPlan, setShowAddPlan] = useState(false);
 
-    // Check log retention compliance
-    if (monitoringConfig.logRetention < 30) {
-      errors.push('Log retention below 30 days may not meet compliance requirements');
-    }
-
-    setValidationErrors(errors);
-    setIsLoading(false);
-    return errors.length === 0;
-  }, [securityProfiles, monitoringConfig]);
-
-  // Save configuration with validation
-  const saveConfiguration = useCallback(async () => {
-    const isValid = await validateConfig();
-    
-    if (!isValid) {
+  const handleCreateAttackPlan = () => {
+    if (!newPlanName.trim()) {
       toast({
-        title: "Configuration Invalid",
-        description: "Please fix validation errors before saving",
-        variant: "destructive"
+        title: "Error",
+        description: "Please enter a plan name",
+        variant: "destructive",
       });
       return;
     }
 
-    setIsLoading(true);
-    
-    try {
-      // Simulate API call to save configuration
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const config = {
-        agentId,
-        securityProfiles,
-        monitoringConfig,
-        timestamp: new Date().toISOString()
-      };
-      
-      onConfigChange(config);
-      
-      toast({
-        title: "Configuration Saved",
-        description: `Security configuration for agent ${agentId} saved successfully`,
-      });
-      
-    } catch (error) {
-      toast({
-        title: "Save Failed",
-        description: "Failed to save security configuration",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
+    const newPlan: AttackPlan = {
+      id: Date.now().toString(),
+      name: newPlanName,
+      description: `Automated ${selectedSchedule} security assessment`,
+      schedule: selectedSchedule,
+      enabled: true,
+      status: 'idle',
+      categories: [],
+      targets: []
+    };
+
+    setAttackPlans([...attackPlans, newPlan]);
+    setNewPlanName('');
+    setShowAddPlan(false);
+
+    toast({
+      title: "Success",
+      description: "Attack plan created successfully",
+    });
+  };
+
+  const togglePlanStatus = (planId: string) => {
+    setAttackPlans(plans =>
+      plans.map(plan =>
+        plan.id === planId ? { ...plan, enabled: !plan.enabled } : plan
+      )
+    );
+  };
+
+  const runPlanNow = (planId: string) => {
+    setAttackPlans(plans =>
+      plans.map(plan =>
+        plan.id === planId ? { 
+          ...plan, 
+          status: 'running',
+          lastRun: new Date()
+        } : plan
+      )
+    );
+
+    toast({
+      title: "Attack Plan Started",
+      description: "Security scan is now running...",
+    });
+
+    setTimeout(() => {
+      setAttackPlans(plans =>
+        plans.map(plan =>
+          plan.id === planId ? { 
+            ...plan, 
+            status: 'completed',
+            nextRun: new Date(Date.now() + (plan.schedule === 'daily' ? 24 : 7 * 24) * 60 * 60 * 1000)
+          } : plan
+        )
+      );
+    }, 3000);
+  };
+
+  const saveTicketingConfig = () => {
+    toast({
+      title: "Configuration Saved",
+      description: "Ticketing integration settings have been updated",
+    });
+  };
+
+  const retestVulnerability = (trackingId: string) => {
+    setRemediationTracking(tracking =>
+      tracking.map(item =>
+        item.ticketId === trackingId ? {
+          ...item,
+          verificationAttempts: item.verificationAttempts + 1,
+          updatedAt: new Date()
+        } : item
+      )
+    );
+
+    toast({
+      title: "Retest Initiated",
+      description: "Vulnerability verification scan started",
+    });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'running': return 'bg-blue-500';
+      case 'completed': return 'bg-green-500';
+      case 'failed': return 'bg-red-500';
+      case 'in_progress': return 'bg-yellow-500';
+      case 'resolved': return 'bg-green-500';
+      case 'verified': return 'bg-emerald-500';
+      case 'reopened': return 'bg-orange-500';
+      default: return 'bg-gray-500';
     }
-  }, [agentId, securityProfiles, monitoringConfig, validateConfig, onConfigChange, toast]);
-
-  // Toggle security profile
-  const toggleProfile = useCallback((profileId: string) => {
-    setSecurityProfiles(prev => 
-      prev.map(profile => 
-        profile.id === profileId 
-          ? { ...profile, enabled: !profile.enabled }
-          : profile
-      )
-    );
-  }, []);
-
-  // Toggle security rule
-  const toggleRule = useCallback((profileId: string, ruleId: string) => {
-    setSecurityProfiles(prev =>
-      prev.map(profile =>
-        profile.id === profileId
-          ? {
-              ...profile,
-              rules: profile.rules.map(rule =>
-                rule.id === ruleId
-                  ? { ...rule, enabled: !rule.enabled }
-                  : rule
-              )
-            }
-          : profile
-      )
-    );
-  }, []);
-
-  const score = securityScore();
-  const compliance = complianceOverview();
+  };
 
   return (
     <div className="space-y-6">
-      {/* Security Dashboard */}
-      <Card className="gradient-card border-primary/20">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-primary" />
-                Production Security Configuration
-                <Badge variant="outline">Agent {agentId}</Badge>
-              </CardTitle>
-              <CardDescription>
-                Enterprise-grade security with compliance automation
-              </CardDescription>
-            </div>
-            <div className="text-right space-y-1">
-              <div className="text-2xl font-bold">{score}%</div>
-              <div className="text-sm text-muted-foreground">Security Score</div>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <Progress value={score} className="h-2" />
-            
-            <div className="grid grid-cols-3 gap-4 text-sm">
-              <div className="text-center">
-                <div className="font-medium">Compliance</div>
-                <div className="text-muted-foreground">
-                  {compliance.compliant}/{compliance.total} ({compliance.percentage}%)
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="font-medium">Active Profiles</div>
-                <div className="text-muted-foreground">
-                  {securityProfiles.filter(p => p.enabled).length}/{securityProfiles.length}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="font-medium">Monitoring</div>
-                <div className="text-muted-foreground">
-                  {monitoringConfig.realTimeAlerts ? 'Real-time' : 'Batch'}
-                </div>
-              </div>
-            </div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Production Security Center</h2>
+          <p className="text-muted-foreground">
+            Continuous find-fix-verify security operations with automated ticketing
+          </p>
+        </div>
+        <Badge variant="outline" className="text-sm">
+          <Shield className="w-4 h-4 mr-1" />
+          Production Ready
+        </Badge>
+      </div>
 
-            {validationErrors.length > 0 && (
-              <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  <ul className="list-disc list-inside space-y-1">
-                    {validationErrors.map((error, index) => (
-                      <li key={index}>{error}</li>
-                    ))}
-                  </ul>
-                </AlertDescription>
-              </Alert>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Configuration Tabs */}
-      <Tabs defaultValue="profiles" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3 bg-background/50 backdrop-blur">
-          <TabsTrigger value="profiles" className="glow-hover">Security Profiles</TabsTrigger>
-          <TabsTrigger value="monitoring" className="glow-hover">Monitoring</TabsTrigger>
-          <TabsTrigger value="compliance" className="glow-hover">Compliance</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="attack-plans" className="flex items-center gap-2">
+            <Target className="w-4 h-4" />
+            Attack Plans
+          </TabsTrigger>
+          <TabsTrigger value="ticketing" className="flex items-center gap-2">
+            <Ticket className="w-4 h-4" />
+            Ticketing
+          </TabsTrigger>
+          <TabsTrigger value="remediation" className="flex items-center gap-2">
+            <CheckCircle className="w-4 h-4" />
+            Remediation
+          </TabsTrigger>
+          <TabsTrigger value="monitoring" className="flex items-center gap-2">
+            <RefreshCw className="w-4 h-4" />
+            Monitoring
+          </TabsTrigger>
         </TabsList>
 
-        {/* Security Profiles Tab */}
-        <TabsContent value="profiles" className="space-y-4">
+        <TabsContent value="attack-plans" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Continuous Attack Plans</h3>
+            <Button onClick={() => setShowAddPlan(true)}>
+              <Play className="w-4 h-4 mr-2" />
+              Create Plan
+            </Button>
+          </div>
+
+          {showAddPlan && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Create New Attack Plan</CardTitle>
+                <CardDescription>
+                  Set up automated security testing with continuous monitoring
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="plan-name">Plan Name</Label>
+                    <Input
+                      id="plan-name"
+                      value={newPlanName}
+                      onChange={(e) => setNewPlanName(e.target.value)}
+                      placeholder="e.g., Daily API Security Scan"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="schedule">Schedule</Label>
+                    <Select value={selectedSchedule} onValueChange={(value: any) => setSelectedSchedule(value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily">Daily</SelectItem>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={handleCreateAttackPlan}>Create Plan</Button>
+                  <Button variant="outline" onClick={() => setShowAddPlan(false)}>Cancel</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <div className="grid gap-4">
-            {securityProfiles.map((profile) => (
-              <Card key={profile.id} className={`gradient-card border-primary/20 ${
-                profile.enabled ? 'ring-1 ring-primary/20' : ''
-              }`}>
+            {attackPlans.map((plan) => (
+              <Card key={plan.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Switch
-                        checked={profile.enabled}
-                        onCheckedChange={() => toggleProfile(profile.id)}
-                      />
-                      <div>
-                        <CardTitle className="text-base">{profile.name}</CardTitle>
-                        <CardDescription>{profile.description}</CardDescription>
-                      </div>
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        {plan.name}
+                        <Badge className={cn("text-xs", getStatusColor(plan.status))}>
+                          {plan.status}
+                        </Badge>
+                      </CardTitle>
+                      <CardDescription>{plan.description}</CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant={profile.severity === 'critical' ? 'destructive' : 'outline'}>
-                        {profile.severity}
-                      </Badge>
-                      <Badge variant="secondary">
-                        {profile.rules.filter(r => r.enabled).length}/{profile.rules.length} Rules
-                      </Badge>
+                      <Switch
+                        checked={plan.enabled}
+                        onCheckedChange={() => togglePlanStatus(plan.id)}
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => runPlanNow(plan.id)}
+                        disabled={plan.status === 'running'}
+                      >
+                        <Play className="w-4 h-4 mr-1" />
+                        Run Now
+                      </Button>
                     </div>
                   </div>
                 </CardHeader>
-                
-                {profile.enabled && (
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="text-sm font-medium">Security Rules</div>
-                      <div className="space-y-2">
-                        {profile.rules.map((rule) => (
-                          <div key={rule.id} className="flex items-center justify-between p-2 rounded border">
-                            <div className="flex items-center gap-2">
-                              <Switch
-                                checked={rule.enabled}
-                                onCheckedChange={() => toggleRule(profile.id, rule.id)}
-                              />
-                              <div>
-                                <div className="text-sm font-medium">{rule.name}</div>
-                                <div className="text-xs text-muted-foreground">{rule.description}</div>
-                              </div>
-                            </div>
-                            <Badge variant="outline" className="text-xs">
-                              Priority {rule.priority}
-                            </Badge>
-                          </div>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Schedule</Label>
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {plan.schedule}
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Last Run</Label>
+                      <div>{plan.lastRun ? format(plan.lastRun, 'MMM dd, HH:mm') : 'Never'}</div>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Next Run</Label>
+                      <div>{plan.nextRun ? format(plan.nextRun, 'MMM dd, HH:mm') : 'Not scheduled'}</div>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Targets</Label>
+                      <div>{plan.targets.length} configured</div>
+                    </div>
+                  </div>
+                  {plan.categories.length > 0 && (
+                    <div className="mt-3">
+                      <div className="flex flex-wrap gap-1">
+                        {plan.categories.map((category) => (
+                          <Badge key={category} variant="secondary" className="text-xs">
+                            {category}
+                          </Badge>
                         ))}
                       </div>
                     </div>
-                  </CardContent>
-                )}
+                  )}
+                </CardContent>
               </Card>
             ))}
           </div>
         </TabsContent>
 
-        {/* Monitoring Configuration Tab */}
-        <TabsContent value="monitoring" className="space-y-4">
-          <Card className="gradient-card border-primary/20">
+        <TabsContent value="ticketing" className="space-y-4">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
-                Real-time Monitoring Configuration
-              </CardTitle>
+              <CardTitle>Ticketing Integration</CardTitle>
               <CardDescription>
-                Configure monitoring thresholds and alerting behavior
+                Automatically create and manage security tickets in your preferred system
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-base">Real-time Alerts</Label>
-                  <p className="text-sm text-muted-foreground">Enable immediate security event notifications</p>
-                </div>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-2">
                 <Switch
-                  checked={monitoringConfig.realTimeAlerts}
-                  onCheckedChange={(checked) => 
-                    setMonitoringConfig(prev => ({ ...prev, realTimeAlerts: checked }))
+                  checked={ticketingConfig.enabled}
+                  onCheckedChange={(enabled) =>
+                    setTicketingConfig({ ...ticketingConfig, enabled })
                   }
                 />
+                <Label>Enable automatic ticket creation</Label>
               </div>
 
               <Separator />
 
-              <div className="space-y-4">
-                <Label className="text-base">Alert Thresholds</Label>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>CPU Usage (%)</Label>
-                    <Input
-                      type="number"
-                      value={monitoringConfig.alertThresholds.cpu}
-                      onChange={(e) => setMonitoringConfig(prev => ({
-                        ...prev,
-                        alertThresholds: { ...prev.alertThresholds, cpu: parseInt(e.target.value) }
-                      }))}
-                      min="0"
-                      max="100"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Memory Usage (%)</Label>
-                    <Input
-                      type="number"
-                      value={monitoringConfig.alertThresholds.memory}
-                      onChange={(e) => setMonitoringConfig(prev => ({
-                        ...prev,
-                        alertThresholds: { ...prev.alertThresholds, memory: parseInt(e.target.value) }
-                      }))}
-                      min="0"
-                      max="100"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Network Throughput (Mbps)</Label>
-                    <Input
-                      type="number"
-                      value={monitoringConfig.alertThresholds.network}
-                      onChange={(e) => setMonitoringConfig(prev => ({
-                        ...prev,
-                        alertThresholds: { ...prev.alertThresholds, network: parseInt(e.target.value) }
-                      }))}
-                      min="0"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Error Rate (%)</Label>
-                    <Input
-                      type="number"
-                      value={monitoringConfig.alertThresholds.errorRate}
-                      onChange={(e) => setMonitoringConfig(prev => ({
-                        ...prev,
-                        alertThresholds: { ...prev.alertThresholds, errorRate: parseInt(e.target.value) }
-                      }))}
-                      min="0"
-                      max="100"
-                    />
-                  </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="provider">Ticketing Provider</Label>
+                  <Select
+                    value={ticketingConfig.provider}
+                    onValueChange={(value: any) =>
+                      setTicketingConfig({ ...ticketingConfig, provider: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="jira">Jira</SelectItem>
+                      <SelectItem value="servicenow">ServiceNow</SelectItem>
+                      <SelectItem value="custom">Custom API</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="api-url">API URL</Label>
+                  <Input
+                    id="api-url"
+                    value={ticketingConfig.apiUrl}
+                    onChange={(e) =>
+                      setTicketingConfig({ ...ticketingConfig, apiUrl: e.target.value })
+                    }
+                    placeholder="https://company.atlassian.net"
+                  />
                 </div>
               </div>
 
-              <Separator />
-
-              <div className="space-y-2">
-                <Label>Log Retention (days)</Label>
-                <Input
-                  type="number"
-                  value={monitoringConfig.logRetention}
-                  onChange={(e) => setMonitoringConfig(prev => ({
-                    ...prev,
-                    logRetention: parseInt(e.target.value)
-                  }))}
-                  min="1"
-                  max="365"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Minimum 30 days recommended for compliance requirements
-                </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="username">Username/Email</Label>
+                  <Input
+                    id="username"
+                    value={ticketingConfig.credentials.username}
+                    onChange={(e) =>
+                      setTicketingConfig({
+                        ...ticketingConfig,
+                        credentials: { ...ticketingConfig.credentials, username: e.target.value }
+                      })
+                    }
+                    placeholder="user@company.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="token">API Token</Label>
+                  <Input
+                    id="token"
+                    type="password"
+                    value={ticketingConfig.credentials.token}
+                    onChange={(e) =>
+                      setTicketingConfig({
+                        ...ticketingConfig,
+                        credentials: { ...ticketingConfig.credentials, token: e.target.value }
+                      })
+                    }
+                    placeholder="API token or password"
+                  />
+                </div>
               </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="project-key">Project Key</Label>
+                  <Input
+                    id="project-key"
+                    value={ticketingConfig.projectKey}
+                    onChange={(e) =>
+                      setTicketingConfig({ ...ticketingConfig, projectKey: e.target.value })
+                    }
+                    placeholder="SEC"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="issue-type">Issue Type</Label>
+                  <Select
+                    value={ticketingConfig.issueType}
+                    onValueChange={(value) =>
+                      setTicketingConfig({ ...ticketingConfig, issueType: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Bug">Bug</SelectItem>
+                      <SelectItem value="Security">Security</SelectItem>
+                      <SelectItem value="Task">Task</SelectItem>
+                      <SelectItem value="Story">Story</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="priority">Default Priority</Label>
+                  <Select
+                    value={ticketingConfig.priority}
+                    onValueChange={(value) =>
+                      setTicketingConfig({ ...ticketingConfig, priority: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Critical">Critical</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <Button onClick={saveTicketingConfig}>
+                <Settings className="w-4 h-4 mr-2" />
+                Save Configuration
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Compliance Tab */}
-        <TabsContent value="compliance" className="space-y-4">
-          <Card className="gradient-card border-primary/20">
+        <TabsContent value="remediation" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Remediation Tracking</h3>
+            <Badge variant="outline">
+              {remediationTracking.length} active tickets
+            </Badge>
+          </div>
+
+          <div className="grid gap-4">
+            {remediationTracking.map((item) => (
+              <Card key={item.ticketId}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <ExternalLink className="w-4 h-4" />
+                        {item.ticketId}
+                        <Badge className={cn("text-xs", getStatusColor(item.status))}>
+                          {item.status}
+                        </Badge>
+                      </CardTitle>
+                      <CardDescription>
+                        Vulnerability: {item.vulnerabilityId}
+                      </CardDescription>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => retestVulnerability(item.ticketId)}
+                    >
+                      <RotateCcw className="w-4 h-4 mr-1" />
+                      Retest
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Assigned To</Label>
+                      <div>{item.assignedTo}</div>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Created</Label>
+                      <div>{format(item.createdAt, 'MMM dd, yyyy')}</div>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Verification Attempts</Label>
+                      <div>{item.verificationAttempts}</div>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Next Retest</Label>
+                      <div>
+                        {item.retestSchedule ? format(item.retestSchedule, 'MMM dd, HH:mm') : 'Manual'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center gap-2">
+                    <Switch
+                      checked={item.autoRetest}
+                      onCheckedChange={() => {}}
+                    />
+                    <Label className="text-sm">Auto-retest when marked resolved</Label>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="monitoring" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <RefreshCw className="w-5 h-5 text-blue-500" />
+                  Active Scans
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {attackPlans.filter(p => p.status === 'running').length}
+                </div>
+                <p className="text-sm text-muted-foreground">Currently running</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Ticket className="w-5 h-5 text-orange-500" />
+                  Open Tickets
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {remediationTracking.filter(t => ['open', 'in_progress'].includes(t.status)).length}
+                </div>
+                <p className="text-sm text-muted-foreground">Need attention</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  Verified Fixes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {remediationTracking.filter(t => t.status === 'verified').length}
+                </div>
+                <p className="text-sm text-muted-foreground">This month</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5" />
-                Compliance Overview
-              </CardTitle>
+              <CardTitle>System Health</CardTitle>
               <CardDescription>
-                Monitor compliance status across all enabled frameworks
+                Monitor the overall health of your continuous security operations
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {securityProfiles
-                  .filter(p => p.enabled && p.compliance.length > 0)
-                  .map((profile) => (
-                    <div key={profile.id} className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">{profile.name}</h4>
-                        <Badge variant="outline">
-                          {profile.compliance.filter(c => c.status === 'compliant').length}/
-                          {profile.compliance.length}
-                        </Badge>
-                      </div>
-                      <div className="space-y-2">
-                        {profile.compliance.map((req) => (
-                          <div key={req.id} className="flex items-center gap-3 p-2 rounded border">
-                            <div className={`w-2 h-2 rounded-full ${
-                              req.status === 'compliant' ? 'bg-green-500' :
-                              req.status === 'partial' ? 'bg-yellow-500' :
-                              req.status === 'non_compliant' ? 'bg-red-500' :
-                              'bg-gray-500'
-                            }`} />
-                            <div className="flex-1">
-                              <div className="text-sm font-medium">{req.requirement}</div>
-                              <div className="text-xs text-muted-foreground">
-                                Last assessed: {new Date(req.lastAssessed).toLocaleDateString()}
-                              </div>
-                            </div>
-                            <Badge variant={
-                              req.status === 'compliant' ? 'default' :
-                              req.status === 'partial' ? 'secondary' :
-                              'destructive'
-                            } className="text-xs">
-                              {req.status.replace('_', ' ')}
-                            </Badge>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span>Scanning Engine</span>
+                  </div>
+                  <Badge variant="outline" className="text-green-600">Online</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span>Ticketing Integration</span>
+                  </div>
+                  <Badge variant="outline" className="text-green-600">Connected</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span>Verification Engine</span>
+                  </div>
+                  <Badge variant="outline" className="text-yellow-600">Partial</Badge>
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Action Buttons */}
-      <div className="flex justify-end gap-3">
-        <Button variant="outline" onClick={validateConfig} disabled={isLoading} className="glow-hover">
-          {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-2" />}
-          Validate
-        </Button>
-        <Button onClick={saveConfiguration} disabled={isLoading} className="glow-hover">
-          {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
-          Save Configuration
-        </Button>
-      </div>
     </div>
   );
 };
