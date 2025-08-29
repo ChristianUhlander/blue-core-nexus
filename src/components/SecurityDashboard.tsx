@@ -23,6 +23,7 @@ import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
 import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterface";
 import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
+import { AutomaticOSINTAgent } from "./AutomaticOSINTAgent";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import * as React from "react";
@@ -450,6 +451,7 @@ const SecurityDashboard = () => {
   // Penetration Testing state
   const [isPentestOpen, setIsPentestOpen] = useState(false);
   const [isAgenticPentestOpen, setIsAgenticPentestOpen] = useState(false);
+  const [isOSINTAgentOpen, setIsOSINTAgentOpen] = useState(false);
   const [pentestSession, setPentestSession] = useState({
     name: '',
     description: '',
@@ -2830,6 +2832,16 @@ const SecurityDashboard = () => {
                       >
                         <Settings className="h-6 w-6 mr-3" />
                         Configure & Launch AI Pentest
+                      </Button>
+                      
+                      <Button 
+                        onClick={() => setIsOSINTAgentOpen(true)}
+                        size="lg"
+                        className="bg-gradient-to-r from-cyan-600/80 to-teal-600/80 hover:from-cyan-700/90 hover:to-teal-700/90 text-white px-8 py-4 text-lg font-medium shadow-lg hover:shadow-cyan-500/20 transition-all duration-500"
+                      >
+                        <Eye className="h-6 w-6 mr-3" />
+                        Launch Encrypted OSINT Agent
+                        <Lock className="h-4 w-4 ml-2" />
                       </Button>
                       
                       <div className="text-center">
@@ -6438,6 +6450,11 @@ const SecurityDashboard = () => {
               <EnhancedAgenticPentestInterface onClose={() => setIsAgenticPentestOpen(false)} />
             </DialogContent>
           </Dialog>
+        )}
+        
+        {/* Automatic OSINT Agent */}
+        {isOSINTAgentOpen && (
+          <AutomaticOSINTAgent onClose={() => setIsOSINTAgentOpen(false)} />
         )}
         </div>
 
