@@ -70,7 +70,7 @@ const SecurityDashboard = () => {
         <div className="relative container mx-auto px-6 py-16">
           <div className="max-w-4xl">
             <h1 className="text-6xl font-bold mb-6 text-glow animate-float">
-              Security Operations Center
+              IPS Security Center
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
               Unified cybersecurity monitoring with Wazuh, OpenVAS, OWASP ZAP, and Spiderfoot intelligence
