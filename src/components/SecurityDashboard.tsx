@@ -192,8 +192,12 @@ const SecurityDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button className="w-full glow-hover" variant="default">
-                Deploy New Agent
+              <Button 
+                className="w-full glow-hover" 
+                variant="default"
+                onClick={() => window.location.href = '/wazuh'}
+              >
+                Manage Wazuh SIEM
               </Button>
               <Button className="w-full" variant="outline">
                 View Agent Status

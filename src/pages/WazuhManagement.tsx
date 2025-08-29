@@ -1,0 +1,411 @@
+import React, { useState } from 'react';
+import { 
+  Shield, 
+  Users, 
+  Settings, 
+  FileText, 
+  AlertTriangle, 
+  Activity, 
+  Server, 
+  Database,
+  Search,
+  Play,
+  Pause,
+  Trash2,
+  Plus,
+  Download,
+  Upload,
+  Eye,
+  RefreshCw
+} from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+const WazuhManagement = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Mock data - replace with actual Wazuh API calls
+  const agents = [
+    { id: '001', name: 'web-server-01', ip: '192.168.1.10', os: 'Ubuntu 20.04', status: 'active', lastSeen: '2 min ago' },
+    { id: '002', name: 'db-server-01', ip: '192.168.1.11', os: 'CentOS 8', status: 'active', lastSeen: '5 min ago' },
+    { id: '003', name: 'mail-server-01', ip: '192.168.1.12', os: 'Windows Server 2019', status: 'disconnected', lastSeen: '2 hours ago' },
+  ];
+
+  const rules = [
+    { id: '100001', level: 'High', description: 'SSH authentication success', groups: ['authentication', 'ssh'] },
+    { id: '100002', level: 'Medium', description: 'Multiple authentication failures', groups: ['authentication', 'brute_force'] },
+    { id: '100003', level: 'Low', description: 'User login', groups: ['authentication', 'login'] },
+  ];
+
+  const alerts = [
+    { id: 1, timestamp: '2024-01-20 14:30:15', agent: 'web-server-01', rule: 'SSH Brute Force', level: 'High', ip: '203.0.113.1' },
+    { id: 2, timestamp: '2024-01-20 14:25:32', agent: 'db-server-01', rule: 'Root login', level: 'Medium', ip: '192.168.1.100' },
+    { id: 3, timestamp: '2024-01-20 14:20:45', agent: 'mail-server-01', rule: 'File integrity', level: 'Low', ip: '192.168.1.12' },
+  ];
+
+  return (
+    <div className="min-h-screen gradient-bg p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <Shield className="h-8 w-8 text-primary glow" />
+          <h1 className="text-4xl font-bold text-glow">Wazuh SIEM Management</h1>
+        </div>
+        <p className="text-muted-foreground text-lg">
+          Comprehensive security monitoring and incident response management
+        </p>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <Card className="gradient-card glow-hover">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Agents</CardTitle>
+            <Users className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">247</div>
+            <p className="text-xs text-muted-foreground">+12 from last week</p>
+          </CardContent>
+        </Card>
+
+        <Card className="gradient-card glow-hover">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-destructive" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-destructive">23</div>
+            <p className="text-xs text-muted-foreground">-5 from yesterday</p>
+          </CardContent>
+        </Card>
+
+        <Card className="gradient-card glow-hover">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Rules Active</CardTitle>
+            <FileText className="h-4 w-4 text-secondary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-secondary">1,847</div>
+            <p className="text-xs text-muted-foreground">Custom + Default</p>
+          </CardContent>
+        </Card>
+
+        <Card className="gradient-card glow-hover">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">System Health</CardTitle>
+            <Activity className="h-4 w-4 text-accent" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-accent">98.7%</div>
+            <Progress value={98.7} className="mt-2" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Management Tabs */}
+      <Tabs defaultValue="agents" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-6 gradient-card">
+          <TabsTrigger value="agents" className="flex items-center gap-2">
+            <Server className="h-4 w-4" />
+            Agents
+          </TabsTrigger>
+          <TabsTrigger value="rules" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Rules
+          </TabsTrigger>
+          <TabsTrigger value="alerts" className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            Alerts
+          </TabsTrigger>
+          <TabsTrigger value="monitoring" className="flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            Monitoring
+          </TabsTrigger>
+          <TabsTrigger value="config" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Configuration
+          </TabsTrigger>
+          <TabsTrigger value="reports" className="flex items-center gap-2">
+            <Database className="h-4 w-4" />
+            Reports
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Agents Management */}
+        <TabsContent value="agents" className="space-y-6">
+          <Card className="gradient-card glow">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Server className="h-5 w-5 text-primary" />
+                    Agent Management
+                  </CardTitle>
+                  <CardDescription>Monitor and control Wazuh agents across your infrastructure</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="glow-hover">
+                    <Download className="h-4 w-4 mr-2" />
+                    Deploy Agent
+                  </Button>
+                  <Button className="glow-hover">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Agent
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Search agents..." 
+                    className="pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <Button variant="outline" className="glow-hover">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+              </div>
+
+              <ScrollArea className="h-[400px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Agent ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>IP Address</TableHead>
+                      <TableHead>OS</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Last Seen</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {agents.map((agent) => (
+                      <TableRow key={agent.id}>
+                        <TableCell className="font-mono">{agent.id}</TableCell>
+                        <TableCell className="font-medium">{agent.name}</TableCell>
+                        <TableCell>{agent.ip}</TableCell>
+                        <TableCell>{agent.os}</TableCell>
+                        <TableCell>
+                          <Badge variant={agent.status === 'active' ? 'default' : 'destructive'}>
+                            {agent.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{agent.lastSeen}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline">
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <Pause className="h-3 w-3" />
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Rules Management */}
+        <TabsContent value="rules" className="space-y-6">
+          <Card className="gradient-card glow">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    Detection Rules
+                  </CardTitle>
+                  <CardDescription>Manage detection rules and custom signatures</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="glow-hover">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Import Rules
+                  </Button>
+                  <Button className="glow-hover">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Rule
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[400px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Rule ID</TableHead>
+                      <TableHead>Level</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Groups</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {rules.map((rule) => (
+                      <TableRow key={rule.id}>
+                        <TableCell className="font-mono">{rule.id}</TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            rule.level === 'High' ? 'destructive' : 
+                            rule.level === 'Medium' ? 'secondary' : 'outline'
+                          }>
+                            {rule.level}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{rule.description}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-1 flex-wrap">
+                            {rule.groups.map((group, index) => (
+                              <Badge key={index} variant="outline" className="text-xs">
+                                {group}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline">
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <Settings className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Alerts Management */}
+        <TabsContent value="alerts" className="space-y-6">
+          <Card className="gradient-card glow">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-primary" />
+                Security Alerts
+              </CardTitle>
+              <CardDescription>Real-time security alerts and incident response</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[400px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Timestamp</TableHead>
+                      <TableHead>Agent</TableHead>
+                      <TableHead>Rule</TableHead>
+                      <TableHead>Level</TableHead>
+                      <TableHead>Source IP</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {alerts.map((alert) => (
+                      <TableRow key={alert.id}>
+                        <TableCell className="font-mono text-sm">{alert.timestamp}</TableCell>
+                        <TableCell>{alert.agent}</TableCell>
+                        <TableCell>{alert.rule}</TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            alert.level === 'High' ? 'destructive' : 
+                            alert.level === 'Medium' ? 'secondary' : 'outline'
+                          }>
+                            {alert.level}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-mono">{alert.ip}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline">
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <Play className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Additional tabs would be implemented similarly */}
+        <TabsContent value="monitoring">
+          <Card className="gradient-card glow">
+            <CardHeader>
+              <CardTitle>System Monitoring</CardTitle>
+              <CardDescription>Real-time system performance and health metrics</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[400px] flex items-center justify-center">
+              <p className="text-muted-foreground">Monitoring dashboard coming soon...</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="config">
+          <Card className="gradient-card glow">
+            <CardHeader>
+              <CardTitle>Configuration Management</CardTitle>
+              <CardDescription>Wazuh server and agent configuration settings</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[400px] flex items-center justify-center">
+              <p className="text-muted-foreground">Configuration panel coming soon...</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="reports">
+          <Card className="gradient-card glow">
+            <CardHeader>
+              <CardTitle>Security Reports</CardTitle>
+              <CardDescription>Generate and manage security compliance reports</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[400px] flex items-center justify-center">
+              <p className="text-muted-foreground">Reports dashboard coming soon...</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      <div className="mt-8 text-center">
+        <p className="text-sm text-muted-foreground">
+          Connect to Supabase to enable Wazuh API integration and real-time functionality
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default WazuhManagement;
