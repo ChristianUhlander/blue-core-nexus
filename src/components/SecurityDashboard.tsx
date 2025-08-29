@@ -1985,29 +1985,6 @@ const SecurityDashboard = () => {
     }
   ];
 
-  /**
-   * Handles starting a CVE assessment scan
-   */
-  const handleStartCveScan = () => {
-    setCveScanning(true);
-    setScanProgress(0);
-    
-    // Simulate scan progress
-    const interval = setInterval(() => {
-      setScanProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setCveScanning(false);
-          toast({
-            title: "CVE Scan Complete",
-            description: `Found ${cveVulnerabilities.length} vulnerabilities across ${new Set(cveVulnerabilities.flatMap(v => v.hosts)).size} hosts.`,
-          });
-          return 100;
-        }
-        return prev + Math.random() * 15;
-      });
-    }, 500);
-  };
 
   /**
    * Gets vulnerability statistics

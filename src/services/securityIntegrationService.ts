@@ -179,29 +179,29 @@ class SecurityIntegrationService {
     // Load configuration from environment or defaults
     this.config = {
       wazuh: {
-        baseUrl: process.env.NODE_ENV === 'production' ? 'https://wazuh-manager' : 'http://localhost',
+        baseUrl: import.meta.env?.PROD ? 'https://wazuh-manager' : 'http://localhost',
         port: 55000,
-        username: process.env.WAZUH_USERNAME || 'wazuh',
-        password: process.env.WAZUH_PASSWORD || 'wazuh',
+        username: import.meta.env?.VITE_WAZUH_USERNAME || 'wazuh',
+        password: import.meta.env?.VITE_WAZUH_PASSWORD || 'wazuh',
         timeout: 10000
       },
       gvm: {
-        baseUrl: process.env.NODE_ENV === 'production' ? 'https://gvm-manager' : 'http://localhost',
+        baseUrl: import.meta.env?.PROD ? 'https://gvm-manager' : 'http://localhost',
         port: 9392,
-        username: process.env.GVM_USERNAME || 'admin',
-        password: process.env.GVM_PASSWORD || 'admin',
+        username: import.meta.env?.VITE_GVM_USERNAME || 'admin',
+        password: import.meta.env?.VITE_GVM_PASSWORD || 'admin',
         timeout: 15000
       },
       zap: {
-        baseUrl: process.env.NODE_ENV === 'production' ? 'https://zap-proxy' : 'http://localhost',
+        baseUrl: import.meta.env?.PROD ? 'https://zap-proxy' : 'http://localhost',
         port: 8080,
-        apiKey: process.env.ZAP_API_KEY || '',
+        apiKey: import.meta.env?.VITE_ZAP_API_KEY || '',
         timeout: 10000
       },
       spiderfoot: {
-        baseUrl: process.env.NODE_ENV === 'production' ? 'https://spiderfoot' : 'http://localhost',
+        baseUrl: import.meta.env?.PROD ? 'https://spiderfoot' : 'http://localhost',
         port: 5001,
-        apiKey: process.env.SPIDERFOOT_API_KEY || '',
+        apiKey: import.meta.env?.VITE_SPIDERFOOT_API_KEY || '',
         timeout: 20000
       }
     };
