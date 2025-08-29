@@ -1,73 +1,50 @@
-# Welcome to your Lovable project
+# IPS Security Center
 
-## Project info
+A comprehensive cybersecurity management dashboard with real-time API connections and status monitoring.
 
-**URL**: https://lovable.dev/projects/499293cd-f89e-4ae6-abd9-18c022321caf
+## 🔧 Features Implemented
 
-## How can I edit this code?
+✅ **Full API Service Layer** (`src/services/securityApi.ts`)
+- Wazuh SIEM integration (port 55000)
+- OpenVAS/GVM integration (port 9392)  
+- OWASP ZAP integration (port 8080)
+- Spiderfoot OSINT integration (port 5001)
 
-There are several ways of editing your application.
+✅ **Real-time Connection Status**
+- 🟢 Green: Connected & authenticated
+- 🔴 Red: Connection failed/error
+- Live status monitoring every 30 seconds
 
-**Use Lovable**
+✅ **Production-Ready Components**
+- WazuhManagement.tsx - Agent management, alerts
+- GVMManagement.tsx - Vulnerability scanning
+- Status management hook with error handling
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/499293cd-f89e-4ae6-abd9-18c022321caf) and start prompting.
+## 🚀 API Integration Status
 
-Changes made via Lovable will be committed automatically to this repo.
+### Connection Indicators
+All buttons show live API status:
+- **Connected**: Full functionality enabled
+- **Error**: Red indicators, mock data displayed
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Required Backend Setup
+Connect to Supabase and deploy these Edge Functions:
+```bash
+/functions/v1/wazuh-health-check
+/functions/v1/openvas-start-scan  
+/functions/v1/zap-owasp-scan
+/functions/v1/spiderfoot-osint
 ```
 
-**Edit a file directly in GitHub**
+## 📋 Production Checklist
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- [x] Service layer with comprehensive error handling
+- [x] Real-time connection monitoring 
+- [x] Mock data for development
+- [x] TypeScript interfaces
+- [x] Responsive UI components
+- [ ] Deploy Supabase Edge Functions
+- [ ] Configure API secrets
+- [ ] Connect to actual security tools
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/499293cd-f89e-4ae6-abd9-18c022321caf) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+**Ready for Supabase backend integration!**

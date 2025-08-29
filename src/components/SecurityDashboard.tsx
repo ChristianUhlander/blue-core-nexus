@@ -5,9 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SecurityChatbot from "./SecurityChatbot";
+import { useSecurityStatus } from "@/hooks/useSecurityStatus";
 import heroImage from "@/assets/security-hero.jpg";
 
 const SecurityDashboard = () => {
+  const { getConnectionIndicator } = useSecurityStatus();
   const tools = [
     {
       name: "Wazuh SIEM",
@@ -215,10 +217,10 @@ const SecurityDashboard = () => {
                     </span>
                   )}
                   {tool.vulnerabilities && (
-                    <span className="flex items-center gap-1 text-destructive">
-                      <AlertTriangle className="h-4 w-4" />
-                      {tool.vulnerabilities} vulns
-                    </span>
+                        <span className="flex items-center gap-1 text-destructive">
+                          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                          {tool.vulnerabilities} vulns
+                        </span>
                   )}
                   {tool.scans && (
                     <span className="flex items-center gap-1">
