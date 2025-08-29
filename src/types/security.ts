@@ -1,0 +1,163 @@
+/**
+ * Security Service Type Definitions
+ * Backend Integration: K8s deployment with service discovery
+ */
+
+// Service Configuration Types
+export interface ServiceConfig {
+  name: string;
+  endpoint: string;
+  protocol: 'http' | 'https' | 'ws' | 'wss';
+  port: number;
+  healthPath: string;
+  timeout: number;
+  retryAttempts: number;
+  retryDelay: number;
+}
+
+// Connection Status Types
+export interface ConnectionStatus {
+  online: boolean;
+  lastCheck: string | null;
+  error: string | null;
+  responseTime: number;
+  retryCount: number;
+  version?: string;
+}
+
+// Service Status Types
+export interface WazuhStatus extends ConnectionStatus {
+  agents: number;
+  activeAgents: number;
+  managerVersion: string;
+  rulesLoaded: number;
+  lastAlert?: string;
+}
+
+export interface GVMStatus extends ConnectionStatus {
+  scans: number;
+  activeScans: number;
+  totalTasks: number;
+  vulnerabilities: number;
+  lastScan?: string;
+}
+
+export interface ZAPStatus extends ConnectionStatus {
+  scans: number;
+  activeScans: number;
+  alerts: number;
+  spiderProgress: number;
+  activeScanProgress: number;
+}
+
+export interface SpiderfootStatus extends ConnectionStatus {
+  sources: number;
+  activeSources: number;
+  entities: number;
+  modules: number;
+  lastScan?: string;
+}
+
+// Alert Types
+export interface SecurityAlert {
+  id: string;
+  source: 'wazuh' | 'gvm' | 'zap' | 'spiderfoot';
+  timestamp: string;
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
+  title: string;
+  description: string;
+  agentId?: string;
+  agentName?: string;
+  rule?: {
+    id: string;
+    description: string;
+    level: number;
+  };
+  data?: Record<string, any>;
+  acknowledged: boolean;
+  assignedTo?: string;
+}
+
+// Agent Types
+export interface WazuhAgent {
+  id: string;
+  name: string;
+  ip: string;
+  os: {
+    name: string;
+    version: string;
+    platform: string;
+  };
+  status: 'active' | 'disconnected' | 'never_connected';
+  lastKeepAlive: string;
+  version: string;
+  manager: string;
+  group: string[];
+  configSum: string;
+  mergedSum: string;
+  dateAdd: string;
+}
+
+// Scan Types
+export interface ScanConfig {
+  id: string;
+  name: string;
+  target: string;
+  type: 'baseline' | 'full' | 'custom';
+  options: Record<string, any>;
+  schedule?: {
+    enabled: boolean;
+    cron: string;
+  };
+}
+
+export interface ScanResult {
+  id: string;
+  configId: string;
+  status: 'running' | 'completed' | 'failed' | 'cancelled';
+  startTime: string;
+  endTime?: string;
+  progress: number;
+  findings: Finding[];
+  metadata: Record<string, any>;
+}
+
+export interface Finding {
+  id: string;
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
+  title: string;
+  description: string;
+  impact: string;
+  solution: string;
+  reference: string[];
+  cve?: string[];
+  cvss?: {
+    score: number;
+    vector: string;
+  };
+}
+
+// K8s Service Discovery Types
+export interface K8sServiceEndpoint {
+  namespace: string;
+  serviceName: string;
+  port: number;
+  path?: string;
+}
+
+// API Response Types
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  timestamp: string;
+  requestId: string;
+}
+
+// WebSocket Message Types
+export interface WSMessage {
+  type: 'alert' | 'status' | 'scan_progress' | 'agent_update';
+  source: string;
+  data: any;
+  timestamp: string;
+}
