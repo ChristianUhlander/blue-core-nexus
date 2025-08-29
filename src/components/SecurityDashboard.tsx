@@ -182,13 +182,13 @@ const SecurityDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Security Management Console */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           <Card className="gradient-card glow-hover">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-primary" />
-                Agent Management
+                SIEM Management
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -212,7 +212,7 @@ const SecurityDashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Eye className="h-5 w-5 text-secondary" />
-                Vulnerability Scans
+                Vulnerability Management
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -236,7 +236,7 @@ const SecurityDashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-accent" />
-                Security Testing
+                Web Application Security
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -247,7 +247,27 @@ const SecurityDashboard = () => {
                 Custom ZAP Scan
               </Button>
               <Button className="w-full" variant="outline">
-                OSINT Monitoring
+                Penetration Testing
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="gradient-card glow-hover">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Search className="h-5 w-5 text-primary" />
+                OSINT Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button className="w-full glow-hover" variant="default">
+                Spiderfoot OSINT
+              </Button>
+              <Button className="w-full" variant="outline">
+                Intelligence Gathering
+              </Button>
+              <Button className="w-full" variant="outline">
+                Threat Analysis
               </Button>
             </CardContent>
           </Card>
