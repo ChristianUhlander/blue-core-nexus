@@ -5922,10 +5922,80 @@ const SecurityDashboard = () => {
         </Card>
       </div>
       
-      {/* Security Chatbot */}
-      <SecurityChatbot />
-    </div>
-  );
-};
+        {/* Full Agentic Pentest Button - EXPERIMENTAL FEATURE */}
+        <Card className="gradient-card glow mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-glow">
+              <BrainCircuit className="h-5 w-5" />
+              Full Agentic Pentest
+              <Badge variant="secondary" className="ml-2 bg-orange-500/20 text-orange-400 border-orange-500/50">
+                EXPERIMENTAL
+              </Badge>
+            </CardTitle>
+            <CardDescription>
+              AI-powered autonomous penetration testing with LLM integration. Connect a language model to automatically analyze, plan, and execute security assessments using Kali Linux tools.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                <Info className="h-5 w-5 text-blue-500 mt-0.5" />
+                <div className="space-y-2">
+                  <div className="font-semibold text-blue-400">Autonomous AI Security Assessment</div>
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    <p>• LLM-driven analysis of Nmap, SQLMap, Nikto, Amass, and Sn1per output</p>
+                    <p>• OWASP and NIST methodology compliance</p>
+                    <p>• Real-time decision making and logical next steps</p>
+                    <p>• Sandboxed execution with human oversight</p>
+                    <p>• Comprehensive evidence collection and reporting</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <div className="font-medium">Ready for Production Deployment</div>
+                  <div className="text-sm text-muted-foreground">
+                    K8s integration, WebSocket real-time updates, comprehensive logging
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => setIsAgenticPentestOpen(true)}
+                  className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white glow-hover"
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Configure & Launch
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Security Chatbot */}
+        <SecurityChatbot />
+        
+        {/* Agentic Pentest Interface Modal */}
+        {isAgenticPentestOpen && (
+          <Dialog open={isAgenticPentestOpen} onOpenChange={setIsAgenticPentestOpen}>
+            <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <BrainCircuit className="h-5 w-5" />
+                  Full Agentic Penetration Test Configuration
+                  <Badge variant="secondary" className="ml-2 bg-orange-500/20 text-orange-400 border-orange-500/50">
+                    EXPERIMENTAL
+                  </Badge>
+                </DialogTitle>
+                <DialogDescription>
+                  Configure and launch an AI-powered autonomous penetration test with comprehensive LLM integration.
+                </DialogDescription>
+              </DialogHeader>
+              <AgenticPentestInterface onClose={() => setIsAgenticPentestOpen(false)} />
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
+    );
+  };
 
 export default SecurityDashboard;
