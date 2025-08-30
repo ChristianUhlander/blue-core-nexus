@@ -879,6 +879,26 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
       website: 'https://whoisapi.com',
       pricingTier: 'Freemium',
       capabilities: ['WHOIS Lookup', 'Domain History', 'Registration Data', 'Registrar Info']
+    },
+    {
+      name: 'lexbase',
+      displayName: 'Lexbase',
+      description: 'Comprehensive legal database with UK court records, case law, and legal intelligence',
+      category: 'Legal Intelligence',
+      website: 'https://lexbase.co.uk',
+      pricingTier: 'Paid',
+      capabilities: [
+        'Court Records Search',
+        'Case Law Analysis', 
+        'Legal Entity Lookup',
+        'Judgment Database',
+        'Lawyer Directory',
+        'Company Legal History',
+        'Insolvency Records',
+        'Tribunal Decisions',
+        'Legal Document Analysis',
+        'Litigation History'
+      ]
     }
   ];
 
