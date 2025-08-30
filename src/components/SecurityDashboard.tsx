@@ -25,6 +25,7 @@ import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 import { AutomaticOSINTAgent } from "./AutomaticOSINTAgent";
 import WazuhManagement from "../pages/WazuhManagement";
+import GVMManagement from "../pages/GVMManagement";
 import { ConnectionStatusIndicator } from "./ConnectionStatusIndicator";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState, useEffect, useCallback, useMemo } from "react";
@@ -76,6 +77,7 @@ const SecurityDashboard = () => {
   const [isOsintProfilesOpen, setIsOsintProfilesOpen] = useState(false);
   const [isThreatAnalysisOpen, setIsThreatAnalysisOpen] = useState(false);
   const [isWazuhManagementOpen, setIsWazuhManagementOpen] = useState(false);
+  const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
   
   // IppsY chat pane state
   const [isIppsYOpen, setIsIppsYOpen] = useState(false);
@@ -3446,14 +3448,31 @@ const SecurityDashboard = () => {
                   
                   <TabsContent value="vulnerability" className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <Button 
-                        className="glow-hover" 
-                        variant="default"
-                        size="sm"
-                        onClick={() => window.location.href = '/gvm'}
-                      >
-                        Manage GVM/OpenVAS
-                      </Button>
+                      <Dialog open={isGvmManagementOpen} onOpenChange={setIsGvmManagementOpen}>
+                        <DialogTrigger asChild>
+                          <Button 
+                            className="glow-hover" 
+                            variant="default"
+                            size="sm"
+                          >
+                            Manage GVM/OpenVAS
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1400px] max-h-[90vh] gradient-card border-primary/20 overflow-hidden">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <Shield className="h-6 w-6 text-primary animate-pulse" />
+                              GVM/OpenVAS Management
+                            </DialogTitle>
+                            <DialogDescription>
+                              Comprehensive vulnerability scanning and management console
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="overflow-auto max-h-[75vh]">
+                            <GVMManagement />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                       
                       <Dialog open={isCveAssessmentOpen} onOpenChange={setIsCveAssessmentOpen}>
                         <DialogTrigger asChild>
