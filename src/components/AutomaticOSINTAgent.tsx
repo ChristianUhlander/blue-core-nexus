@@ -875,6 +875,14 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     website: 'https://skatteverket.se/omoss/digitalasamarbeten.4.3684199413c956649b56298.html',
     pricingTier: 'Freemium',
     capabilities: ['Tax Information', 'Company Registration Data', 'Income Declarations', 'VAT Information', 'Business Intelligence', 'Financial Compliance', 'Open Data Access']
+  }, {
+    name: 'fordonsfakta',
+    displayName: 'Fordonsfakta API',
+    description: 'Swedish vehicle registration data API for accessing Vägtrafikregistret in real-time',
+    category: 'Vehicle Intelligence',
+    website: 'https://www.fordonsfakta.se/',
+    pricingTier: 'Paid',
+    capabilities: ['Vehicle Registration Data', 'Technical Specifications', 'Ownership History', 'Inspection Records', 'Insurance Information', 'Tax Status', 'Driver License Verification']
   }];
   const renderToolCard = (tool: OSINTTool) => <Card key={tool.name} className="gradient-card glow-hover">
       <CardHeader className="pb-3">
