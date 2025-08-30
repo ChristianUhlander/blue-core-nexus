@@ -851,6 +851,14 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     website: 'https://mrkoll.se',
     pricingTier: 'Paid',
     capabilities: ['Person Search', 'Background Checks', 'Professional Information', 'Legal Proceedings', 'Contact Information', 'Educational Background']
+  }, {
+    name: 'trafikverket',
+    displayName: 'Trafikverket API',
+    description: 'Swedish Transport Administration API for real-time traffic data on roads and railways',
+    category: 'Transportation Intelligence',
+    website: 'https://www.trafikverket.se/e-tjanster/trafikverkets-oppna-api-for-trafikinformation/',
+    pricingTier: 'Free',
+    capabilities: ['Real-time Traffic Data', 'Road Information', 'Railway Data', 'Traffic Incidents', 'Weather Conditions', 'Camera Feeds', 'Travel Times']
   }];
   const renderToolCard = (tool: OSINTTool) => <Card key={tool.name} className="gradient-card glow-hover">
       <CardHeader className="pb-3">
