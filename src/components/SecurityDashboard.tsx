@@ -24,6 +24,7 @@ import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterfa
 import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 import { AutomaticOSINTAgent } from "./AutomaticOSINTAgent";
+import WazuhManagement from "../pages/WazuhManagement";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import * as React from "react";
@@ -73,6 +74,7 @@ const SecurityDashboard = () => {
   const [isSpiderfootOpen, setIsSpiderfootOpen] = useState(false);
   const [isOsintProfilesOpen, setIsOsintProfilesOpen] = useState(false);
   const [isThreatAnalysisOpen, setIsThreatAnalysisOpen] = useState(false);
+  const [isWazuhManagementOpen, setIsWazuhManagementOpen] = useState(false);
   
   // IppsY chat pane state
   const [isIppsYOpen, setIsIppsYOpen] = useState(false);
@@ -2882,14 +2884,37 @@ const SecurityDashboard = () => {
                   
                   <TabsContent value="siem" className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <Button 
-                        className="glow-hover" 
-                        variant="default"
-                        size="sm"
-                        onClick={() => window.location.href = '/wazuh'}
-                      >
-                        Manage Wazuh SIEM
-                      </Button>
+                      <Dialog open={isWazuhManagementOpen} onOpenChange={setIsWazuhManagementOpen}>
+                        <DialogTrigger asChild>
+                          <Button 
+                            className="glow-hover" 
+                            variant="default"
+                            size="sm"
+                          >
+                            Manage Wazuh SIEM
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <div className="relative">
+                                <Shield className="h-6 w-6 text-primary animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-ping" />
+                              </div>
+                              Wazuh SIEM Management
+                              <Badge variant="default" className="ml-2 animate-pulse-glow">
+                                LIVE
+                              </Badge>
+                            </DialogTitle>
+                            <DialogDescription className="text-base">
+                              Comprehensive security information and event management system
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="overflow-auto max-h-[calc(95vh-200px)]">
+                            <WazuhManagement />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                       <Dialog open={isAgentStatusOpen} onOpenChange={setIsAgentStatusOpen}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" className="glow-hover group">
