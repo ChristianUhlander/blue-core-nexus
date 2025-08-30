@@ -152,7 +152,7 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
   const [activeInvestigations, setActiveInvestigations] = useState<ExtendedOSINTInvestigation[]>([]);
   const [completedInvestigations, setCompletedInvestigations] = useState<ExtendedOSINTInvestigation[]>([]);
 
-  // New Investigation Form State
+  // New Investigation Form State - Comprehensive OSINT Data Structure
   const [investigationForm, setInvestigationForm] = useState({
     // Basic Information
     title: '',
@@ -161,6 +161,7 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     priority: 'medium',
     expectedDuration: '24h',
     legalAuthorization: false,
+    
     // Personal Information
     fullName: '',
     aliases: [],
@@ -168,50 +169,207 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     nationality: '',
     occupation: '',
     employer: '',
-    education: '',
-    // Contact Information
-    emailAddresses: [],
-    phoneNumbers: [],
-    physicalAddresses: [],
-    socialMediaProfiles: [],
-    // Digital Footprint
-    websites: [],
-    usernames: [],
-    ipAddresses: [],
-    domains: [],
+    education: '', // Simple education for legacy compatibility
+    placeOfBirth: '',
+    
     // Physical Characteristics (for facial recognition)
     height: '',
     weight: '',
     eyeColor: '',
     hairColor: '',
     distinctiveMarks: '',
-    // Assets & Financial
+    
+    // Education & Academic History (Detailed)
+    educationDetails: {
+      university: {
+        name: '',
+        faculty: '',
+        degree: '',
+        fieldOfStudy: '',
+        graduationYear: '',
+        studentId: '',
+        gpa: '',
+        thesisTitle: '',
+        advisor: '',
+        dormitory: ''
+      },
+      highSchool: {
+        name: '',
+        address: '',
+        graduationYear: '',
+        studentId: ''
+      },
+      certifications: {
+        list: '',
+        licenseNumber: '',
+        issuingAuthority: ''
+      }
+    },
+    
+    // Family Members & Relations
+    family: {
+      father: {
+        fullName: '',
+        dateOfBirth: '',
+        occupation: '',
+        phone: '',
+        address: '',
+        ssn: '',
+        placeOfBirth: ''
+      },
+      mother: {
+        fullName: '',
+        maidenName: '',
+        dateOfBirth: '',
+        occupation: '',
+        phone: '',
+        address: '',
+        ssn: '',
+        placeOfBirth: ''
+      },
+      siblings: [],
+      spouse: {
+        fullName: '',
+        maidenName: '',
+        dateOfBirth: '',
+        marriageDate: '',
+        occupation: '',
+        employer: '',
+        phone: '',
+        ssn: ''
+      },
+      children: [],
+      grandparents: {
+        paternal: '',
+        maternal: ''
+      },
+      extendedFamily: '',
+      emergencyContacts: []
+    },
+    
+    // Residence & Address History
+    residence: {
+      current: {
+        streetAddress: '',
+        city: '',
+        state: '',
+        postalCode: '',
+        country: '',
+        residenceType: '',
+        ownershipStatus: '',
+        moveInDate: '',
+        propertyValue: '',
+        landlord: ''
+      },
+      previousAddresses: [],
+      familyResidences: {
+        fatherAddress: {
+          address: '',
+          city: '',
+          stateZip: '',
+          phone: '',
+          yearsAtAddress: ''
+        },
+        motherAddress: {
+          address: '',
+          city: '',
+          stateZip: '',
+          phone: '',
+          yearsAtAddress: ''
+        },
+        siblingsAddresses: [],
+        extendedFamilyAddresses: ''
+      },
+      birthAndChildhood: {
+        birthLocation: '',
+        childhoodHome: ''
+      },
+      propertyOwnership: {
+        ownedProperties: '',
+        investmentProperties: '',
+        propertyTaxRecords: '',
+        realEstateAgent: ''
+      }
+    },
+    
+    // Financial Information & Assets
+    financial: {
+      banking: {
+        primaryBank: '',
+        accountNumbers: '',
+        routingNumbers: '',
+        creditCards: '',
+        investmentAccounts: ''
+      },
+      employment: {
+        annualIncome: '',
+        incomeSource: '',
+        previousEmployers: '',
+        businessOwnership: ''
+      },
+      assets: {
+        valuableAssets: '',
+        debtsAndLoans: '',
+        netWorth: '',
+        creditScore: ''
+      },
+      insurance: {
+        policies: '',
+        legalIssues: '',
+        taxId: '',
+        taxPreparer: ''
+      }
+    },
+    
+    // Contact Information & Digital Footprint
+    emailAddresses: [],
+    phoneNumbers: [],
+    physicalAddresses: [],
+    socialMediaProfiles: [],
+    websites: [],
+    usernames: [],
+    ipAddresses: [],
+    domains: [],
+    
+    // Assets & Financial (Legacy - keeping for compatibility)
     knownAssets: [],
     financialInstitutions: [],
     businessInterests: [],
-    // Relationships
+    
+    // Relationships (Legacy - keeping for compatibility)
     familyMembers: [],
     associates: [],
     enemies: [],
+    
     // Technology Profile
     devices: [],
     operatingSystems: [],
     softwarePreferences: [],
+    
     // Behavioral Patterns
     onlineHabits: '',
     schedulePatterns: '',
     interests: [],
+    
     // Media Files for AI Analysis
     profileImages: [],
     voiceRecordings: [],
     videoFiles: [],
     documents: [],
+    
     // Investigation Parameters
     enableVoiceAnalysis: false,
     enableFacialRecognition: false,
     enableBehavioralAnalysis: false,
     enableSentimentAnalysis: false,
     enableNetworkAnalysis: false,
+    
+    // Advanced Field Toggles
+    showAdvancedEducation: false,
+    showAdvancedFamily: false,
+    showAdvancedResidence: false,
+    showAdvancedFinancial: false,
+    
     // Third-party AI Tools
     aiToolsConfig: {
       openai: {
@@ -1966,13 +2124,15 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
           
           <ScrollArea className="max-h-[75vh] pr-4">
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-6 mb-6">
+              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-6">
                 <TabsTrigger value="basic">Basic Info</TabsTrigger>
                 <TabsTrigger value="personal">Personal</TabsTrigger>
+                <TabsTrigger value="education">Education</TabsTrigger>
+                <TabsTrigger value="family">Family</TabsTrigger>
+                <TabsTrigger value="residence">Residence</TabsTrigger>
                 <TabsTrigger value="digital">Digital</TabsTrigger>
-                <TabsTrigger value="media">Media Files</TabsTrigger>
-                <TabsTrigger value="ai-tools">AI Analysis</TabsTrigger>
-                <TabsTrigger value="parameters">Parameters</TabsTrigger>
+                <TabsTrigger value="financial">Financial</TabsTrigger>
+                <TabsTrigger value="media">Media</TabsTrigger>
               </TabsList>
 
               {/* Basic Information Tab */}
@@ -2145,7 +2305,7 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
 
                   <div className="space-y-2">
                     <Label htmlFor="education">Education</Label>
-                    <Input id="education" value={investigationForm.education} onChange={e => setInvestigationForm(prev => ({
+                    <Input id="education" value={investigationForm.education || ''} onChange={e => setInvestigationForm(prev => ({
                     ...prev,
                     education: e.target.value
                   }))} placeholder="Educational background" />
@@ -2194,6 +2354,672 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
                     </div>
                   </div>
                 </div>
+              </TabsContent>
+
+              {/* Education & Academic History Tab */}
+              <TabsContent value="education" className="space-y-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Education & Academic History</h3>
+                  <div className="flex items-center space-x-2">
+                    <Switch id="showAdvancedEducation" />
+                    <Label htmlFor="showAdvancedEducation" className="text-sm">Show Advanced Fields</Label>
+                  </div>
+                </div>
+
+                {/* University Education */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <GraduationCap className="h-5 w-5" />
+                      University & Higher Education
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>University Name</Label>
+                        <Input placeholder="Harvard University" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Faculty/School</Label>
+                        <Input placeholder="School of Medicine" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>Degree Type</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select degree" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="bachelor">Bachelor's</SelectItem>
+                            <SelectItem value="master">Master's</SelectItem>
+                            <SelectItem value="phd">PhD</SelectItem>
+                            <SelectItem value="md">Medical Doctor</SelectItem>
+                            <SelectItem value="jd">Juris Doctor</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Field of Study</Label>
+                        <Input placeholder="Computer Science" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Graduation Year</Label>
+                        <Input type="number" placeholder="2020" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Student ID</Label>
+                        <Input placeholder="Student identification number" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>GPA/Grade</Label>
+                        <Input placeholder="3.8 / First Class" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Thesis/Dissertation Title</Label>
+                      <Input placeholder="Research project or thesis title" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Academic Advisor/Supervisor</Label>
+                      <Input placeholder="Professor name" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Dormitory/Housing</Label>
+                      <Input placeholder="Residential college or dormitory name" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Secondary Education */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle>Secondary Education (High School)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>School Name</Label>
+                        <Input placeholder="Lincoln High School" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Graduation Year</Label>
+                        <Input type="number" placeholder="2016" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>School Address</Label>
+                        <Input placeholder="Complete school address" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Student ID</Label>
+                        <Input placeholder="High school student ID" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Professional Certifications */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle>Professional Certifications & Training</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Certifications</Label>
+                      <Textarea placeholder="List professional certifications, licenses, and specialized training..." rows={3} />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Professional License Number</Label>
+                        <Input placeholder="License or certification number" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Issuing Authority</Label>
+                        <Input placeholder="Certification body or authority" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Family & Relations Tab */}
+              <TabsContent value="family" className="space-y-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Family Members & Relations</h3>
+                  <div className="flex items-center space-x-2">
+                    <Switch id="showAdvancedFamily" />
+                    <Label htmlFor="showAdvancedFamily" className="text-sm">Show Advanced Fields</Label>
+                  </div>
+                </div>
+
+                {/* Immediate Family */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Immediate Family
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Parents */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-primary">Parents</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <h5 className="font-medium">Father</h5>
+                          <div className="space-y-2">
+                            <Input placeholder="Full name" />
+                            <Input placeholder="Date of birth" type="date" />
+                            <Input placeholder="Occupation" />
+                            <Input placeholder="Phone number" />
+                            <Input placeholder="Current address" />
+                            <Input placeholder="Social Security Number" />
+                            <Input placeholder="Place of birth" />
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <h5 className="font-medium">Mother</h5>
+                          <div className="space-y-2">
+                            <Input placeholder="Full name (including maiden name)" />
+                            <Input placeholder="Date of birth" type="date" />
+                            <Input placeholder="Occupation" />
+                            <Input placeholder="Phone number" />
+                            <Input placeholder="Current address" />
+                            <Input placeholder="Social Security Number" />
+                            <Input placeholder="Place of birth" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Siblings */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-primary">Siblings</h4>
+                      <div className="space-y-3">
+                        <div className="flex gap-2">
+                          <Input placeholder="Sibling name" className="flex-1" />
+                          <Input placeholder="Age" type="number" className="w-20" />
+                          <Input placeholder="Occupation" className="flex-1" />
+                          <Button size="sm"><Plus className="h-4 w-4" /></Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Spouse/Partner */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-primary">Spouse/Partner</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Input placeholder="Full name" />
+                          <Input placeholder="Maiden name (if applicable)" />
+                          <Input placeholder="Date of birth" type="date" />
+                          <Input placeholder="Marriage date" type="date" />
+                        </div>
+                        <div className="space-y-2">
+                          <Input placeholder="Occupation" />
+                          <Input placeholder="Employer" />
+                          <Input placeholder="Phone number" />
+                          <Input placeholder="Social Security Number" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Children */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-primary">Children</h4>
+                      <div className="space-y-3">
+                        <div className="flex gap-2">
+                          <Input placeholder="Child name" className="flex-1" />
+                          <Input placeholder="Date of birth" type="date" className="flex-1" />
+                          <Input placeholder="School/Occupation" className="flex-1" />
+                          <Button size="sm"><Plus className="h-4 w-4" /></Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Extended Family */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle>Extended Family & Close Relations</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-4">
+                      <h4 className="font-medium">Grandparents</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Textarea placeholder="Paternal grandparents details..." rows={3} />
+                        <Textarea placeholder="Maternal grandparents details..." rows={3} />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Other Relatives (Aunts, Uncles, Cousins)</Label>
+                      <Textarea placeholder="Names, relationships, and contact information of other family members..." rows={4} />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Close Family Friends</Label>
+                      <Textarea placeholder="Names and details of family friends, godparents, etc..." rows={3} />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Emergency Contacts */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle>Emergency Contacts & References</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <Input placeholder="Contact name" className="flex-1" />
+                        <Input placeholder="Relationship" className="flex-1" />
+                        <Input placeholder="Phone number" className="flex-1" />
+                        <Button size="sm"><Plus className="h-4 w-4" /></Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Residence History Tab */}
+              <TabsContent value="residence" className="space-y-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Residence & Address History</h3>
+                  <div className="flex items-center space-x-2">
+                    <Switch id="showAdvancedResidence" />
+                    <Label htmlFor="showAdvancedResidence" className="text-sm">Show Advanced Fields</Label>
+                  </div>
+                </div>
+
+                {/* Current Residence */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Home className="h-5 w-5" />
+                      Current Residence
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Street Address</Label>
+                        <Input placeholder="123 Main Street, Apt 4B" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>City</Label>
+                        <Input placeholder="New York" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>State/Province</Label>
+                        <Input placeholder="NY" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Postal Code</Label>
+                        <Input placeholder="10001" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Country</Label>
+                        <Input placeholder="United States" />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Residence Type</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="apartment">Apartment</SelectItem>
+                            <SelectItem value="house">House</SelectItem>
+                            <SelectItem value="condo">Condominium</SelectItem>
+                            <SelectItem value="townhouse">Townhouse</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Ownership Status</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="owned">Owned</SelectItem>
+                            <SelectItem value="rented">Rented</SelectItem>
+                            <SelectItem value="family">Family Property</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Move-in Date</Label>
+                        <Input type="date" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Property Value/Rent</Label>
+                        <Input placeholder="$2,500/month or $450,000" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Landlord/Property Manager</Label>
+                      <Input placeholder="Contact information" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Previous Residences */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle>Previous Addresses (Last 10 Years)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                        <Input placeholder="Address" />
+                        <Input placeholder="City, State" />
+                        <Input placeholder="From" type="date" />
+                        <Input placeholder="To" type="date" />
+                      </div>
+                      <Button variant="outline" size="sm" className="w-full">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Previous Address
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Family Members' Residences */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle>Family Members' Current Residences</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Parents' Addresses */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-primary">Parents' Addresses</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <h5 className="font-medium">Father's Address</h5>
+                          <div className="space-y-2">
+                            <Input placeholder="Street address" />
+                            <div className="grid grid-cols-2 gap-2">
+                              <Input placeholder="City" />
+                              <Input placeholder="State/ZIP" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <Input placeholder="Phone" />
+                              <Input placeholder="Years at address" />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <h5 className="font-medium">Mother's Address</h5>
+                          <div className="space-y-2">
+                            <Input placeholder="Street address" />
+                            <div className="grid grid-cols-2 gap-2">
+                              <Input placeholder="City" />
+                              <Input placeholder="State/ZIP" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <Input placeholder="Phone" />
+                              <Input placeholder="Years at address" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Siblings' Addresses */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-primary">Siblings' Addresses</h4>
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                          <Input placeholder="Sibling name" />
+                          <Input placeholder="Address" />
+                          <Input placeholder="Phone" />
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Sibling Address
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Extended Family Addresses */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-primary">Extended Family Addresses</h4>
+                      <div className="space-y-2">
+                        <Textarea placeholder="Grandparents, aunts, uncles, cousins addresses and contact information..." rows={4} />
+                      </div>
+                    </div>
+
+                    {/* Childhood/Birth Location */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-primary">Birth & Childhood Locations</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Birth Location</Label>
+                          <Input placeholder="Hospital, city, state, country" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Childhood Home</Label>
+                          <Input placeholder="Primary childhood residence" />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Property Ownership */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle>Property Ownership & Real Estate</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Owned Properties</Label>
+                      <Textarea placeholder="List all owned properties with addresses, purchase dates, and values..." rows={3} />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Investment Properties</Label>
+                      <Textarea placeholder="Rental properties, commercial real estate, etc..." rows={3} />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Property Tax Records</Label>
+                        <Input placeholder="Tax assessment numbers" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Real Estate Agent</Label>
+                        <Input placeholder="Agent name and contact" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Financial & Assets Tab */}
+              <TabsContent value="financial" className="space-y-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Financial Information & Assets</h3>
+                  <div className="flex items-center space-x-2">
+                    <Switch id="showAdvancedFinancial" />
+                    <Label htmlFor="showAdvancedFinancial" className="text-sm">Show Advanced Fields</Label>
+                  </div>
+                </div>
+
+                {/* Banking Information */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CreditCard className="h-5 w-5" />
+                      Banking & Financial Accounts
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Primary Bank</Label>
+                      <Input placeholder="Bank name and branch" />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Account Numbers (last 4 digits)</Label>
+                        <Input placeholder="****1234, ****5678" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Routing Numbers</Label>
+                        <Input placeholder="Bank routing numbers" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Credit Cards</Label>
+                      <Textarea placeholder="Credit card companies, last 4 digits, credit limits..." rows={3} />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Investment Accounts</Label>
+                      <Textarea placeholder="Brokerage accounts, retirement accounts (401k, IRA), investment platforms..." rows={3} />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Employment & Income */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle>Employment & Income Sources</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Annual Income</Label>
+                        <Input placeholder="$75,000" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Income Source</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select source" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="salary">Salary</SelectItem>
+                            <SelectItem value="business">Business Owner</SelectItem>
+                            <SelectItem value="freelance">Freelance</SelectItem>
+                            <SelectItem value="investments">investments</SelectItem>
+                            <SelectItem value="multiple">Multiple Sources</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Previous Employers (Last 5 Years)</Label>
+                      <Textarea placeholder="Company names, positions, dates of employment, salaries..." rows={4} />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Business Ownership</Label>
+                      <Textarea placeholder="Owned businesses, partnerships, LLC registrations..." rows={3} />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Assets & Liabilities */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle>Assets & Liabilities</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Valuable Assets</Label>
+                      <Textarea placeholder="Vehicles, jewelry, art, collectibles, equipment..." rows={3} />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Debts & Loans</Label>
+                      <Textarea placeholder="Mortgages, student loans, credit card debt, personal loans..." rows={3} />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Estimated Net Worth</Label>
+                        <Input placeholder="$250,000" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Credit Score Range</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select range" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="excellent">Excellent (750+)</SelectItem>
+                            <SelectItem value="good">Good (700-749)</SelectItem>
+                            <SelectItem value="fair">Fair (650-699)</SelectItem>
+                            <SelectItem value="poor">Poor (600-649)</SelectItem>
+                            <SelectItem value="bad">Bad (&lt;600)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Insurance & Legal */}
+                <Card className="gradient-card">
+                  <CardHeader>
+                    <CardTitle>Insurance & Legal Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Insurance Policies</Label>
+                      <Textarea placeholder="Health, auto, home, life insurance policies and providers..." rows={3} />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Legal Issues</Label>
+                      <Textarea placeholder="Bankruptcies, liens, judgments, legal proceedings..." rows={3} />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Tax ID/SSN</Label>
+                        <Input placeholder="Social Security Number" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Tax Preparer</Label>
+                        <Input placeholder="Accountant or tax service" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               {/* Digital Footprint Tab */}
@@ -2480,318 +3306,6 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
                       </div>
                     </CardContent>
                   </Card>
-                </div>
-              </TabsContent>
-
-              {/* AI Tools Tab */}
-              <TabsContent value="ai-tools" className="space-y-6">
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="font-semibold mb-4">Third-Party AI Analysis Tools</h4>
-                    <p className="text-sm text-muted-foreground mb-6">
-                      Configure external AI services for advanced analysis capabilities. These tools will process uploaded media files for enhanced intelligence gathering.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
-                    {/* OpenAI */}
-                    <Card className="gradient-card">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <BrainCircuit className="h-5 w-5" />
-                          OpenAI GPT-4 Vision
-                        </CardTitle>
-                        <CardDescription>
-                          Advanced image and video analysis with GPT-4 Vision
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Switch id="openai-enabled" checked={investigationForm.aiToolsConfig.openai.enabled} onCheckedChange={checked => setInvestigationForm(prev => ({
-                          ...prev,
-                          aiToolsConfig: {
-                            ...prev.aiToolsConfig,
-                            openai: {
-                              ...prev.aiToolsConfig.openai,
-                              enabled: checked
-                            }
-                          }
-                        }))} />
-                          <Label htmlFor="openai-enabled">Enable OpenAI Analysis</Label>
-                        </div>
-                        {investigationForm.aiToolsConfig.openai.enabled && <div>
-                            <Label>Model Selection</Label>
-                            <Select value={investigationForm.aiToolsConfig.openai.model} onValueChange={value => setInvestigationForm(prev => ({
-                          ...prev,
-                          aiToolsConfig: {
-                            ...prev.aiToolsConfig,
-                            openai: {
-                              ...prev.aiToolsConfig.openai,
-                              model: value
-                            }
-                          }
-                        }))}>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="gpt-4-vision-preview">GPT-4 Vision</SelectItem>
-                                <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
-                                <SelectItem value="gpt-5-2025-08-07">GPT-5 (Latest)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>}
-                      </CardContent>
-                    </Card>
-
-                    {/* Anthropic Claude */}
-                    <Card className="gradient-card">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Bot className="h-5 w-5" />
-                          Anthropic Claude
-                        </CardTitle>
-                        <CardDescription>
-                          Advanced reasoning and content analysis with Claude
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Switch id="anthropic-enabled" checked={investigationForm.aiToolsConfig.anthropic.enabled} onCheckedChange={checked => setInvestigationForm(prev => ({
-                          ...prev,
-                          aiToolsConfig: {
-                            ...prev.aiToolsConfig,
-                            anthropic: {
-                              ...prev.aiToolsConfig.anthropic,
-                              enabled: checked
-                            }
-                          }
-                        }))} />
-                          <Label htmlFor="anthropic-enabled">Enable Claude Analysis</Label>
-                        </div>
-                        {investigationForm.aiToolsConfig.anthropic.enabled && <div>
-                            <Label>Model Selection</Label>
-                            <Select value={investigationForm.aiToolsConfig.anthropic.model} onValueChange={value => setInvestigationForm(prev => ({
-                          ...prev,
-                          aiToolsConfig: {
-                            ...prev.aiToolsConfig,
-                            anthropic: {
-                              ...prev.aiToolsConfig.anthropic,
-                              model: value
-                            }
-                          }
-                        }))}>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="claude-3.5-sonnet">Claude 3.5 Sonnet</SelectItem>
-                                <SelectItem value="claude-sonnet-4-20250514">Claude Sonnet 4</SelectItem>
-                                <SelectItem value="claude-opus-4-20250514">Claude Opus 4</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>}
-                      </CardContent>
-                    </Card>
-
-                    {/* Azure Cognitive Services */}
-                    <Card className="gradient-card">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Zap className="h-5 w-5" />
-                          Azure Cognitive Services
-                        </CardTitle>
-                        <CardDescription>
-                          Face API, Speech Services, and Computer Vision
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Switch id="azure-enabled" checked={investigationForm.aiToolsConfig.azure.enabled} onCheckedChange={checked => setInvestigationForm(prev => ({
-                          ...prev,
-                          aiToolsConfig: {
-                            ...prev.aiToolsConfig,
-                            azure: {
-                              ...prev.aiToolsConfig.azure,
-                              enabled: checked
-                            }
-                          }
-                        }))} />
-                          <Label htmlFor="azure-enabled">Enable Azure Services</Label>
-                        </div>
-                        {investigationForm.aiToolsConfig.azure.enabled && <div className="space-y-2">
-                            <Label>Available Services</Label>
-                            <div className="flex flex-wrap gap-2">
-                              <Badge variant="secondary">Face API</Badge>
-                              <Badge variant="secondary">Speech Services</Badge>
-                              <Badge variant="secondary">Computer Vision</Badge>
-                              <Badge variant="secondary">Text Analytics</Badge>
-                            </div>
-                          </div>}
-                      </CardContent>
-                    </Card>
-
-                    {/* AWS AI Services */}
-                    <Card className="gradient-card">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Globe2 className="h-5 w-5" />
-                          AWS AI Services
-                        </CardTitle>
-                        <CardDescription>
-                          Rekognition, Transcribe, and Comprehend
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Switch id="aws-enabled" checked={investigationForm.aiToolsConfig.aws.enabled} onCheckedChange={checked => setInvestigationForm(prev => ({
-                          ...prev,
-                          aiToolsConfig: {
-                            ...prev.aiToolsConfig,
-                            aws: {
-                              ...prev.aiToolsConfig.aws,
-                              enabled: checked
-                            }
-                          }
-                        }))} />
-                          <Label htmlFor="aws-enabled">Enable AWS Services</Label>
-                        </div>
-                        {investigationForm.aiToolsConfig.aws.enabled && <div className="space-y-2">
-                            <Label>Available Services</Label>
-                            <div className="flex flex-wrap gap-2">
-                              <Badge variant="secondary">Rekognition</Badge>
-                              <Badge variant="secondary">Transcribe</Badge>
-                              <Badge variant="secondary">Comprehend</Badge>
-                              <Badge variant="secondary">Textract</Badge>
-                            </div>
-                          </div>}
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-              </TabsContent>
-
-              {/* Parameters Tab */}
-              <TabsContent value="parameters" className="space-y-6">
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="font-semibold mb-4">Investigation Parameters</h4>
-                    <p className="text-sm text-muted-foreground mb-6">
-                      Configure advanced analysis options and investigation scope.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card className="gradient-card">
-                      <CardHeader>
-                        <CardTitle>Analysis Options</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="networkAnalysis" className="flex items-center gap-2">
-                            <Network className="h-4 w-4" />
-                            Network Analysis
-                          </Label>
-                          <Switch id="networkAnalysis" checked={investigationForm.enableNetworkAnalysis} onCheckedChange={checked => setInvestigationForm(prev => ({
-                          ...prev,
-                          enableNetworkAnalysis: checked
-                        }))} />
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="voiceAnalysis" className="flex items-center gap-2">
-                            <Mic className="h-4 w-4" />
-                            Voice Pattern Analysis
-                          </Label>
-                          <Switch id="voiceAnalysis" checked={investigationForm.enableVoiceAnalysis} onCheckedChange={checked => setInvestigationForm(prev => ({
-                          ...prev,
-                          enableVoiceAnalysis: checked
-                        }))} />
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="facialRecognition" className="flex items-center gap-2">
-                            <Camera className="h-4 w-4" />
-                            Facial Recognition
-                          </Label>
-                          <Switch id="facialRecognition" checked={investigationForm.enableFacialRecognition} onCheckedChange={checked => setInvestigationForm(prev => ({
-                          ...prev,
-                          enableFacialRecognition: checked
-                        }))} />
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="behavioralAnalysis" className="flex items-center gap-2">
-                            <Activity className="h-4 w-4" />
-                            Behavioral Analysis
-                          </Label>
-                          <Switch id="behavioralAnalysis" checked={investigationForm.enableBehavioralAnalysis} onCheckedChange={checked => setInvestigationForm(prev => ({
-                          ...prev,
-                          enableBehavioralAnalysis: checked
-                        }))} />
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="sentimentAnalysis" className="flex items-center gap-2">
-                            <MessageSquare className="h-4 w-4" />
-                            Sentiment Analysis
-                          </Label>
-                          <Switch id="sentimentAnalysis" checked={investigationForm.enableSentimentAnalysis} onCheckedChange={checked => setInvestigationForm(prev => ({
-                          ...prev,
-                          enableSentimentAnalysis: checked
-                        }))} />
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="gradient-card">
-                      <CardHeader>
-                        <CardTitle>Investigation Scope</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                          <Label>Data Sources</Label>
-                          <div className="grid grid-cols-2 gap-2">
-                            {['Social Media', 'Public Records', 'Court Documents', 'News Articles', 'Business Registries', 'Domain Registrations', 'Email Leaks', 'Phone Directories'].map(source => <div key={source} className="flex items-center space-x-2">
-                                <Checkbox id={source} defaultChecked />
-                                <Label htmlFor={source} className="text-sm">{source}</Label>
-                              </div>)}
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label>Geographic Scope</Label>
-                          <Select defaultValue="global">
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="local">Local Region</SelectItem>
-                              <SelectItem value="national">National</SelectItem>
-                              <SelectItem value="global">Global</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label>Time Range</Label>
-                          <Select defaultValue="5years">
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="1year">Last 1 Year</SelectItem>
-                              <SelectItem value="3years">Last 3 Years</SelectItem>
-                              <SelectItem value="5years">Last 5 Years</SelectItem>
-                              <SelectItem value="10years">Last 10 Years</SelectItem>
-                              <SelectItem value="all">All Available Data</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
                 </div>
               </TabsContent>
             </Tabs>
