@@ -612,8 +612,6 @@ For specific use cases (e.g., vendor due diligence vs. threat intel), customize 
           ],
           tags: ['Sweden', 'OSINT', 'GDPR', 'Legal Compliance', 'Public Records', 'Intelligence Gathering'],
           lastUpdated: '2024-08-30'
-          tags: ['Sweden', 'OSINT', 'GDPR', 'Legal Compliance', 'Public Records', 'Intelligence Gathering'],
-          lastUpdated: '2024-08-30'
         },
         {
           id: 'social-media-osint',
