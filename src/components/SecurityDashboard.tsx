@@ -6501,23 +6501,7 @@ const SecurityDashboard = () => {
         
         {/* Automatic OSINT Agent */}
         {isOSINTAgentOpen && (
-          <Dialog open={isOSINTAgentOpen} onOpenChange={setIsOSINTAgentOpen}>
-            <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden p-0">
-              <DialogHeader className="p-6 pb-4">
-                <DialogTitle className="flex items-center gap-2">
-                  <Eye className="h-5 w-5" />
-                  Encrypted OSINT Intelligence Agent
-                  <Lock className="h-4 w-4 ml-2 text-primary" />
-                </DialogTitle>
-                <DialogDescription>
-                  Advanced Open Source Intelligence gathering with encrypted analysis and automated threat intelligence correlation
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex-1 overflow-hidden">
-                <AutomaticOSINTAgent onClose={() => setIsOSINTAgentOpen(false)} />
-              </div>
-            </DialogContent>
-          </Dialog>
+          <AutomaticOSINTAgent onClose={() => setIsOSINTAgentOpen(false)} />
         )}
         </div>
 
