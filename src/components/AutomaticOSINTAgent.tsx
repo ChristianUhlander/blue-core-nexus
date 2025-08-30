@@ -1049,6 +1049,14 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     website: 'https://www.hitta.se/api',
     pricingTier: 'Paid',
     capabilities: ['Person Directory Search', 'Business Directory Search', 'Address Lookup', 'Phone Number Lookup', 'Map Integration', 'Location Intelligence', 'Contact Verification', 'Demographic Data']
+  }, {
+    name: 'pimeyes',
+    displayName: 'PimEyes API',
+    description: 'AI-powered facial recognition search engine for finding faces across the internet',
+    category: 'Facial Recognition',
+    website: 'https://pimeyes.com',
+    pricingTier: 'Paid',
+    capabilities: ['Facial Recognition Search', 'Reverse Image Search', 'Privacy Protection', 'Digital Footprint Tracking', 'Face Detection', 'Identity Verification', 'Web Crawling', 'Image Analysis']
   }];
   const renderToolCard = (tool: OSINTTool) => <Card key={tool.name} className="gradient-card glow-hover">
       <CardHeader className="pb-3">
