@@ -827,6 +827,22 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     website: 'https://whoisapi.com',
     pricingTier: 'Freemium',
     capabilities: ['WHOIS Lookup', 'Domain History', 'Registration Data', 'Registrar Info']
+  }, {
+    name: 'yandex',
+    displayName: 'Yandex Maps API',
+    description: 'Russian mapping and geolocation services with global coverage',
+    category: 'Geolocation',
+    website: 'https://yandex.com/maps-api',
+    pricingTier: 'Freemium',
+    capabilities: ['Geocoding', 'Reverse Geocoding', 'Maps Rendering', 'Route Planning', 'Organization Search', 'Traffic Data']
+  }, {
+    name: 'lexbase',
+    displayName: 'Lexbase',
+    description: 'Swedish legal database with court records and case information',
+    category: 'Legal Intelligence',
+    website: 'https://lexbase.se',
+    pricingTier: 'Paid',
+    capabilities: ['Court Records Search', 'Legal Case Analysis', 'Swedish Legal Database', 'Background Checks', 'Company Information']
   }];
   const renderToolCard = (tool: OSINTTool) => <Card key={tool.name} className="gradient-card glow-hover">
       <CardHeader className="pb-3">
