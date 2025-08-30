@@ -1057,6 +1057,38 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     website: 'https://pimeyes.com',
     pricingTier: 'Paid',
     capabilities: ['Facial Recognition Search', 'Reverse Image Search', 'Privacy Protection', 'Digital Footprint Tracking', 'Face Detection', 'Identity Verification', 'Web Crawling', 'Image Analysis']
+  }, {
+    name: 'facecheck',
+    displayName: 'FaceCheck.ID API',
+    description: 'Professional facial recognition search engine optimized for OSINT investigations and identity verification',
+    category: 'Facial Recognition',
+    website: 'https://facecheck.id',
+    pricingTier: 'Freemium',
+    capabilities: ['Face Search', 'Identity Verification', 'Social Media Discovery', 'Scammer Detection', 'Criminal Database Search', 'Reverse Image Search', 'API Integration', 'Bulk Processing']
+  }, {
+    name: 'lenso',
+    displayName: 'Lenso.ai API',
+    description: 'AI-powered reverse image search for finding people, places, and similar images across the web',
+    category: 'Visual Intelligence',
+    website: 'https://lenso.ai',
+    pricingTier: 'Freemium',
+    capabilities: ['AI Image Search', 'People Recognition', 'Place Identification', 'Duplicate Detection', 'Similar Image Finding', 'Text-based Search', 'Visual Analysis', 'Web Crawling']
+  }, {
+    name: 'yandex_images',
+    displayName: 'Yandex Images API',
+    description: 'Russian search engine with advanced facial recognition and reverse image search capabilities',
+    category: 'Search Intelligence',
+    website: 'https://yandex.com/images',
+    pricingTier: 'Free',
+    capabilities: ['Reverse Image Search', 'Facial Recognition', 'Visual Similarity', 'Image Analysis', 'Multi-language Support', 'Advanced Filtering', 'High Accuracy', 'Global Coverage']
+  }, {
+    name: 'tineye',
+    displayName: 'TinEye API',
+    description: 'Original reverse image search engine for tracking image usage and finding sources',
+    category: 'Image Intelligence',
+    website: 'https://tineye.com',
+    pricingTier: 'Freemium',
+    capabilities: ['Reverse Image Search', 'Image Tracking', 'Source Identification', 'Usage Monitoring', 'API Access', 'Bulk Processing', 'Image Forensics', 'Historical Search']
   }];
   const renderToolCard = (tool: OSINTTool) => <Card key={tool.name} className="gradient-card glow-hover">
       <CardHeader className="pb-3">
