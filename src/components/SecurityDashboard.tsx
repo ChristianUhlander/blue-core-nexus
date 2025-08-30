@@ -2828,10 +2828,10 @@ const SecurityDashboard = () => {
                       <Button 
                         onClick={() => setIsAgenticPentestOpen(true)}
                         size="lg"
-                        className="bg-gradient-to-r from-green-600/80 to-blue-600/80 hover:from-green-700/90 hover:to-blue-700/90 text-white px-8 py-4 text-lg font-medium shadow-lg hover:shadow-green-500/20 transition-all duration-500 animate-pulse border-2 border-green-400/50"
+                        className="flex items-center gap-3"
                       >
-                        <Settings className="h-6 w-6 mr-3 animate-spin" />
-                        CLICK HERE: Configure & Launch AI Pentest
+                        <Settings className="h-5 w-5" />
+                        Configure & Launch AI Pentest
                       </Button>
                       
                       <Button 
