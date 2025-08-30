@@ -47,7 +47,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
     },
     services: {
       wazuh: {
-        baseUrl: isDevelopment ? 'http://localhost:55000' : process.env.WAZUH_API_URL || 'https://wazuh-api.yourdomain.com',
+        baseUrl: isDevelopment ? 'http://localhost:55000' : 'https://wazuh-api.yourdomain.com',
         timeout: 15000,
         retryAttempts: 3,
         retryDelay: 2000,
@@ -57,7 +57,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
         },
       },
       gvm: {
-        baseUrl: isDevelopment ? 'http://localhost:9392' : process.env.GVM_API_URL || 'https://gvm-api.yourdomain.com',
+        baseUrl: isDevelopment ? 'http://localhost:9392' : 'https://gvm-api.yourdomain.com',
         timeout: 30000,
         retryAttempts: 2,
         retryDelay: 3000,
@@ -67,14 +67,14 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
         },
       },
       zap: {
-        baseUrl: isDevelopment ? 'http://localhost:8080' : process.env.ZAP_API_URL || 'https://zap-api.yourdomain.com',
+        baseUrl: isDevelopment ? 'http://localhost:8080' : 'https://zap-api.yourdomain.com',
         timeout: 20000,
         retryAttempts: 3,
         retryDelay: 2000,
         apiKey: '', // In production, this would come from secure storage
       },
       spiderfoot: {
-        baseUrl: isDevelopment ? 'http://localhost:5001' : process.env.SPIDERFOOT_API_URL || 'https://spiderfoot-api.yourdomain.com',
+        baseUrl: isDevelopment ? 'http://localhost:5001' : 'https://spiderfoot-api.yourdomain.com',
         timeout: 25000,
         retryAttempts: 2,
         retryDelay: 3000,
