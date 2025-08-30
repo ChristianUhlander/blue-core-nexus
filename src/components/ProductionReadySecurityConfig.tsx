@@ -601,7 +601,7 @@ export const ProductionReadySecurityConfig: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <RefreshCw className="w-5 h-5 text-blue-500" />
+                  <RefreshCw className="w-5 h-5 text-primary" />
                   Active Scans
                 </CardTitle>
               </CardHeader>
@@ -616,7 +616,7 @@ export const ProductionReadySecurityConfig: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Ticket className="w-5 h-5 text-orange-500" />
+                  <Ticket className="w-5 h-5 text-accent" />
                   Open Tickets
                 </CardTitle>
               </CardHeader>
@@ -631,7 +631,7 @@ export const ProductionReadySecurityConfig: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="w-5 h-5 text-primary" />
                   Verified Fixes
                 </CardTitle>
               </CardHeader>
@@ -658,21 +658,21 @@ export const ProductionReadySecurityConfig: React.FC = () => {
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                     <span>Scanning Engine</span>
                   </div>
-                  <Badge variant="outline" className="text-green-600">Online</Badge>
+                  <Badge variant="outline" className="text-primary">Online</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-primary rounded-full"></div>
                     <span>Ticketing Integration</span>
                   </div>
-                  <Badge variant="outline" className="text-green-600">Connected</Badge>
+                  <Badge variant="outline" className="text-primary">Connected</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-accent rounded-full"></div>
                     <span>Verification Engine</span>
                   </div>
-                  <Badge variant="outline" className="text-yellow-600">Partial</Badge>
+                  <Badge variant="outline" className="text-accent">Partial</Badge>
                 </div>
               </div>
             </CardContent>

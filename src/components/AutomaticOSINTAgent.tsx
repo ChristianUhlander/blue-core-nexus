@@ -791,7 +791,7 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
           <span>v{tool.version}</span>
           <div className="flex items-center gap-2">
             {tool.requiresAuth && <Key className="h-3 w-3" />}
-            {tool.legalCompliance && <Shield className="h-3 w-3 text-green-400" />}
+            {tool.legalCompliance && <Shield className="h-3 w-3 text-primary" />}
             <Lock className="h-3 w-3 text-primary" />
           </div>
         </div>
@@ -936,7 +936,7 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
                     <CardTitle className="text-sm font-medium">Compliance Score</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-green-400">{metrics.complianceScore}%</div>
+                    <div className="text-2xl font-bold text-primary">{metrics.complianceScore}%</div>
                   </CardContent>
                 </Card>
               </div>
@@ -1169,19 +1169,19 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
                             {/* Investigation Metrics */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                               <div className="text-center p-3 bg-muted/30 rounded-lg">
-                                <div className="text-2xl font-bold text-blue-600">{selectedInvestigation.targets.length}</div>
+                                <div className="text-2xl font-bold text-primary">{selectedInvestigation.targets.length}</div>
                                 <div className="text-xs text-muted-foreground">Targets</div>
                               </div>
                               <div className="text-center p-3 bg-muted/30 rounded-lg">
-                                <div className="text-2xl font-bold text-green-600">{selectedInvestigation.evidence.length}</div>
+                                <div className="text-2xl font-bold text-accent">{selectedInvestigation.evidence.length}</div>
                                 <div className="text-xs text-muted-foreground">Evidence Items</div>
                               </div>
                               <div className="text-center p-3 bg-muted/30 rounded-lg">
-                                <div className="text-2xl font-bold text-orange-600">{selectedInvestigation.tools.length}</div>
+                                <div className="text-2xl font-bold text-primary">{selectedInvestigation.tools.length}</div>
                                 <div className="text-xs text-muted-foreground">Tools Used</div>
                               </div>
                               <div className="text-center p-3 bg-muted/30 rounded-lg">
-                                <div className="text-2xl font-bold text-purple-600">{calculateInvestigationProgress(selectedInvestigation)}%</div>
+                                <div className="text-2xl font-bold text-accent">{calculateInvestigationProgress(selectedInvestigation)}%</div>
                                 <div className="text-xs text-muted-foreground">Complete</div>
                               </div>
                             </div>
@@ -1314,7 +1314,7 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
                             <span>Reliability:</span>
                             <div className="flex items-center">
                               {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                                <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-accent text-accent' : 'text-muted-foreground'}`} />
                               ))}
                             </div>
                           </div>
@@ -1600,19 +1600,19 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
                                   <div className="text-xs text-muted-foreground">Total Items</div>
                                 </div>
                                 <div className="text-center p-3 bg-muted/30 rounded-lg">
-                                  <div className="text-2xl font-bold text-green-600">
+                                  <div className="text-2xl font-bold text-primary">
                                     {selectedInvestigation.evidence.filter(e => e.reliability === 'high').length}
                                   </div>
                                   <div className="text-xs text-muted-foreground">High Reliability</div>
                                 </div>
                                 <div className="text-center p-3 bg-muted/30 rounded-lg">
-                                  <div className="text-2xl font-bold text-blue-600">
+                                  <div className="text-2xl font-bold text-accent">
                                     {selectedInvestigation.evidence.filter(e => e.type === 'document').length}
                                   </div>
                                   <div className="text-xs text-muted-foreground">Documents</div>
                                 </div>
                                 <div className="text-center p-3 bg-muted/30 rounded-lg">
-                                  <div className="text-2xl font-bold text-purple-600">
+                                  <div className="text-2xl font-bold text-primary">
                                     {selectedInvestigation.evidence.filter(e => e.source === 'social-media').length}
                                   </div>
                                   <div className="text-xs text-muted-foreground">Social Media</div>

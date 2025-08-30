@@ -617,7 +617,7 @@ ${content}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="w-5 h-5 text-primary" />
                   Generated Report
                 </CardTitle>
                 <CardDescription>

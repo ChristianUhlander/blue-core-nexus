@@ -422,20 +422,20 @@ const GVMManagement: React.FC = () => {
                       </p>
                     </div>
                     <div>
-                      <span className="text-red-500">Critical:</span>
-                      <p className="font-bold text-red-500">{scan.vulnerabilities.critical}</p>
+                      <span className="text-primary">Critical:</span>
+                      <p className="font-bold text-primary">{scan.vulnerabilities.critical}</p>
                     </div>
                     <div>
-                      <span className="text-orange-500">High:</span>
-                      <p className="font-bold text-orange-500">{scan.vulnerabilities.high}</p>
+                      <span className="text-accent">High:</span>
+                      <p className="font-bold text-accent">{scan.vulnerabilities.high}</p>
                     </div>
                     <div>
-                      <span className="text-yellow-500">Medium:</span>
-                      <p className="font-bold text-yellow-500">{scan.vulnerabilities.medium}</p>
+                      <span className="text-muted-foreground">Medium:</span>
+                      <p className="font-bold text-muted-foreground">{scan.vulnerabilities.medium}</p>
                     </div>
                     <div>
-                      <span className="text-blue-500">Low:</span>
-                      <p className="font-bold text-blue-500">{scan.vulnerabilities.low}</p>
+                      <span className="text-muted-foreground">Low:</span>
+                      <p className="font-bold text-muted-foreground">{scan.vulnerabilities.low}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -453,9 +453,9 @@ const GVMManagement: React.FC = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
                       <AlertTriangle className={`h-5 w-5 mt-0.5 ${
-                        cve.severity === 'Critical' ? 'text-red-500' :
-                        cve.severity === 'High' ? 'text-orange-500' :
-                        cve.severity === 'Medium' ? 'text-yellow-500' : 'text-blue-500'
+                        cve.severity === 'Critical' ? 'text-primary' :
+                        cve.severity === 'High' ? 'text-accent' :
+                        cve.severity === 'Medium' ? 'text-muted-foreground' : 'text-muted-foreground'
                       }`} />
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">

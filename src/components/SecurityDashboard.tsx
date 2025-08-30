@@ -1074,11 +1074,11 @@ const SecurityDashboard = () => {
    */
   const getRiskColor = (severity) => {
     switch (severity) {
-      case 'critical': return 'text-red-500 bg-red-500/10';
-      case 'high': return 'text-orange-500 bg-orange-500/10';
-      case 'medium': return 'text-yellow-500 bg-yellow-500/10';
-      case 'low': return 'text-green-500 bg-green-500/10';
-      default: return 'text-gray-500 bg-gray-500/10';
+      case 'critical': return 'text-primary bg-destructive/10';
+      case 'high': return 'text-accent bg-accent/10';
+      case 'medium': return 'text-muted-foreground bg-muted/20';
+      case 'low': return 'text-muted-foreground bg-muted/10';
+      default: return 'text-muted-foreground bg-muted/10';
     }
   };
 
@@ -2778,18 +2778,18 @@ const SecurityDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div className="space-y-4">
                       <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-full bg-gradient-to-r from-blue-600/20 to-slate-600/20 shadow-md">
-                          <BrainCircuit className="h-8 w-8 text-blue-400" />
+                        <div className="p-3 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 shadow-md">
+                          <BrainCircuit className="h-8 w-8 text-primary" />
                         </div>
                         <div>
-                          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-slate-400 to-blue-500">
+                          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">
                             🤖 Full Agentic AI Pentest
                           </h2>
                           <div className="flex items-center gap-2 mt-2">
-                            <Badge className="bg-blue-500/10 text-blue-300 border-blue-500/30">
+                            <Badge className="bg-primary/10 text-primary border-primary/30">
                               EXPERIMENTAL
                             </Badge>
-                            <Badge className="bg-slate-500/10 text-slate-300 border-slate-500/30">
+                            <Badge className="bg-muted/20 text-muted-foreground border-muted/30">
                               PRODUCTION READY
                             </Badge>
                           </div>
@@ -2798,8 +2798,8 @@ const SecurityDashboard = () => {
                       
                       <div className="max-w-2xl">
                         <p className="text-lg text-muted-foreground leading-relaxed">
-                          <span className="text-blue-400 font-medium">Advanced AI-powered</span> autonomous penetration testing with 
-                          <span className="text-slate-400 font-medium"> LLM integration</span>. Connect GPT-5, Claude, or Perplexity to automatically 
+                          <span className="text-primary font-medium">Advanced AI-powered</span> autonomous penetration testing with 
+                          <span className="text-accent font-medium"> LLM integration</span>. Connect GPT-5, Claude, or Perplexity to automatically
                           analyze, plan, and execute security assessments using Kali Linux tools.
                         </p>
                         
@@ -2969,8 +2969,8 @@ const SecurityDashboard = () => {
                                         </div>
                                         <div className={`p-2 rounded-full ${
                                           connection.status === 'connected' 
-                                            ? 'bg-green-500/10 text-green-500' 
-                                            : 'bg-red-500/10 text-red-500'
+                                            ? 'bg-primary/10 text-primary' 
+                                            : 'bg-destructive/10 text-destructive'
                                         }`}>
                                           {connection.status === 'connected' ? (
                                             <CheckCircle className="h-4 w-4" />
@@ -3014,21 +3014,21 @@ const SecurityDashboard = () => {
                                 
                                 {/* Real-time Status Indicators */}
                                 <div className="flex gap-3 text-sm">
-                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20">
-                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse-glow" />
-                                    <span className="text-green-400 font-medium">
+                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+                                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
+                                    <span className="text-primary font-medium">
                                       {agents.filter(a => a.status === 'active').length} Active
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20">
-                                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                    <span className="text-red-400 font-medium">
+                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-destructive/10 border border-destructive/20">
+                                    <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
+                                    <span className="text-destructive font-medium">
                                       {agents.filter(a => a.status === 'disconnected').length} Offline
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20">
-                                    <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
-                                    <span className="text-yellow-400 font-medium">
+                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20">
+                                    <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                                    <span className="text-accent font-medium">
                                       {agents.filter(a => a.status === 'never_connected').length} Pending
                                     </span>
                                   </div>
@@ -3118,10 +3118,10 @@ const SecurityDashboard = () => {
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                                   <div className="text-center group cursor-pointer">
                                     <div className="relative mb-2">
-                                      <div className="text-3xl font-bold text-green-500 group-hover:scale-110 transition-transform">
+                                      <div className="text-3xl font-bold text-primary group-hover:scale-110 transition-transform">
                                         {agents.filter(a => a.status === 'active').length}
                                       </div>
-                                      <div className="absolute inset-0 bg-green-500/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      <div className="absolute inset-0 bg-primary/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
                                     <div className="text-sm text-muted-foreground">Active Agents</div>
                                     <Progress value={75} className="mt-2 h-2 glow" />
@@ -3129,10 +3129,10 @@ const SecurityDashboard = () => {
                                   
                                   <div className="text-center group cursor-pointer">
                                     <div className="relative mb-2">
-                                      <div className="text-3xl font-bold text-red-500 group-hover:scale-110 transition-transform">
+                                      <div className="text-3xl font-bold text-destructive group-hover:scale-110 transition-transform">
                                         {agents.filter(a => a.status === 'disconnected').length}
                                       </div>
-                                      <div className="absolute inset-0 bg-red-500/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      <div className="absolute inset-0 bg-destructive/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
                                     <div className="text-sm text-muted-foreground">Disconnected</div>
                                     <Progress value={20} className="mt-2 h-2" />
@@ -3140,10 +3140,10 @@ const SecurityDashboard = () => {
                                   
                                   <div className="text-center group cursor-pointer">
                                     <div className="relative mb-2">
-                                      <div className="text-3xl font-bold text-yellow-500 group-hover:scale-110 transition-transform">
+                                      <div className="text-3xl font-bold text-accent group-hover:scale-110 transition-transform">
                                         {agents.filter(a => a.status === 'never_connected').length}
                                       </div>
-                                      <div className="absolute inset-0 bg-yellow-500/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      <div className="absolute inset-0 bg-accent/20 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
                                     <div className="text-sm text-muted-foreground">Never Connected</div>
                                     <Progress value={5} className="mt-2 h-2" />

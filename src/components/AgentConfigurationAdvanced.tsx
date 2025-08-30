@@ -386,10 +386,10 @@ export const AgentConfigurationAdvanced: React.FC<AgentConfigurationAdvancedProp
 
   // Get risk level based on health score
   const getRiskLevel = (score: number) => {
-    if (score >= 80) return { level: 'Low', color: 'text-green-500', bg: 'bg-green-500/10' };
-    if (score >= 60) return { level: 'Medium', color: 'text-yellow-500', bg: 'bg-yellow-500/10' };
-    if (score >= 40) return { level: 'High', color: 'text-orange-500', bg: 'bg-orange-500/10' };
-    return { level: 'Critical', color: 'text-red-500', bg: 'bg-red-500/10' };
+    if (score >= 80) return { level: 'Low', color: 'text-primary', bg: 'bg-primary/10' };
+    if (score >= 60) return { level: 'Medium', color: 'text-muted-foreground', bg: 'bg-muted/20' };
+    if (score >= 40) return { level: 'High', color: 'text-accent', bg: 'bg-accent/10' };
+    return { level: 'Critical', color: 'text-primary', bg: 'bg-destructive/10' };
   };
 
   const riskLevel = getRiskLevel(healthScore);

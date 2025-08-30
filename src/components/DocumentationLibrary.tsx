@@ -899,37 +899,37 @@ actions:
                                 <CardTitle className="text-base">Prerequisites</CardTitle>
                               </CardHeader>
                               <CardContent>
-                                <ul className="text-sm space-y-1">
-                                  {selectedDocItem.prerequisites.map((prereq, idx) => (
-                                    <li key={idx} className="flex items-center gap-2">
-                                      <CheckCircle className="h-3 w-3 text-green-500" />
-                                      {prereq}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </CardContent>
-                            </Card>
-                          )}
+                                 <ul className="text-sm space-y-1">
+                                   {selectedDocItem.prerequisites.map((prereq, idx) => (
+                                     <li key={idx} className="flex items-center gap-2">
+                                       <CheckCircle className="h-3 w-3 text-primary" />
+                                       <span className="text-xs">{prereq}</span>
+                                     </li>
+                                   ))}
+                                 </ul>
+                               </CardContent>
+                             </Card>
+                           )}
 
-                          {selectedDocItem.expectedOutcomes && (
-                            <Card className="col-span-2">
-                              <CardHeader>
-                                <CardTitle className="text-base">Expected Outcomes</CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                <ul className="text-sm space-y-1">
-                                  {selectedDocItem.expectedOutcomes.map((outcome, idx) => (
-                                    <li key={idx} className="flex items-center gap-2">
-                                      <Star className="h-3 w-3 text-yellow-500" />
-                                      {outcome}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </CardContent>
-                            </Card>
-                          )}
-                        </div>
-                      </TabsContent>
+                           {selectedDocItem.expectedOutcomes && (
+                             <Card>
+                               <CardHeader>
+                                 <CardTitle className="text-base">Learning Outcomes</CardTitle>
+                               </CardHeader>
+                               <CardContent>
+                                 <ul className="text-sm space-y-1">
+                                   {selectedDocItem.expectedOutcomes.map((outcome, idx) => (
+                                     <li key={idx} className="flex items-center gap-2">
+                                       <CheckCircle className="h-3 w-3 text-accent" />
+                                       <span className="text-xs">{outcome}</span>
+                                     </li>
+                                   ))}
+                                 </ul>
+                               </CardContent>
+                             </Card>
+                           )}
+                         </div>
+                       </TabsContent>
 
                       {selectedDocItem.qaSteps && (
                         <TabsContent value="qa" className="mt-4">
@@ -944,12 +944,12 @@ actions:
                                     <h4 className="font-medium text-sm mb-2">Step {idx + 1}: {step.step}</h4>
                                     <div className="text-sm space-y-2">
                                       <div>
-                                        <span className="font-medium text-green-600">Expected Result:</span>
-                                        <p className="text-muted-foreground mt-1">{step.expectedResult}</p>
+                                        <span className="font-medium text-primary">Expected Result:</span>
+                                        <span className="text-sm text-muted-foreground">{step.expectedResult}</span>
                                       </div>
                                       {step.troubleshooting && (
-                                        <div>
-                                          <span className="font-medium text-orange-600">Troubleshooting:</span>
+                                        <div className="mt-1">
+                                          <span className="font-medium text-accent">Troubleshooting:</span>
                                           <p className="text-muted-foreground mt-1">{step.troubleshooting}</p>
                                         </div>
                                       )}
