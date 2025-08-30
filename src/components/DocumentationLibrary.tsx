@@ -4424,6 +4424,486 @@ actions:
           ]
         }
       ]
+    },
+    {
+      id: 'backend-development',
+      title: 'Backend Development',
+      description: 'Comprehensive guide for backend developers working on the security platform',
+      icon: Code,
+      badge: 'Developer Focus',
+      items: [
+        {
+          id: 'backend-architecture',
+          title: 'Backend Architecture & Development Guide',
+          description: 'Complete technical documentation for backend developers working on the security platform',
+          type: 'guide',
+          difficulty: 'advanced',
+          estimatedTime: '2 hours',
+          content: `# Backend Development Guide
+
+## Architecture Overview
+
+### Technology Stack
+- **Backend Framework**: FastAPI (Python 3.11+)
+- **Database**: PostgreSQL with SQLAlchemy ORM
+- **Message Queue**: Redis for caching and pub/sub
+- **Container**: Docker with Kubernetes deployment
+- **Authentication**: JWT with role-based access control
+- **API Documentation**: Auto-generated OpenAPI/Swagger
+
+### System Architecture
+\`\`\`
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │────│   FastAPI       │────│   PostgreSQL    │
+│   React/TS      │    │   Backend       │    │   Database      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │   Security      │
+                       │   Services      │
+                       │ Wazuh/GVM/ZAP   │
+                       └─────────────────┘
+\`\`\`
+
+## Development Environment Setup
+
+### Prerequisites
+\`\`\`bash
+# Python 3.11+ with pip
+python --version
+
+# PostgreSQL 14+
+psql --version
+
+# Redis 6+
+redis-cli --version
+
+# Docker & Docker Compose
+docker --version
+docker-compose --version
+\`\`\`
+
+### Local Development Setup
+\`\`\`bash
+# Clone and setup backend
+git clone [repository-url]
+cd security-platform-backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# venv\\Scripts\\activate  # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your configurations
+
+# Run database migrations
+alembic upgrade head
+
+# Start development server
+uvicorn app.main:app --reload --port 8000
+\`\`\`
+
+## Project Structure
+
+\`\`\`
+app/
+├── api/
+│   └── v1/
+│       ├── auth.py          # Authentication endpoints
+│       ├── security.py      # Security service endpoints
+│       ├── scans.py         # Scan management
+│       ├── reports.py       # Report generation
+│       └── websocket.py     # WebSocket connections
+├── core/
+│   ├── config.py           # Configuration management
+│   ├── database.py         # Database connection
+│   ├── security.py         # Security utilities
+│   └── logging.py          # Logging configuration
+├── models/
+│   ├── user.py            # User data models
+│   ├── security.py        # Security data models
+│   └── scan.py            # Scan data models
+├── schemas/
+│   ├── user.py            # Pydantic schemas
+│   ├── security.py        # API request/response schemas
+│   └── scan.py            # Scan schemas
+├── services/
+│   ├── auth_service.py    # Authentication logic
+│   ├── wazuh_service.py   # Wazuh integration
+│   ├── gvm_service.py     # GVM integration
+│   └── zap_service.py     # OWASP ZAP integration
+└── main.py                # FastAPI application entry
+\`\`\`
+
+## Core Components
+
+### 1. Configuration Management
+\`\`\`python
+# app/core/config.py
+from pydantic import BaseSettings
+
+class Settings(BaseSettings):
+    # Database
+    DATABASE_URL: str = "postgresql://user:pass@localhost/db"
+    
+    # Security Services
+    WAZUH_URL: str = "https://wazuh:55000"
+    WAZUH_USER: str = "wazuh"
+    WAZUH_PASSWORD: str = "wazuh"
+    
+    GVM_URL: str = "https://gvm:9390"
+    ZAP_URL: str = "http://zap:8080"
+    
+    # Authentication
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    
+    class Config:
+        env_file = ".env"
+
+settings = Settings()
+\`\`\`
+
+### 2. Database Models
+\`\`\`python
+# app/models/security.py
+from sqlalchemy import Column, Integer, String, DateTime, Text, Enum
+from app.core.database import Base
+
+class SecurityAlert(Base):
+    __tablename__ = "security_alerts"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    source = Column(Enum('wazuh', 'gvm', 'zap', name='source_enum'))
+    severity = Column(Enum('critical', 'high', 'medium', 'low', name='severity_enum'))
+    title = Column(String(255), nullable=False)
+    description = Column(Text)
+    timestamp = Column(DateTime)
+    acknowledged = Column(Boolean, default=False)
+\`\`\`
+
+### 3. API Schemas
+\`\`\`python
+# app/schemas/security.py
+from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
+
+class AlertBase(BaseModel):
+    title: str
+    description: str
+    severity: str
+    source: str
+
+class AlertCreate(AlertBase):
+    pass
+
+class Alert(AlertBase):
+    id: int
+    timestamp: datetime
+    acknowledged: bool
+    
+    class Config:
+        orm_mode = True
+\`\`\`
+
+## Security Service Integration
+
+### Abstract Service Base
+\`\`\`python
+# app/services/base_service.py
+from abc import ABC, abstractmethod
+import httpx
+from typing import Dict, Any
+
+class SecurityServiceBase(ABC):
+    def __init__(self, base_url: str, timeout: int = 30):
+        self.base_url = base_url
+        self.timeout = timeout
+        self.client = httpx.AsyncClient(timeout=timeout)
+    
+    @abstractmethod
+    async def health_check(self) -> Dict[str, Any]:
+        pass
+    
+    async def make_request(self, method: str, endpoint: str, **kwargs):
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
+        try:
+            response = await self.client.request(method, url, **kwargs)
+            response.raise_for_status()
+            return response.json()
+        except httpx.RequestError as e:
+            raise Exception(f"Request failed: {e}")
+\`\`\`
+
+### Wazuh Service Implementation
+\`\`\`python
+# app/services/wazuh_service.py
+from .base_service import SecurityServiceBase
+from typing import List, Dict, Any
+
+class WazuhService(SecurityServiceBase):
+    def __init__(self):
+        super().__init__(settings.WAZUH_URL)
+        self.auth_token = None
+    
+    async def authenticate(self):
+        auth_data = {
+            "user": settings.WAZUH_USER,
+            "password": settings.WAZUH_PASSWORD
+        }
+        response = await self.make_request("POST", "/security/user/authenticate", json=auth_data)
+        self.auth_token = response["data"]["token"]
+    
+    async def health_check(self) -> Dict[str, Any]:
+        try:
+            if not self.auth_token:
+                await self.authenticate()
+            
+            headers = {"Authorization": f"Bearer {self.auth_token}"}
+            response = await self.make_request("GET", "/", headers=headers)
+            return {"status": "healthy", "version": response.get("data", {}).get("api_version")}
+        except Exception as e:
+            return {"status": "unhealthy", "error": str(e)}
+    
+    async def get_agents(self) -> List[Dict[str, Any]]:
+        headers = {"Authorization": f"Bearer {self.auth_token}"}
+        response = await self.make_request("GET", "/agents", headers=headers)
+        return response["data"]["affected_items"]
+\`\`\`
+
+## API Endpoints
+
+### Security Endpoints
+\`\`\`python
+# app/api/v1/security.py
+from fastapi import APIRouter, Depends, HTTPException
+from app.services.wazuh_service import WazuhService
+from app.schemas.security import Alert
+
+router = APIRouter()
+
+@router.get("/health")
+async def security_health():
+    wazuh = WazuhService()
+    gvm = GVMService()
+    zap = ZAPService()
+    
+    health_status = {
+        "wazuh": await wazuh.health_check(),
+        "gvm": await gvm.health_check(),
+        "zap": await zap.health_check()
+    }
+    
+    return health_status
+
+@router.get("/alerts", response_model=List[Alert])
+async def get_alerts():
+    wazuh = WazuhService()
+    alerts = await wazuh.get_alerts()
+    return alerts
+\`\`\`
+
+## WebSocket Implementation
+
+### Connection Manager
+\`\`\`python
+# app/api/v1/websocket.py
+from fastapi import WebSocket, WebSocketDisconnect
+from typing import Dict, List
+import json
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: Dict[str, List[WebSocket]] = {}
+    
+    async def connect(self, websocket: WebSocket, user_id: str):
+        await websocket.accept()
+        if user_id not in self.active_connections:
+            self.active_connections[user_id] = []
+        self.active_connections[user_id].append(websocket)
+    
+    def disconnect(self, websocket: WebSocket, user_id: str):
+        if user_id in self.active_connections:
+            self.active_connections[user_id].remove(websocket)
+    
+    async def broadcast_to_user(self, message: dict, user_id: str):
+        if user_id in self.active_connections:
+            for connection in self.active_connections[user_id]:
+                await connection.send_text(json.dumps(message))
+
+manager = ConnectionManager()
+
+@router.websocket("/security-alerts")
+async def websocket_endpoint(websocket: WebSocket, token: str):
+    # Verify token and extract user_id
+    user_id = verify_token(token)
+    
+    await manager.connect(websocket, user_id)
+    try:
+        while True:
+            # Keep connection alive
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket, user_id)
+\`\`\`
+
+## Quality Assurance
+
+### Testing Structure
+\`\`\`python
+# tests/test_security_services.py
+import pytest
+from app.services.wazuh_service import WazuhService
+
+@pytest.mark.asyncio
+async def test_wazuh_health_check():
+    service = WazuhService()
+    health = await service.health_check()
+    assert "status" in health
+
+@pytest.fixture
+async def db_session():
+    # Setup test database session
+    pass
+
+def test_create_alert(db_session):
+    # Test alert creation
+    pass
+\`\`\`
+
+### Code Quality Standards
+\`\`\`bash
+# Install development dependencies
+pip install black flake8 mypy pytest pytest-asyncio
+
+# Code formatting
+black app/ tests/
+
+# Linting
+flake8 app/ tests/
+
+# Type checking
+mypy app/
+
+# Run tests
+pytest tests/ -v --cov=app
+\`\`\`
+
+## Deployment
+
+### Docker Configuration
+\`\`\`dockerfile
+# Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+\`\`\`
+
+### Kubernetes Deployment
+\`\`\`yaml
+# k8s-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: security-backend
+  template:
+    metadata:
+      labels:
+        app: security-backend
+    spec:
+      containers:
+      - name: backend
+        image: security-backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: url
+\`\`\`
+
+## Modular Development Guidelines
+
+### Service Pattern
+- Each external service (Wazuh, GVM, ZAP) has its own service class
+- Services inherit from SecurityServiceBase for consistency
+- Circuit breaker pattern for resilience
+
+### Database Patterns
+- Repository pattern for data access
+- Alembic migrations for schema changes
+- Connection pooling for performance
+
+### API Design
+- RESTful endpoints with proper HTTP methods
+- Consistent error handling and responses
+- OpenAPI documentation auto-generation
+
+### Security Best Practices
+- Input validation with Pydantic schemas
+- SQL injection prevention with ORM
+- JWT token validation and refresh
+- Rate limiting on sensitive endpoints
+
+## Monitoring & Logging
+
+### Structured Logging
+\`\`\`python
+import structlog
+
+logger = structlog.get_logger()
+
+# In service methods
+logger.info("wazuh_api_call", 
+           endpoint="/agents", 
+           response_time=0.250,
+           status_code=200)
+\`\`\`
+
+### Health Checks
+- Service health endpoints for each integration
+- Database connection monitoring  
+- Redis connection validation
+- Kubernetes readiness/liveness probes`,
+          prerequisites: ['Python 3.11+', 'FastAPI experience', 'PostgreSQL knowledge', 'Docker/K8s familiarity'],
+          expectedOutcomes: [
+            'Set up complete development environment',
+            'Understand system architecture and patterns',
+            'Implement secure API endpoints',
+            'Deploy services to Kubernetes'
+          ],
+          troubleshootingTips: [
+            'Use Docker Compose for local development dependencies',
+            'Check service health endpoints before debugging integration issues',
+            'Use Alembic for all database schema changes',
+            'Implement proper error handling and logging for all external service calls'
+          ],
+          tags: ['Backend', 'FastAPI', 'Security', 'PostgreSQL', 'Kubernetes', 'Development'],
+          lastUpdated: '2024-08-30'
+        }
+      ]
     }
   ];
 
