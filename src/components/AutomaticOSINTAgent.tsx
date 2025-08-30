@@ -843,6 +843,14 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     website: 'https://lexbase.se',
     pricingTier: 'Paid',
     capabilities: ['Court Records Search', 'Legal Case Analysis', 'Swedish Legal Database', 'Background Checks', 'Company Information']
+  }, {
+    name: 'mrkoll',
+    displayName: 'MrKoll',
+    description: 'Swedish person search engine with comprehensive background information and public records',
+    category: 'Person Intelligence',
+    website: 'https://mrkoll.se',
+    pricingTier: 'Paid',
+    capabilities: ['Person Search', 'Background Checks', 'Professional Information', 'Legal Proceedings', 'Contact Information', 'Educational Background']
   }];
   const renderToolCard = (tool: OSINTTool) => <Card key={tool.name} className="gradient-card glow-hover">
       <CardHeader className="pb-3">
