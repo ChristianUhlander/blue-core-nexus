@@ -1041,6 +1041,14 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     website: 'https://www.fordonsfakta.se/',
     pricingTier: 'Paid',
     capabilities: ['Vehicle Registration Data', 'Technical Specifications', 'Ownership History', 'Inspection Records', 'Insurance Information', 'Tax Status', 'Driver License Verification']
+  }, {
+    name: 'hitta',
+    displayName: 'Hitta.se API',
+    description: 'Swedish directory service API for person search, business information, and location intelligence',
+    category: 'Directory Intelligence',
+    website: 'https://www.hitta.se/api',
+    pricingTier: 'Paid',
+    capabilities: ['Person Directory Search', 'Business Directory Search', 'Address Lookup', 'Phone Number Lookup', 'Map Integration', 'Location Intelligence', 'Contact Verification', 'Demographic Data']
   }];
   const renderToolCard = (tool: OSINTTool) => <Card key={tool.name} className="gradient-card glow-hover">
       <CardHeader className="pb-3">
