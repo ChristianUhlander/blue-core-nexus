@@ -322,6 +322,296 @@ def extract_metadata(image_path):
               troubleshooting: 'Consult legal counsel if uncertain about compliance'
             }
           ]
+        },
+        {
+          id: 'sweden-osint-guide',
+          title: 'Advanced OSINT Guide (Sweden-focused)',
+          description: 'Comprehensive guide for lawful open-source information gathering in Sweden',
+          type: 'guide',
+          difficulty: 'advanced',
+          estimatedTime: '75 minutes',
+          content: `# Advanced OSINT Guide (Sweden-focused)
+
+This guide shows lawful ways to gather open-source information in/about Sweden and how to stay compliant. It does not cover bypassing access controls, scraping where forbidden, or any activity that could facilitate harassment, discrimination, stalking, or other harms.
+
+## 1) Legal & Ethical Grounding (read this first)
+
+### Offentlighetsprincipen (Principle of Public Access)
+**Offentlighetsprincipen** gives everyone the right to access official records; it's enshrined in Sweden's Freedom of the Press Act (TF).
+- **Source**: [Regeringskansliet](https://www.regeringen.se/)
+- **Reference**: [Riksdagen](https://www.riksdagen.se/)
+
+### Public Access to Information and Secrecy Act
+The **Public Access to Information and Secrecy Act (2009:400)** explains how to obtain documents and the limits (what's secret).
+- **Primary**: [Regeringskansliet](https://www.regeringen.se/)
+- **International**: [Natlex](https://www.ilo.org/dyn/natlex/) | [WIPO](https://www.wipo.int/)
+
+### GDPR Compliance
+**GDPR** still applies to most OSINT processing. Biometric data (incl. facial recognition used to uniquely identify someone) is a special category—generally prohibited unless a strict exception in Art. 9 applies. Swedish DPA (IMY) reiterates that face recognition is highly regulated.
+- **GDPR Text**: [EUR-Lex](https://eur-lex.europa.eu/eli/reg/2016/679/oj)
+- **Swedish Authority**: [IMY.se](https://www.imy.se/) - [Face Recognition Guidance](https://www.imy.se/en/news/facial-recognition-in-public-spaces/)
+
+### Publisher's Certificate Protection
+Some Swedish "people search" sites rely on **utgivningsbevis** (publisher's certificate) under YGL to claim constitutional protection; even then, IMY now says such services can be reviewed for GDPR compliance. Treat their data with caution and verify.
+- **Media Authority**: [Mediemyndigheten](https://www.mediemyndigheten.se/)
+- **GDPR Review**: [IMY.se](https://www.imy.se/)
+
+### Legal Precedent Warning
+**Lawful use matters**: Swedish Police were fined for using Clearview AI (unlawful biometric processing). That's a clear signal for private actors, too.
+- **EDPB Decision**: [European Data Protection Board](https://edpb.europa.eu/)
+- **Case Details**: [GDPR Hub](https://gdprhub.eu/)
+
+## 2) Core Swedish Sources (what you can request)
+
+### A. Authorities (primary data; highest reliability)
+
+#### Skatteverket (Swedish Tax Agency)
+**Folkbokföring** extracts ("personbevis") for identity/family/marital status; some info is public, some confidential. Follow their public-info process.
+- **Official Site**: [Skatteverket.se](https://www.skatteverket.se/)
+- **Public Info Process**: [Request Guidelines](https://www.skatteverket.se/privat/folkbokforing/sekretess.4.18e1b10334ebe8bc80001502.html)
+
+#### Sveriges Domstolar (Courts)
+You can request **allmän handling** (public documents) incl. judgments; anonymity rights; secrecy review applies. Use their request pages.
+- **Main Site**: [Sveriges Domstolar](https://www.domstol.se/)
+- **FOI Requests**: [Document Requests](https://www.domstol.se/amne/bestalla-domar-och-beslut/)
+- **Request Form**: [Online Portal](https://www.domstol.se/amne/bestalla-domar-och-beslut/bestall-domar-och-beslut/)
+
+#### Bolagsverket (Companies Registration Office)
+Free company lookups and purchasable documents (registration certs, annual reports).
+- **Company Search**: [Bolagsverket.se](https://www.bolagsverket.se/)
+- **Free Search**: [Company Database](https://bolagsverket.se/be/sok)
+- **Document Orders**: [E-service Portal](https://bolagsverket.se/ff/foretagsformer/aktiebolag/starta/registrera)
+
+#### Lantmäteriet (Cadastre/Property)
+**Fastighetsregistret** (official property register) with free standard extracts via e-service; details on contents.
+- **Main Portal**: [Lantmateriet.se](https://www.lantmateriet.se/)
+- **Property Search**: [Fastighetsregistret](https://www.lantmateriet.se/en/real-property/property-register/)
+- **Extract Service**: [Min Fastighet](https://minfastighet.lantmateriet.se/)
+- **API Access**: [Open Data](https://www.lantmateriet.se/en/about-lantmateriet/open-geodata/)
+
+#### Kronofogden (Enforcement Authority)
+Debt/collection information via e-services or request; they note right to anonymity when contacting them.
+- **Official Site**: [Kronofogden.se](https://kronofogden.se/)
+- **Anonymity Rights**: [Contact Information](https://kronofogden.se/om-kronofogden/kontakt/)
+
+**Practice**: Prefer primary records (above) to third-party mirrors; document the source, request route, reference numbers, and dates.
+
+### B. Private Aggregators (verify & handle carefully)
+
+**MrKoll, Ratsit, Hitta, Eniro, Merinfo, Lexbase** etc. often hold an **utgivningsbevis** (constitutional "database" protection). Accuracy varies; information may be outdated; and there's ongoing legal debate about how GDPR applies. Use only as leads; verify against primary sources.
+- **Constitutional Protection**: [Mediemyndigheten](https://www.mediemyndigheten.se/)
+- **Example Sites**: [MrKoll.se](https://www.mrkoll.se/) 
+- **Legal Analysis**: [Timedanowsky Law](https://timedanowsky.se/)
+
+## 3) Facial Recognition & Image OSINT (what's actually legal/useful)
+
+**Important**: Meta shut down its face-recognition system on Facebook and deleted the templates in 2021; crawling Facebook/Instagram for biometric identification conflicts with their terms and EU privacy rules.
+- **Meta Announcement**: [About Facebook](https://about.fb.com/news/2021/11/update-on-use-of-face-recognition/)
+- **News Coverage**: [CBS News](https://www.cbsnews.com/) | [WIRED](https://www.wired.com/)
+
+### Lawful alternatives (open-web only):
+
+#### Reverse Image Search
+- **Google Images**: Standard reverse image search
+- **Bing Visual Search**: Microsoft's image search
+- **TinEye**: Specialized reverse image search
+- Works on publicly crawled web, not private social platforms
+
+#### PimEyes (Open Web Only)
+**PimEyes** searches only the open web and explicitly does not index social media like Facebook or Instagram; it offers opt-out. Use only with a clear lawful basis and respect local law.
+- **Official Site**: [PimEyes.com](https://pimeyes.com/)
+- **Opt-out Process**: [Privacy Controls](https://pimeyes.com/en/privacy-policy)
+
+### Compliance Note
+In Sweden/EU, using face recognition to identify a person typically processes biometric special-category data. You must have a valid Art. 9 exception (rare in OSINT contexts) and meet GDPR's principles (necessity, proportionality, transparency, etc.). When in doubt, don't process biometrics; use non-biometric and consent-based methods instead.
+- **GDPR Article 9**: [Special Categories](https://gdpr-info.eu/art-9-gdpr/)
+- **Swedish Guidance**: [IMY.se](https://www.imy.se/)
+
+## 4) A Practical, Lawful OSINT Workflow (Sweden)
+
+### Step 1: Define scope & purpose (GDPR Art. 5)
+Write down your legitimate interest or other legal basis for processing. Exclude special-category data unless a clear exception applies.
+
+### Step 2: Start with primary registers
+
+\`\`\`bash
+# Company Investigation Workflow
+curl "https://api.bolagsverket.se/companies/search?name=TargetCompany"
+\`\`\`
+
+#### Bolagsverket Company Check
+- Check [Bolagsverket.se](https://www.bolagsverket.se/) for entities/roles
+- Document registration numbers and dates
+- Download annual reports if needed
+
+#### Property Investigation
+- Pull [Lantmäteriet](https://www.lantmateriet.se/) property extracts for addresses/ownership history if necessary
+- Use **Fastighetsregistret** for official property records
+
+#### Court Records
+- Request relevant court records through [Sveriges Domstolar](https://www.domstol.se/)
+- Use their official request forms
+
+#### Tax Authority Records
+- Where justified, query [Skatteverket](https://www.skatteverket.se/) for permissible folkbokföring details
+- Follow their public information procedures
+
+### Step 3: Use private directories as leads, not truth
+- Cross-check MrKoll/Lexbase outputs against official sources
+- Keep notes on where each datum came from and its timestamp
+- Treat as unverified until confirmed
+- Reference: [Mediemyndigheten](https://www.mediemyndigheten.se/)
+
+### Step 4: Open-web media checks (non-biometric first)
+- Reverse-image search on public sites
+- Examine EXIF (if present) and context
+- If you consider a web face-search engine (e.g., [PimEyes](https://pimeyes.com/)), confirm your lawful basis, minimize data, and record opt-out/notice steps
+
+### Step 5: Freedom-of-Information (FOI) requests
+- Use **Begär ut allmän handling** procedures
+- You can request anonymously, subject to secrecy tests and fees
+- Reference: [Sveriges Domstolar FOI](https://www.domstol.se/)
+
+### Step 6: Document chain-of-custody
+- Store copies of responses, headers/metadata, and your notes
+- Record source URL / authority, date, what you asked for, and what was returned
+- Maintain forensic integrity
+
+## 5) OPSEC & Quality
+
+### Minimize and partition
+- Only collect what you need for the stated purpose
+- Store sensitive items separately
+- Set retention limits
+- Follow data minimization principles
+
+### Corroborate
+- Require ≥2 independent sources for any critical assertion
+- At least one primary source required
+- Document confidence levels
+
+### Respect removal processes
+Even where sites have **utgivningsbevis**, some offer takedown/correction workflows; IMY provides guidance for individuals contesting listings.
+- **Individual Rights**: [IMY.se](https://www.imy.se/)
+
+## 6) Quick Source Map (cheat sheet)
+
+| Information Type | Primary Source | URL | Notes |
+|-----------------|----------------|-----|-------|
+| **Identity/Residence** | Skatteverket "Public information" & personbevis | [Skatteverket.se](https://www.skatteverket.se/) | Some data confidential |
+| **Companies/Officers** | Bolagsverket lookup/e-services | [Bolagsverket.se](https://www.bolagsverket.se/) | Free basic search |
+| **Property** | Lantmäteriet fastighetsregistret & standard extracts | [Lantmateriet.se](https://www.lantmateriet.se/) | Official property records |
+| **Debts/Enforcement** | Kronofogden info & contacts | [Kronofogden.se](https://kronofogden.se/) | Anonymity rights noted |
+| **Courts** | Beställ domar/beslut, FOI guidance | [Sveriges Domstolar](https://www.domstol.se/) | Public document requests |
+| **People directories** | MrKoll, Lexbase | [Mediemyndigheten](https://www.mediemyndigheten.se/) | YGL protection debated; verify |
+| **Facial recognition** | PimEyes (open-web only) | [PimEyes.com](https://pimeyes.com/) | Does not search Facebook/Instagram |
+
+## 7) Things NOT to do
+
+### Social Media Scraping
+- **Don't** try to scrape or face-search Facebook/Instagram
+- Meta discontinued its tagging system and social-media crawling is restricted by both law and platform policy
+- Reference: [About Facebook](https://about.fb.com/)
+
+### Special Category Data
+- **Don't** build "people files" beyond necessity
+- Avoid special-category data (biometrics, health, etc.) unless a clear Art. 9 exception applies
+- Reference: [GDPR Article 9](https://gdpr-info.eu/art-9-gdpr/)
+
+### Constitutional Protection Abuse
+- **Don't** rely on a site's **utgivningsbevis** to justify your own downstream processing
+- Your processing still needs a lawful basis
+- Reference: [Mediemyndigheten](https://www.mediemyndigheten.se/)
+
+## 8) Template: Minimal Compliance Note (example)
+
+\`\`\`
+Purpose: Background vetting for B2B onboarding
+Legal basis: Legitimate interest (GDPR Art. 6(1)(f)); no special-category data processed
+Sources: Bolagsverket (2025-08-30), Lantmäteriet extract (2025-08-30), Court FOI (requested 2025-08-30)
+Data minimization: Only company role, registration status, property liens; no biometrics
+Retention: 12 months, then delete
+Data subject rights: Contact <email>; we honor access/erasure unless legal hold applies
+\`\`\`
+
+## Quality Assurance Checklist
+
+### Legal Compliance
+- [ ] Lawful basis documented (GDPR Art. 6)
+- [ ] Special category data avoided or exception documented (GDPR Art. 9)
+- [ ] Swedish offentlighetsprincipen respected
+- [ ] Platform terms of service reviewed
+- [ ] Data minimization principle applied
+
+### Source Verification
+- [ ] Primary sources prioritized over aggregators
+- [ ] Request routes documented
+- [ ] Reference numbers recorded
+- [ ] Publication dates verified
+- [ ] Cross-reference completed
+
+### Data Quality
+- [ ] Chain of custody maintained
+- [ ] Screenshots captured with timestamps
+- [ ] Metadata preserved
+- [ ] Confidence levels assigned
+- [ ] Verification status documented
+
+### Operational Security
+- [ ] Investigator identity protected
+- [ ] Secure communication channels used
+- [ ] Data segregation implemented
+- [ ] Access controls applied
+- [ ] Retention policies defined
+
+## Final Word
+
+OSINT in Sweden is powerful specifically because of openness and archives. The trade-off is responsibility: prefer primary sources, avoid biometrics, and keep a clear paper trail for why you collected what you collected.
+
+For specific use cases (e.g., vendor due diligence vs. threat intel), customize this workflow with the right forms and request routes.`,
+          prerequisites: [
+            'Understanding of GDPR principles',
+            'Familiarity with Swedish legal system',
+            'Basic OSINT methodology knowledge',
+            'Knowledge of data protection laws'
+          ],
+          expectedOutcomes: [
+            'Conduct lawful OSINT investigations in Sweden',
+            'Navigate Swedish public records systems',
+            'Maintain GDPR compliance throughout investigations',
+            'Produce legally defensible intelligence reports',
+            'Understand constitutional protections and limitations'
+          ],
+          qaSteps: [
+            {
+              step: 'Legal Basis Documentation',
+              expectedResult: 'Clear lawful basis documented before any data processing',
+              troubleshooting: 'If uncertain about legal basis, consult legal counsel before proceeding'
+            },
+            {
+              step: 'Primary Source Verification',
+              expectedResult: 'All critical information verified through official Swedish authorities',
+              troubleshooting: 'If primary source unavailable, document limitation and seek alternative verification'
+            },
+            {
+              step: 'GDPR Compliance Check',
+              expectedResult: 'All processing activities comply with GDPR requirements',
+              troubleshooting: 'Review data minimization and lawful basis if compliance issues arise'
+            },
+            {
+              step: 'Chain of Custody Maintenance',
+              expectedResult: 'Complete documentation of all sources and collection methods',
+              troubleshooting: 'If documentation gaps exist, fill immediately or mark as unverified'
+            }
+          ],
+          troubleshootingTips: [
+            'If a Swedish authority denies a public record request, check if secrecy provisions apply under the Public Access to Information and Secrecy Act',
+            'When facing GDPR compliance questions, consult IMY guidance documents specific to your use case',
+            'If private aggregator data conflicts with official records, always prioritize the official source',
+            'For complex constitutional protection questions regarding utgivningsbevis, seek legal advice from Swedish media law specialists'
+          ],
+          tags: ['Sweden', 'OSINT', 'GDPR', 'Legal Compliance', 'Public Records', 'Intelligence Gathering'],
+          lastUpdated: '2024-08-30'
         }
       ]
     },
