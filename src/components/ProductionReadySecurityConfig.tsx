@@ -104,30 +104,6 @@ export const ProductionReadySecurityConfig: React.FC = () => {
       targets: ['api.company.com/v1', 'api.company.com/v2', 'graphql.company.com']
     },
     {
-      id: '4',
-      name: 'Social Engineering Simulation',
-      description: 'Automated phishing campaigns and social engineering tests to assess human security awareness',
-      schedule: 'monthly',
-      enabled: true,
-      lastRun: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
-      nextRun: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
-      status: 'completed',
-      categories: ['social-engineering', 'phishing', 'awareness-testing', 'human-factor'],
-      targets: ['employees@company.com', 'contractors@company.com']
-    },
-    {
-      id: '5',
-      name: 'Wireless Network Penetration',
-      description: 'WiFi security assessment including WPA/WEP cracking, rogue access point detection, and wireless client attacks',
-      schedule: 'weekly',
-      enabled: false,
-      lastRun: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
-      nextRun: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
-      status: 'idle',
-      categories: ['wireless', 'wifi-security', 'wpa-cracking', 'rogue-ap-detection'],
-      targets: ['Corporate-WiFi', 'Guest-Network', 'IoT-Devices-WiFi']
-    },
-    {
       id: '6',  
       name: 'Cloud Infrastructure Security',
       description: 'AWS/Azure/GCP security assessment including IAM misconfigurations, storage bucket exposure, and container security',
@@ -138,42 +114,6 @@ export const ProductionReadySecurityConfig: React.FC = () => {
       status: 'running',
       categories: ['cloud-security', 'aws-security', 'azure-security', 'iam-assessment', 'container-security'],
       targets: ['aws-prod-account', 'azure-subscription', 'k8s-clusters']
-    },
-    {
-      id: '7',
-      name: 'Active Directory Assessment',
-      description: 'Windows domain security testing including Kerberoasting, DCSync, Golden Ticket attacks, and privilege escalation',
-      schedule: 'weekly',
-      enabled: true,
-      lastRun: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
-      nextRun: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-      status: 'idle',
-      categories: ['active-directory', 'kerberoasting', 'privilege-escalation', 'domain-controller'],
-      targets: ['dc01.company.local', 'dc02.company.local', 'corp.company.local']
-    },
-    {
-      id: '8',
-      name: 'Mobile Application Security',
-      description: 'iOS/Android app security testing including static/dynamic analysis, API abuse, and data storage vulnerabilities',
-      schedule: 'monthly',
-      enabled: true,
-      lastRun: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
-      nextRun: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-      status: 'idle',
-      categories: ['mobile-security', 'ios-security', 'android-security', 'static-analysis', 'dynamic-analysis'],
-      targets: ['com.company.mobile-app', 'company-ios-app', 'mobile-api.company.com']
-    },
-    {
-      id: '9',
-      name: 'IoT Device Security Audit',
-      description: 'Internet of Things device security assessment including firmware analysis, protocol security, and device authentication',
-      schedule: 'monthly',
-      enabled: false,
-      lastRun: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
-      nextRun: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-      status: 'idle',
-      categories: ['iot-security', 'firmware-analysis', 'protocol-security', 'device-authentication'],
-      targets: ['smart-cameras', 'building-sensors', 'industrial-controllers']
     }
   ]);
 
