@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { encryptionService } from "@/utils/encryptionService";
 import { 
@@ -65,7 +66,35 @@ import {
   Calendar,
   Play,
   Star,
-  CheckCircle
+  CheckCircle,
+  Target,
+  ChevronLeft,
+  ChevronRight,
+  Edit,
+  Database,
+  TrendingUp,
+  BarChart3,
+  PieChart,
+  FileAudio,
+  FileVideo,
+  Camera,
+  Mic,
+  ImageIcon,
+  UserCheck,
+  Building2,
+  Briefcase,
+  GraduationCap,
+  Heart,
+  Smartphone,
+  Laptop,
+  Car,
+  Home,
+  CreditCard,
+  MessageSquare,
+  Share2,
+  Clock,
+  Globe2,
+  Zap
 } from "lucide-react";
 import type { 
   OSINTTool, 
@@ -148,6 +177,94 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
   const [investigationTab, setInvestigationTab] = useState('overview');
   const [activeInvestigations, setActiveInvestigations] = useState<ExtendedOSINTInvestigation[]>([]);
   const [completedInvestigations, setCompletedInvestigations] = useState<ExtendedOSINTInvestigation[]>([]);
+
+  // New Investigation Form State
+  const [investigationForm, setInvestigationForm] = useState({
+    // Basic Information
+    title: '',
+    description: '',
+    targetType: 'person',
+    priority: 'medium',
+    expectedDuration: '24h',
+    legalAuthorization: false,
+    
+    // Personal Information
+    fullName: '',
+    aliases: [],
+    dateOfBirth: '',
+    nationality: '',
+    occupation: '',
+    employer: '',
+    education: '',
+    
+    // Contact Information
+    emailAddresses: [],
+    phoneNumbers: [],
+    physicalAddresses: [],
+    socialMediaProfiles: [],
+    
+    // Digital Footprint
+    websites: [],
+    usernames: [],
+    ipAddresses: [],
+    domains: [],
+    
+    // Physical Characteristics (for facial recognition)
+    height: '',
+    weight: '',
+    eyeColor: '',
+    hairColor: '',
+    distinctiveMarks: '',
+    
+    // Assets & Financial
+    knownAssets: [],
+    financialInstitutions: [],
+    businessInterests: [],
+    
+    // Relationships
+    familyMembers: [],
+    associates: [],
+    enemies: [],
+    
+    // Technology Profile
+    devices: [],
+    operatingSystems: [],
+    softwarePreferences: [],
+    
+    // Behavioral Patterns
+    onlineHabits: '',
+    schedulePatterns: '',
+    interests: [],
+    
+    // Media Files for AI Analysis
+    profileImages: [],
+    voiceRecordings: [],
+    videoFiles: [],
+    documents: [],
+    
+    // Investigation Parameters
+    enableVoiceAnalysis: false,
+    enableFacialRecognition: false,
+    enableBehavioralAnalysis: false,
+    enableSentimentAnalysis: false,
+    enableNetworkAnalysis: false,
+    
+    // Third-party AI Tools
+    aiToolsConfig: {
+      openai: { enabled: false, model: 'gpt-4-vision-preview' },
+      anthropic: { enabled: false, model: 'claude-3.5-sonnet' },
+      google: { enabled: false, model: 'gemini-pro-vision' },
+      azure: { enabled: false, services: ['face-api', 'speech-services'] },
+      aws: { enabled: false, services: ['rekognition', 'transcribe', 'comprehend'] }
+    }
+  });
+
+  const [newAlias, setNewAlias] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [newAddress, setNewAddress] = useState('');
+  const [newSocialProfile, setNewSocialProfile] = useState({ platform: '', username: '' });
+  const [uploadingFiles, setUploadingFiles] = useState(false);
   const [showAddTargetDialog, setShowAddTargetDialog] = useState(false);
   const [showToolConfigDialog, setShowToolConfigDialog] = useState(false);
   const [showEvidenceFilter, setShowEvidenceFilter] = useState(false);
@@ -1981,6 +2098,1010 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({ onClos
           </Tabs>
         </div>
       </div>
+
+      {/* New Investigation Dialog */}
+      <Dialog open={showNewInvestigationDialog} onOpenChange={setShowNewInvestigationDialog}>
+        <DialogContent className="sm:max-w-[1200px] max-h-[90vh] gradient-card border-primary/20 overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Search className="h-6 w-6 text-primary animate-pulse" />
+              New OSINT Investigation - Advanced Profiling
+            </DialogTitle>
+            <DialogDescription>
+              Create a comprehensive investigation profile with AI-powered analysis capabilities
+            </DialogDescription>
+          </DialogHeader>
+          
+          <ScrollArea className="max-h-[75vh] pr-4">
+            <Tabs defaultValue="basic" className="w-full">
+              <TabsList className="grid w-full grid-cols-6 mb-6">
+                <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                <TabsTrigger value="personal">Personal</TabsTrigger>
+                <TabsTrigger value="digital">Digital</TabsTrigger>
+                <TabsTrigger value="media">Media Files</TabsTrigger>
+                <TabsTrigger value="ai-tools">AI Analysis</TabsTrigger>
+                <TabsTrigger value="parameters">Parameters</TabsTrigger>
+              </TabsList>
+
+              {/* Basic Information Tab */}
+              <TabsContent value="basic" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Investigation Title *</Label>
+                    <Input
+                      id="title"
+                      value={investigationForm.title}
+                      onChange={(e) => setInvestigationForm(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Operation Codename"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="targetType">Target Type</Label>
+                    <Select 
+                      value={investigationForm.targetType} 
+                      onValueChange={(value) => setInvestigationForm(prev => ({ ...prev, targetType: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="person">Individual Person</SelectItem>
+                        <SelectItem value="organization">Organization</SelectItem>
+                        <SelectItem value="domain">Domain/Website</SelectItem>
+                        <SelectItem value="email">Email Address</SelectItem>
+                        <SelectItem value="phone">Phone Number</SelectItem>
+                        <SelectItem value="ip">IP Address</SelectItem>
+                        <SelectItem value="username">Username</SelectItem>
+                        <SelectItem value="vehicle">Vehicle</SelectItem>
+                        <SelectItem value="property">Property</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Investigation Description</Label>
+                  <Textarea
+                    id="description"
+                    value={investigationForm.description}
+                    onChange={(e) => setInvestigationForm(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Detailed description of the investigation objectives, scope, and legal basis..."
+                    rows={4}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="priority">Priority Level</Label>
+                    <Select 
+                      value={investigationForm.priority} 
+                      onValueChange={(value) => setInvestigationForm(prev => ({ ...prev, priority: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low Priority</SelectItem>
+                        <SelectItem value="medium">Medium Priority</SelectItem>
+                        <SelectItem value="high">High Priority</SelectItem>
+                        <SelectItem value="critical">Critical</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="duration">Expected Duration</Label>
+                    <Select 
+                      value={investigationForm.expectedDuration} 
+                      onValueChange={(value) => setInvestigationForm(prev => ({ ...prev, expectedDuration: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1h">1 Hour</SelectItem>
+                        <SelectItem value="6h">6 Hours</SelectItem>
+                        <SelectItem value="24h">24 Hours</SelectItem>
+                        <SelectItem value="3d">3 Days</SelectItem>
+                        <SelectItem value="1w">1 Week</SelectItem>
+                        <SelectItem value="1m">1 Month</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center space-x-2 pt-6">
+                    <Checkbox
+                      id="legal"
+                      checked={investigationForm.legalAuthorization}
+                      onCheckedChange={(checked) => setInvestigationForm(prev => ({ ...prev, legalAuthorization: !!checked }))}
+                    />
+                    <Label htmlFor="legal" className="text-sm">Legal Authorization Confirmed</Label>
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Personal Information Tab */}
+              <TabsContent value="personal" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input
+                      id="fullName"
+                      value={investigationForm.fullName}
+                      onChange={(e) => setInvestigationForm(prev => ({ ...prev, fullName: e.target.value }))}
+                      placeholder="John Doe"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                    <Input
+                      id="dateOfBirth"
+                      type="date"
+                      value={investigationForm.dateOfBirth}
+                      onChange={(e) => setInvestigationForm(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Known Aliases</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={newAlias}
+                      onChange={(e) => setNewAlias(e.target.value)}
+                      placeholder="Add alias..."
+                    />
+                    <Button 
+                      onClick={() => {
+                        if (newAlias.trim()) {
+                          setInvestigationForm(prev => ({ 
+                            ...prev, 
+                            aliases: [...prev.aliases, newAlias.trim()] 
+                          }));
+                          setNewAlias('');
+                        }
+                      }}
+                      size="sm"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {investigationForm.aliases.map((alias, index) => (
+                      <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                        {alias}
+                        <button
+                          onClick={() => setInvestigationForm(prev => ({
+                            ...prev,
+                            aliases: prev.aliases.filter((_, i) => i !== index)
+                          }))}
+                          className="ml-1 hover:text-red-500"
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="nationality">Nationality</Label>
+                    <Input
+                      id="nationality"
+                      value={investigationForm.nationality}
+                      onChange={(e) => setInvestigationForm(prev => ({ ...prev, nationality: e.target.value }))}
+                      placeholder="Country of citizenship"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="occupation">Occupation</Label>
+                    <Input
+                      id="occupation"
+                      value={investigationForm.occupation}
+                      onChange={(e) => setInvestigationForm(prev => ({ ...prev, occupation: e.target.value }))}
+                      placeholder="Job title or profession"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="employer">Employer</Label>
+                    <Input
+                      id="employer"
+                      value={investigationForm.employer}
+                      onChange={(e) => setInvestigationForm(prev => ({ ...prev, employer: e.target.value }))}
+                      placeholder="Company or organization"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="education">Education</Label>
+                    <Input
+                      id="education"
+                      value={investigationForm.education}
+                      onChange={(e) => setInvestigationForm(prev => ({ ...prev, education: e.target.value }))}
+                      placeholder="Educational background"
+                    />
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h4 className="font-semibold">Physical Characteristics</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="height">Height</Label>
+                      <Input
+                        id="height"
+                        value={investigationForm.height}
+                        onChange={(e) => setInvestigationForm(prev => ({ ...prev, height: e.target.value }))}
+                        placeholder="5'10&quot;"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="weight">Weight</Label>
+                      <Input
+                        id="weight"
+                        value={investigationForm.weight}
+                        onChange={(e) => setInvestigationForm(prev => ({ ...prev, weight: e.target.value }))}
+                        placeholder="180 lbs"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="eyeColor">Eye Color</Label>
+                      <Input
+                        id="eyeColor"
+                        value={investigationForm.eyeColor}
+                        onChange={(e) => setInvestigationForm(prev => ({ ...prev, eyeColor: e.target.value }))}
+                        placeholder="Brown"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="hairColor">Hair Color</Label>
+                      <Input
+                        id="hairColor"
+                        value={investigationForm.hairColor}
+                        onChange={(e) => setInvestigationForm(prev => ({ ...prev, hairColor: e.target.value }))}
+                        placeholder="Black"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="distinctiveMarks">Marks/Scars</Label>
+                      <Input
+                        id="distinctiveMarks"
+                        value={investigationForm.distinctiveMarks}
+                        onChange={(e) => setInvestigationForm(prev => ({ ...prev, distinctiveMarks: e.target.value }))}
+                        placeholder="Tattoos, scars"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Digital Footprint Tab */}
+              <TabsContent value="digital" className="space-y-6">
+                <div className="space-y-4">
+                  <h4 className="font-semibold">Contact Information</h4>
+                  
+                  <div className="space-y-2">
+                    <Label>Email Addresses</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={newEmail}
+                        onChange={(e) => setNewEmail(e.target.value)}
+                        placeholder="example@domain.com"
+                        type="email"
+                      />
+                      <Button 
+                        onClick={() => {
+                          if (newEmail.trim()) {
+                            setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              emailAddresses: [...prev.emailAddresses, newEmail.trim()] 
+                            }));
+                            setNewEmail('');
+                          }
+                        }}
+                        size="sm"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {investigationForm.emailAddresses.map((email, index) => (
+                        <Badge key={index} variant="outline" className="flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          {email}
+                          <button
+                            onClick={() => setInvestigationForm(prev => ({
+                              ...prev,
+                              emailAddresses: prev.emailAddresses.filter((_, i) => i !== index)
+                            }))}
+                            className="ml-1 hover:text-red-500"
+                          >
+                            ×
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Phone Numbers</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={newPhone}
+                        onChange={(e) => setNewPhone(e.target.value)}
+                        placeholder="+1 (555) 123-4567"
+                        type="tel"
+                      />
+                      <Button 
+                        onClick={() => {
+                          if (newPhone.trim()) {
+                            setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              phoneNumbers: [...prev.phoneNumbers, newPhone.trim()] 
+                            }));
+                            setNewPhone('');
+                          }
+                        }}
+                        size="sm"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {investigationForm.phoneNumbers.map((phone, index) => (
+                        <Badge key={index} variant="outline" className="flex items-center gap-1">
+                          <Phone className="h-3 w-3" />
+                          {phone}
+                          <button
+                            onClick={() => setInvestigationForm(prev => ({
+                              ...prev,
+                              phoneNumbers: prev.phoneNumbers.filter((_, i) => i !== index)
+                            }))}
+                            className="ml-1 hover:text-red-500"
+                          >
+                            ×
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Social Media Profiles</Label>
+                    <div className="flex gap-2">
+                      <Select 
+                        value={newSocialProfile.platform} 
+                        onValueChange={(value) => setNewSocialProfile(prev => ({ ...prev, platform: value }))}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Platform" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="facebook">Facebook</SelectItem>
+                          <SelectItem value="twitter">Twitter/X</SelectItem>
+                          <SelectItem value="instagram">Instagram</SelectItem>
+                          <SelectItem value="linkedin">LinkedIn</SelectItem>
+                          <SelectItem value="tiktok">TikTok</SelectItem>
+                          <SelectItem value="youtube">YouTube</SelectItem>
+                          <SelectItem value="github">GitHub</SelectItem>
+                          <SelectItem value="reddit">Reddit</SelectItem>
+                          <SelectItem value="telegram">Telegram</SelectItem>
+                          <SelectItem value="discord">Discord</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={newSocialProfile.username}
+                        onChange={(e) => setNewSocialProfile(prev => ({ ...prev, username: e.target.value }))}
+                        placeholder="Username or profile URL"
+                        className="flex-1"
+                      />
+                      <Button 
+                        onClick={() => {
+                          if (newSocialProfile.platform && newSocialProfile.username.trim()) {
+                            setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              socialMediaProfiles: [...prev.socialMediaProfiles, {...newSocialProfile}] 
+                            }));
+                            setNewSocialProfile({ platform: '', username: '' });
+                          }
+                        }}
+                        size="sm"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {investigationForm.socialMediaProfiles.map((profile, index) => (
+                        <Badge key={index} variant="outline" className="flex items-center gap-1">
+                          <Share2 className="h-3 w-3" />
+                          {profile.platform}: {profile.username}
+                          <button
+                            onClick={() => setInvestigationForm(prev => ({
+                              ...prev,
+                              socialMediaProfiles: prev.socialMediaProfiles.filter((_, i) => i !== index)
+                            }))}
+                            className="ml-1 hover:text-red-500"
+                          >
+                            ×
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Media Files Tab */}
+              <TabsContent value="media" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  
+                  {/* Profile Images */}
+                  <Card className="gradient-card">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Camera className="h-5 w-5" />
+                        Profile Images
+                      </CardTitle>
+                      <CardDescription>
+                        Upload photos for facial recognition analysis
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                        <ImageIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Drag & drop images or click to browse
+                        </p>
+                        <p className="text-xs text-muted-foreground mb-4">
+                          Supports: JPG, PNG, WEBP (Max 10MB each)
+                        </p>
+                        <Button variant="outline" size="sm">
+                          <Upload className="h-4 w-4 mr-2" />
+                          Select Images
+                        </Button>
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="enableFacialRecognition"
+                            checked={investigationForm.enableFacialRecognition}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              enableFacialRecognition: !!checked 
+                            }))}
+                          />
+                          <Label htmlFor="enableFacialRecognition" className="text-sm">
+                            Enable AI Facial Recognition Analysis
+                          </Label>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Voice Recordings */}
+                  <Card className="gradient-card">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Mic className="h-5 w-5" />
+                        Voice Recordings
+                      </CardTitle>
+                      <CardDescription>
+                        Upload audio files for voice pattern analysis
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                        <FileAudio className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Drag & drop audio files or click to browse
+                        </p>
+                        <p className="text-xs text-muted-foreground mb-4">
+                          Supports: MP3, WAV, M4A, OGG (Max 50MB each)
+                        </p>
+                        <Button variant="outline" size="sm">
+                          <Upload className="h-4 w-4 mr-2" />
+                          Select Audio Files
+                        </Button>
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="enableVoiceAnalysis"
+                            checked={investigationForm.enableVoiceAnalysis}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              enableVoiceAnalysis: !!checked 
+                            }))}
+                          />
+                          <Label htmlFor="enableVoiceAnalysis" className="text-sm">
+                            Enable AI Voice Pattern Analysis
+                          </Label>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Video Files */}
+                  <Card className="gradient-card">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileVideo className="h-5 w-5" />
+                        Video Files
+                      </CardTitle>
+                      <CardDescription>
+                        Upload videos for behavioral and facial analysis
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                        <FileVideo className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Drag & drop video files or click to browse
+                        </p>
+                        <p className="text-xs text-muted-foreground mb-4">
+                          Supports: MP4, AVI, MOV, MKV (Max 500MB each)
+                        </p>
+                        <Button variant="outline" size="sm">
+                          <Upload className="h-4 w-4 mr-2" />
+                          Select Video Files
+                        </Button>
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="enableBehavioralAnalysis"
+                            checked={investigationForm.enableBehavioralAnalysis}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              enableBehavioralAnalysis: !!checked 
+                            }))}
+                          />
+                          <Label htmlFor="enableBehavioralAnalysis" className="text-sm">
+                            Enable AI Behavioral Analysis
+                          </Label>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Documents */}
+                  <Card className="gradient-card">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Documents
+                      </CardTitle>
+                      <CardDescription>
+                        Upload relevant documents for content analysis
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                        <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Drag & drop documents or click to browse
+                        </p>
+                        <p className="text-xs text-muted-foreground mb-4">
+                          Supports: PDF, DOC, TXT, RTF (Max 25MB each)
+                        </p>
+                        <Button variant="outline" size="sm">
+                          <Upload className="h-4 w-4 mr-2" />
+                          Select Documents
+                        </Button>
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="enableSentimentAnalysis"
+                            checked={investigationForm.enableSentimentAnalysis}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              enableSentimentAnalysis: !!checked 
+                            }))}
+                          />
+                          <Label htmlFor="enableSentimentAnalysis" className="text-sm">
+                            Enable AI Sentiment Analysis
+                          </Label>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              {/* AI Tools Tab */}
+              <TabsContent value="ai-tools" className="space-y-6">
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-semibold mb-4">Third-Party AI Analysis Tools</h4>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Configure external AI services for advanced analysis capabilities. These tools will process uploaded media files for enhanced intelligence gathering.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    {/* OpenAI */}
+                    <Card className="gradient-card">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <BrainCircuit className="h-5 w-5" />
+                          OpenAI GPT-4 Vision
+                        </CardTitle>
+                        <CardDescription>
+                          Advanced image and video analysis with GPT-4 Vision
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            id="openai-enabled"
+                            checked={investigationForm.aiToolsConfig.openai.enabled}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({
+                              ...prev,
+                              aiToolsConfig: {
+                                ...prev.aiToolsConfig,
+                                openai: { ...prev.aiToolsConfig.openai, enabled: checked }
+                              }
+                            }))}
+                          />
+                          <Label htmlFor="openai-enabled">Enable OpenAI Analysis</Label>
+                        </div>
+                        {investigationForm.aiToolsConfig.openai.enabled && (
+                          <div>
+                            <Label>Model Selection</Label>
+                            <Select 
+                              value={investigationForm.aiToolsConfig.openai.model}
+                              onValueChange={(value) => setInvestigationForm(prev => ({
+                                ...prev,
+                                aiToolsConfig: {
+                                  ...prev.aiToolsConfig,
+                                  openai: { ...prev.aiToolsConfig.openai, model: value }
+                                }
+                              }))}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="gpt-4-vision-preview">GPT-4 Vision</SelectItem>
+                                <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
+                                <SelectItem value="gpt-5-2025-08-07">GPT-5 (Latest)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* Anthropic Claude */}
+                    <Card className="gradient-card">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Bot className="h-5 w-5" />
+                          Anthropic Claude
+                        </CardTitle>
+                        <CardDescription>
+                          Advanced reasoning and content analysis with Claude
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            id="anthropic-enabled"
+                            checked={investigationForm.aiToolsConfig.anthropic.enabled}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({
+                              ...prev,
+                              aiToolsConfig: {
+                                ...prev.aiToolsConfig,
+                                anthropic: { ...prev.aiToolsConfig.anthropic, enabled: checked }
+                              }
+                            }))}
+                          />
+                          <Label htmlFor="anthropic-enabled">Enable Claude Analysis</Label>
+                        </div>
+                        {investigationForm.aiToolsConfig.anthropic.enabled && (
+                          <div>
+                            <Label>Model Selection</Label>
+                            <Select 
+                              value={investigationForm.aiToolsConfig.anthropic.model}
+                              onValueChange={(value) => setInvestigationForm(prev => ({
+                                ...prev,
+                                aiToolsConfig: {
+                                  ...prev.aiToolsConfig,
+                                  anthropic: { ...prev.aiToolsConfig.anthropic, model: value }
+                                }
+                              }))}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="claude-3.5-sonnet">Claude 3.5 Sonnet</SelectItem>
+                                <SelectItem value="claude-sonnet-4-20250514">Claude Sonnet 4</SelectItem>
+                                <SelectItem value="claude-opus-4-20250514">Claude Opus 4</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* Azure Cognitive Services */}
+                    <Card className="gradient-card">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Zap className="h-5 w-5" />
+                          Azure Cognitive Services
+                        </CardTitle>
+                        <CardDescription>
+                          Face API, Speech Services, and Computer Vision
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            id="azure-enabled"
+                            checked={investigationForm.aiToolsConfig.azure.enabled}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({
+                              ...prev,
+                              aiToolsConfig: {
+                                ...prev.aiToolsConfig,
+                                azure: { ...prev.aiToolsConfig.azure, enabled: checked }
+                              }
+                            }))}
+                          />
+                          <Label htmlFor="azure-enabled">Enable Azure Services</Label>
+                        </div>
+                        {investigationForm.aiToolsConfig.azure.enabled && (
+                          <div className="space-y-2">
+                            <Label>Available Services</Label>
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant="secondary">Face API</Badge>
+                              <Badge variant="secondary">Speech Services</Badge>
+                              <Badge variant="secondary">Computer Vision</Badge>
+                              <Badge variant="secondary">Text Analytics</Badge>
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* AWS AI Services */}
+                    <Card className="gradient-card">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Globe2 className="h-5 w-5" />
+                          AWS AI Services
+                        </CardTitle>
+                        <CardDescription>
+                          Rekognition, Transcribe, and Comprehend
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            id="aws-enabled"
+                            checked={investigationForm.aiToolsConfig.aws.enabled}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({
+                              ...prev,
+                              aiToolsConfig: {
+                                ...prev.aiToolsConfig,
+                                aws: { ...prev.aiToolsConfig.aws, enabled: checked }
+                              }
+                            }))}
+                          />
+                          <Label htmlFor="aws-enabled">Enable AWS Services</Label>
+                        </div>
+                        {investigationForm.aiToolsConfig.aws.enabled && (
+                          <div className="space-y-2">
+                            <Label>Available Services</Label>
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant="secondary">Rekognition</Badge>
+                              <Badge variant="secondary">Transcribe</Badge>
+                              <Badge variant="secondary">Comprehend</Badge>
+                              <Badge variant="secondary">Textract</Badge>
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Parameters Tab */}
+              <TabsContent value="parameters" className="space-y-6">
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-semibold mb-4">Investigation Parameters</h4>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Configure advanced analysis options and investigation scope.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card className="gradient-card">
+                      <CardHeader>
+                        <CardTitle>Analysis Options</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="networkAnalysis" className="flex items-center gap-2">
+                            <Network className="h-4 w-4" />
+                            Network Analysis
+                          </Label>
+                          <Switch
+                            id="networkAnalysis"
+                            checked={investigationForm.enableNetworkAnalysis}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              enableNetworkAnalysis: checked 
+                            }))}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="voiceAnalysis" className="flex items-center gap-2">
+                            <Mic className="h-4 w-4" />
+                            Voice Pattern Analysis
+                          </Label>
+                          <Switch
+                            id="voiceAnalysis"
+                            checked={investigationForm.enableVoiceAnalysis}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              enableVoiceAnalysis: checked 
+                            }))}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="facialRecognition" className="flex items-center gap-2">
+                            <Camera className="h-4 w-4" />
+                            Facial Recognition
+                          </Label>
+                          <Switch
+                            id="facialRecognition"
+                            checked={investigationForm.enableFacialRecognition}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              enableFacialRecognition: checked 
+                            }))}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="behavioralAnalysis" className="flex items-center gap-2">
+                            <Activity className="h-4 w-4" />
+                            Behavioral Analysis
+                          </Label>
+                          <Switch
+                            id="behavioralAnalysis"
+                            checked={investigationForm.enableBehavioralAnalysis}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              enableBehavioralAnalysis: checked 
+                            }))}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="sentimentAnalysis" className="flex items-center gap-2">
+                            <MessageSquare className="h-4 w-4" />
+                            Sentiment Analysis
+                          </Label>
+                          <Switch
+                            id="sentimentAnalysis"
+                            checked={investigationForm.enableSentimentAnalysis}
+                            onCheckedChange={(checked) => setInvestigationForm(prev => ({ 
+                              ...prev, 
+                              enableSentimentAnalysis: checked 
+                            }))}
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="gradient-card">
+                      <CardHeader>
+                        <CardTitle>Investigation Scope</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <Label>Data Sources</Label>
+                          <div className="grid grid-cols-2 gap-2">
+                            {[
+                              'Social Media', 'Public Records', 'Court Documents', 'News Articles',
+                              'Business Registries', 'Domain Registrations', 'Email Leaks', 'Phone Directories'
+                            ].map((source) => (
+                              <div key={source} className="flex items-center space-x-2">
+                                <Checkbox id={source} defaultChecked />
+                                <Label htmlFor={source} className="text-sm">{source}</Label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label>Geographic Scope</Label>
+                          <Select defaultValue="global">
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="local">Local Region</SelectItem>
+                              <SelectItem value="national">National</SelectItem>
+                              <SelectItem value="global">Global</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label>Time Range</Label>
+                          <Select defaultValue="5years">
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="1year">Last 1 Year</SelectItem>
+                              <SelectItem value="3years">Last 3 Years</SelectItem>
+                              <SelectItem value="5years">Last 5 Years</SelectItem>
+                              <SelectItem value="10years">Last 10 Years</SelectItem>
+                              <SelectItem value="all">All Available Data</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </ScrollArea>
+          
+          <div className="flex justify-between items-center pt-4 border-t">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-yellow-500" />
+              <span className="text-sm text-muted-foreground">
+                Ensure legal authorization before proceeding
+              </span>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowNewInvestigationDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  // Handle investigation creation
+                  toast({
+                    title: "Investigation Created",
+                    description: `New OSINT investigation "${investigationForm.title}" has been initiated.`
+                  });
+                  setShowNewInvestigationDialog(false);
+                }}
+                disabled={!investigationForm.title || !investigationForm.legalAuthorization}
+              >
+                <Search className="h-4 w-4 mr-2" />
+                Start Investigation
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
