@@ -859,6 +859,14 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     website: 'https://www.trafikverket.se/e-tjanster/trafikverkets-oppna-api-for-trafikinformation/',
     pricingTier: 'Free',
     capabilities: ['Real-time Traffic Data', 'Road Information', 'Railway Data', 'Traffic Incidents', 'Weather Conditions', 'Camera Feeds', 'Travel Times']
+  }, {
+    name: 'linkedin',
+    displayName: 'LinkedIn Developer API',
+    description: 'Professional networking platform API for accessing profile and company data',
+    category: 'Professional Intelligence',
+    website: 'https://developer.linkedin.com/product-catalog',
+    pricingTier: 'Freemium',
+    capabilities: ['Profile Data', 'Company Information', 'Professional Networks', 'Skills Validation', 'Employment History', 'Connection Analysis']
   }];
   const renderToolCard = (tool: OSINTTool) => <Card key={tool.name} className="gradient-card glow-hover">
       <CardHeader className="pb-3">
