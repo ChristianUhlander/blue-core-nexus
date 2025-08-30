@@ -867,6 +867,14 @@ export const AutomaticOSINTAgent: React.FC<AutomaticOSINTAgentProps> = ({
     website: 'https://developer.linkedin.com/product-catalog',
     pricingTier: 'Freemium',
     capabilities: ['Profile Data', 'Company Information', 'Professional Networks', 'Skills Validation', 'Employment History', 'Connection Analysis']
+  }, {
+    name: 'skatteverket',
+    displayName: 'Skatteverket API',
+    description: 'Swedish Tax Authority APIs for tax information, company data, and income declarations',
+    category: 'Financial Intelligence',
+    website: 'https://skatteverket.se/omoss/digitalasamarbeten.4.3684199413c956649b56298.html',
+    pricingTier: 'Freemium',
+    capabilities: ['Tax Information', 'Company Registration Data', 'Income Declarations', 'VAT Information', 'Business Intelligence', 'Financial Compliance', 'Open Data Access']
   }];
   const renderToolCard = (tool: OSINTTool) => <Card key={tool.name} className="gradient-card glow-hover">
       <CardHeader className="pb-3">
