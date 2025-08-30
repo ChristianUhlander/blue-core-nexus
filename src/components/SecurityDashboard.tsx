@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle, Brain } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle, Brain, Archive } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +24,7 @@ import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterfa
 import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 import { AutomaticOSINTAgent } from "./AutomaticOSINTAgent";
+import { InternetArchiveExplorer } from "./InternetArchiveExplorer";
 import WazuhManagement from "../pages/WazuhManagement";
 import GVMManagement from "../pages/GVMManagement";
 import { ConnectionStatusIndicator } from "./ConnectionStatusIndicator";
@@ -90,6 +91,9 @@ const SecurityDashboard = () => {
   
   // Intelligent Reporting state
   const [isReportingOpen, setIsReportingOpen] = useState(false);
+  
+  // Internet Archive Explorer state
+  const [isArchiveExplorerOpen, setIsArchiveExplorerOpen] = useState(false);
   
   // Scan and configuration state
   const [selectedAgent, setSelectedAgent] = useState<string>('');
@@ -2734,6 +2738,15 @@ const SecurityDashboard = () => {
           >
             <FileText className="h-4 w-4" />
             Documentation
+          </Button>
+          
+          <Button
+            onClick={() => setIsArchiveExplorerOpen(true)}
+            variant="outline"
+            className="flex items-center gap-2 glow-hover transition-all duration-200"
+          >
+            <Archive className="h-4 w-4" />
+            Archive Explorer
           </Button>
           
           <Button
@@ -6538,6 +6551,21 @@ const SecurityDashboard = () => {
         {/* Documentation Library */}
         {isDocumentationOpen && (
           <DocumentationLibrary onClose={() => setIsDocumentationOpen(false)} />
+        )}
+
+        {/* Internet Archive Explorer */}
+        {isArchiveExplorerOpen && (
+          <Dialog open={isArchiveExplorerOpen} onOpenChange={setIsArchiveExplorerOpen}>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Internet Archive Explorer</DialogTitle>
+                <DialogDescription>
+                  Access Wayback Machine APIs for web archive research and preservation
+                </DialogDescription>
+              </DialogHeader>
+              <InternetArchiveExplorer />
+            </DialogContent>
+          </Dialog>
         )}
 
         {/* IppsY Chat Pane */}
