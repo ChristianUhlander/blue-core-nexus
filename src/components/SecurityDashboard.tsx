@@ -18,13 +18,14 @@ import IppsYChatPane from "./IppsYChatPane";
 import { DocumentationLibrary } from "./DocumentationLibrary";
 import { useRealTimeSecurityData } from "@/hooks/useRealTimeSecurityData";
 import { k8sSecurityApi } from "@/services/k8sSecurityApi";
-import { securityIntegration, type WazuhAgent, type WazuhAlert, type SecurityServiceHealth } from "@/services/securityIntegrationService";
+import { enhancedSecurityService, type WazuhAgent, type WazuhAlert, type SecurityServiceHealth } from "@/services/enhancedSecurityService";
 import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
 import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterface";
 import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 import { AutomaticOSINTAgent } from "./AutomaticOSINTAgent";
 import WazuhManagement from "../pages/WazuhManagement";
+import { ConnectionStatusIndicator } from "./ConnectionStatusIndicator";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import * as React from "react";
@@ -131,7 +132,7 @@ const SecurityDashboard = () => {
         console.log('🚀 Initializing production security backend integration...');
         
         // Get initial service health status
-        const healthStatuses = securityIntegration.getHealthStatuses();
+        const healthStatuses = enhancedSecurityService.getHealthStatuses();
         setServiceHealths(healthStatuses);
         
         // Setup real-time event listeners for each security service
@@ -256,7 +257,7 @@ const SecurityDashboard = () => {
       // Parallel data fetching for better performance
       const dataPromises = [
         // Fetch Wazuh agents
-        securityIntegration.getWazuhAgents()
+        enhancedSecurityService.getWazuhAgents()
           .then(agents => setRealTimeAgents(agents))
           .catch(error => {
             console.error('Failed to fetch Wazuh agents:', error);
@@ -264,7 +265,7 @@ const SecurityDashboard = () => {
           }),
         
         // Fetch Wazuh alerts
-        securityIntegration.getWazuhAlerts(50)
+        enhancedSecurityService.getWazuhAlerts(50)
           .then(alerts => setRealTimeAlerts(alerts))
           .catch(error => {
             console.error('Failed to fetch Wazuh alerts:', error);
@@ -272,9 +273,9 @@ const SecurityDashboard = () => {
           }),
         
         // Refresh health checks
-        securityIntegration.refreshHealthChecks()
+        enhancedSecurityService.refreshHealthChecks()
           .then(() => {
-            const healthData = securityIntegration.getHealthStatuses();
+            const healthData = enhancedSecurityService.getHealthStatuses();
             setServiceHealths(healthData);
             setBackendConnected(healthData.some(h => h.status === 'healthy'));
           })
