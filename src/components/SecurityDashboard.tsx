@@ -4024,1136 +4024,261 @@ const SecurityDashboard = () => {
                     </div>
                   </TabsContent>
                   
-                  <TabsContent value="webapp" className="mt-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <Dialog open={isOwaspScanOpen} onOpenChange={setIsOwaspScanOpen}>
-                        <DialogTrigger asChild>
-                          <Button className="glow-hover group" variant="default" size="sm">
-                            <Zap className="h-4 w-4 mr-2 group-hover:animate-bounce" />
-                            OWASP Top 10 Scan
-                            <div className="ml-2 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[1200px] max-h-[90vh] gradient-card border-primary/20">
-                          <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2 text-xl">
-                              <div className="relative">
-                                <Shield className="h-6 w-6 text-red-500 animate-pulse" />
-                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
-                              </div>
-                              OWASP Top 10 Security Assessment
-                              <Badge variant="destructive" className="ml-2 animate-pulse-glow">
-                                2021 STANDARD
-                              </Badge>
-                            </DialogTitle>
-                            <DialogDescription className="text-base">
-                              Comprehensive web application security testing based on OWASP Top 10 2021 vulnerabilities
-                            </DialogDescription>
-                          </DialogHeader>
+                   <TabsContent value="webapp" className="mt-4">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                       {/* AD Penetration Testing */}
+                       <Dialog open={isADPentestOpen} onOpenChange={setIsADPentestOpen}>
+                         <DialogTrigger asChild>
+                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
+                             <CardContent className="p-6 text-center">
+                               <div className="flex flex-col items-center gap-4">
+                                 <div className="relative">
+                                   <Shield className="h-12 w-12 text-red-500 animate-pulse" />
+                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-ping" />
+                                 </div>
+                                 <div>
+                                   <h3 className="text-lg font-semibold text-glow">Active Directory</h3>
+                                   <p className="text-sm text-muted-foreground">BloodHound • CrackMapExec • Kerberos</p>
+                                 </div>
+                                 <Badge variant="destructive" className="animate-pulse-glow">
+                                   High Impact
+                                 </Badge>
+                               </div>
+                             </CardContent>
+                           </Card>
+                         </DialogTrigger>
+                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
+                           <DialogHeader>
+                             <DialogTitle className="flex items-center gap-2 text-xl">
+                               <div className="relative">
+                                 <Shield className="h-6 w-6 text-red-500 animate-pulse" />
+                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+                               </div>
+                               Active Directory Penetration Testing
+                               <Badge variant="destructive" className="ml-2 animate-pulse-glow">
+                                 ENTERPRISE SECURITY
+                               </Badge>
+                             </DialogTitle>
+                             <DialogDescription className="text-base">
+                               Comprehensive AD security assessment with BloodHound, CrackMapExec, and advanced attack techniques
+                             </DialogDescription>
+                           </DialogHeader>
+                           
+                           <ADPentestingContent />
+                         </DialogContent>
+                       </Dialog>
 
-                          <div className="space-y-6">
-                            {/* Target Configuration and Quick Stats */}
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                              {/* Target Configuration */}
-                              <Card className="lg:col-span-1 gradient-card border border-red-500/20">
-                                <CardHeader className="pb-3">
-                                  <CardTitle className="text-lg flex items-center gap-2">
-                                    <Target className="h-5 w-5 text-primary animate-pulse" />
-                                    Scan Configuration
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                  <div className="space-y-2">
-                                    <Label htmlFor="owasp-target">Target URL *</Label>
-                                    <Input
-                                      id="owasp-target"
-                                      placeholder="https://example.com"
-                                      value={owaspTarget}
-                                      onChange={(e) => setOwaspTarget(e.target.value)}
-                                      className="glow-hover"
-                                    />
-                                  </div>
-                                  
-                                  <Button 
-                                    onClick={handleOwaspScan}
-                                    disabled={owaspScanning}
-                                    className="w-full glow-hover group"
-                                    variant={owaspScanning ? "secondary" : "destructive"}
-                                  >
-                                    {owaspScanning ? (
-                                      <>
-                                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                        Scanning...
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Play className="h-4 w-4 mr-2 group-hover:animate-bounce" />
-                                        Launch OWASP Scan
-                                      </>
-                                    )}
-                                  </Button>
-                                  
-                                  {owaspScanning && (
-                                    <div className="space-y-2">
-                                      <div className="flex justify-between text-sm">
-                                        <span>Test Progress</span>
-                                        <span>{Math.round(scanProgress)}%</span>
-                                      </div>
-                                      <Progress value={scanProgress} className="glow animate-pulse" />
-                                      <p className="text-xs text-muted-foreground">
-                                        Testing {selectedOwaspTests.length} OWASP categories...
-                                      </p>
-                                    </div>
-                                  )}
-                                </CardContent>
-                              </Card>
+                       {/* Web Application Testing */}
+                       <Dialog open={isWebPentestOpen} onOpenChange={setIsWebPentestOpen}>
+                         <DialogTrigger asChild>
+                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
+                             <CardContent className="p-6 text-center">
+                               <div className="flex flex-col items-center gap-4">
+                                 <div className="relative">
+                                   <Zap className="h-12 w-12 text-yellow-500 animate-pulse" />
+                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full animate-ping" />
+                                 </div>
+                                 <div>
+                                   <h3 className="text-lg font-semibold text-glow">Web Applications</h3>
+                                   <p className="text-sm text-muted-foreground">OWASP ZAP • Top 10 • SQL Injection</p>
+                                 </div>
+                                 <Badge variant="secondary" className="animate-pulse-glow">
+                                   OWASP Standard
+                                 </Badge>
+                               </div>
+                             </CardContent>
+                           </Card>
+                         </DialogTrigger>
+                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
+                           <DialogHeader>
+                             <DialogTitle className="flex items-center gap-2 text-xl">
+                               <div className="relative">
+                                 <Zap className="h-6 w-6 text-yellow-500 animate-pulse" />
+                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full animate-ping" />
+                               </div>
+                               Web Application Penetration Testing
+                               <Badge variant="secondary" className="ml-2 animate-pulse-glow">
+                                 OWASP STANDARD
+                               </Badge>
+                             </DialogTitle>
+                             <DialogDescription className="text-base">
+                               Complete web application security testing with OWASP ZAP and Top 10 vulnerability assessment
+                             </DialogDescription>
+                           </DialogHeader>
+                           
+                           <WebPentestingContent />
+                         </DialogContent>
+                       </Dialog>
 
-                              {/* Statistics */}
-                              <Card className="lg:col-span-2 gradient-card border border-red-500/20 bg-gradient-to-br from-red-500/5 to-orange-500/5">
-                                <CardHeader className="pb-3">
-                                  <CardTitle className="text-lg flex items-center gap-2">
-                                    <BarChart3 className="h-5 w-5 text-red-500 animate-pulse" />
-                                    Selected Test Categories
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div className="text-center group cursor-pointer hover-scale">
-                                      <div className="text-3xl font-bold text-red-500 animate-pulse">
-                                        {getOwaspStats().critical}
-                                      </div>
-                                      <div className="text-sm font-medium text-red-400">Critical Risk</div>
-                                    </div>
-                                    <div className="text-center group cursor-pointer hover-scale">
-                                      <div className="text-3xl font-bold text-orange-500">
-                                        {getOwaspStats().high}
-                                      </div>
-                                      <div className="text-sm font-medium text-orange-400">High Risk</div>
-                                    </div>
-                                    <div className="text-center group cursor-pointer hover-scale">
-                                      <div className="text-3xl font-bold text-yellow-500">
-                                        {getOwaspStats().medium}
-                                      </div>
-                                      <div className="text-sm font-medium text-yellow-400">Medium Risk</div>
-                                    </div>
-                                    <div className="text-center group cursor-pointer hover-scale">
-                                      <div className="text-3xl font-bold text-primary">
-                                        {getOwaspStats().total}
-                                      </div>
-                                      <div className="text-sm font-medium text-primary">Total Tests</div>
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </div>
+                       {/* Network Penetration Testing */}
+                       <Dialog open={isNetworkPentestOpen} onOpenChange={setIsNetworkPentestOpen}>
+                         <DialogTrigger asChild>
+                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
+                             <CardContent className="p-6 text-center">
+                               <div className="flex flex-col items-center gap-4">
+                                 <div className="relative">
+                                   <Network className="h-12 w-12 text-blue-500 animate-pulse" />
+                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full animate-ping" />
+                                 </div>
+                                 <div>
+                                   <h3 className="text-lg font-semibold text-glow">Network Infrastructure</h3>
+                                   <p className="text-sm text-muted-foreground">Nmap • Nessus • Port Scanning</p>
+                                 </div>
+                                 <Badge variant="outline" className="animate-pulse-glow">
+                                   Infrastructure
+                                 </Badge>
+                               </div>
+                             </CardContent>
+                           </Card>
+                         </DialogTrigger>
+                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
+                           <DialogHeader>
+                             <DialogTitle className="flex items-center gap-2 text-xl">
+                               <div className="relative">
+                                 <Network className="h-6 w-6 text-blue-500 animate-pulse" />
+                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping" />
+                               </div>
+                               Network Infrastructure Penetration Testing
+                               <Badge variant="outline" className="ml-2 animate-pulse-glow">
+                                 NETWORK SECURITY
+                               </Badge>
+                             </DialogTitle>
+                             <DialogDescription className="text-base">
+                               Comprehensive network security assessment with port scanning, vulnerability detection, and service enumeration
+                             </DialogDescription>
+                           </DialogHeader>
+                           
+                           <NetworkPentestingContent />
+                         </DialogContent>
+                       </Dialog>
 
-                            {/* OWASP Top 10 Test Selection */}
-                            <Card className="gradient-card border border-red-500/20">
-                              <CardHeader className="pb-3">
-                                <CardTitle className="text-lg flex items-center gap-2">
-                                  <Shield className="h-5 w-5 text-red-500 animate-pulse" />
-                                  OWASP Top 10 2021 Test Categories
-                                  <Badge variant="outline" className="text-xs">
-                                    {selectedOwaspTests.length}/10 Selected
-                                  </Badge>
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                <ScrollArea className="h-[500px] rounded-md border">
-                                  <div className="space-y-4 p-4">
-                                    {owaspTop10Tests.map((test, index) => (
-                                      <Card key={test.id} className={`gradient-card border transition-all duration-300 ${
-                                        selectedOwaspTests.includes(test.id) 
-                                          ? 'border-primary/50 bg-primary/5' 
-                                          : 'border-border/30'
-                                      } animate-fade-in`} style={{animationDelay: `${index * 0.1}s`}}>
-                                        <CardContent className="p-4">
-                                          <div className="flex items-start gap-4">
-                                            <Checkbox
-                                              checked={selectedOwaspTests.includes(test.id)}
-                                              onCheckedChange={() => toggleOwaspTest(test.id)}
-                                              className="mt-1"
-                                            />
-                                            
-                                            <div className="flex-1 space-y-3">
-                                              <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                  <Badge variant="outline" className="font-mono text-xs">
-                                                    {test.id}:2021
-                                                  </Badge>
-                                                  <h3 className="font-semibold text-lg">{test.category}</h3>
-                                                  <Badge 
-                                                    variant={
-                                                      test.risk === 'CRITICAL' ? 'destructive' : 
-                                                      test.risk === 'HIGH' ? 'destructive' : 
-                                                      test.risk === 'MEDIUM' ? 'secondary' : 'outline'
-                                                    }
-                                                    className="text-xs animate-pulse-glow"
-                                                  >
-                                                    {test.risk}
-                                                  </Badge>
-                                                </div>
-                                                <Code className="h-4 w-4 text-muted-foreground" />
-                                              </div>
-                                              
-                                              <p className="text-sm text-muted-foreground">{test.description}</p>
-                                              
-                                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                  <h4 className="text-sm font-medium mb-2">Test Coverage:</h4>
-                                                  <div className="space-y-1">
-                                                    {test.tests.slice(0, 3).map((testType, i) => (
-                                                      <div key={i} className="text-xs text-muted-foreground flex items-center gap-1">
-                                                        <CheckCircle className="h-3 w-3 text-green-500" />
-                                                        {testType}
-                                                      </div>
-                                                    ))}
-                                                    {test.tests.length > 3 && (
-                                                      <div className="text-xs text-muted-foreground">
-                                                        +{test.tests.length - 3} more tests...
-                                                      </div>
-                                                    )}
-                                                  </div>
-                                                </div>
-                                                
-                                                <div>
-                                                  <h4 className="text-sm font-medium mb-2">Example Payloads:</h4>
-                                                  <div className="space-y-1">
-                                                    {test.payloads.slice(0, 2).map((payload, i) => (
-                                                      <div key={i} className="text-xs font-mono bg-muted/50 px-2 py-1 rounded border">
-                                                        {payload.length > 40 ? `${payload.substring(0, 40)}...` : payload}
-                                                      </div>
-                                                    ))}
-                                                    {test.payloads.length > 2 && (
-                                                      <div className="text-xs text-muted-foreground">
-                                                        +{test.payloads.length - 2} more payloads...
-                                                      </div>
-                                                    )}
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </CardContent>
-                                      </Card>
-                                    ))}
-                                  </div>
-                                </ScrollArea>
-                              </CardContent>
-                            </Card>
-                          </div>
+                       {/* Wireless Security Testing */}
+                       <Dialog open={isWirelessPentestOpen} onOpenChange={setIsWirelessPentestOpen}>
+                         <DialogTrigger asChild>
+                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
+                             <CardContent className="p-6 text-center">
+                               <div className="flex flex-col items-center gap-4">
+                                 <div className="relative">
+                                   <Wifi className="h-12 w-12 text-green-500 animate-pulse" />
+                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-ping" />
+                                 </div>
+                                 <div>
+                                   <h3 className="text-lg font-semibold text-glow">Wireless Networks</h3>
+                                   <p className="text-sm text-muted-foreground">WiFi • Bluetooth • Radio Frequency</p>
+                                 </div>
+                                 <Badge variant="default" className="animate-pulse-glow">
+                                   RF Testing
+                                 </Badge>
+                               </div>
+                             </CardContent>
+                           </Card>
+                         </DialogTrigger>
+                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
+                           <DialogHeader>
+                             <DialogTitle className="flex items-center gap-2 text-xl">
+                               <div className="relative">
+                                 <Wifi className="h-6 w-6 text-green-500 animate-pulse" />
+                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-ping" />
+                               </div>
+                               Wireless Security Penetration Testing
+                               <Badge variant="default" className="ml-2 animate-pulse-glow">
+                                 RF SECURITY
+                               </Badge>
+                             </DialogTitle>
+                             <DialogDescription className="text-base">
+                               Complete wireless security assessment including WiFi, Bluetooth, and RF communication testing
+                             </DialogDescription>
+                           </DialogHeader>
+                           
+                           <WirelessPentestingContent />
+                         </DialogContent>
+                       </Dialog>
 
-                          <div className="flex justify-between items-center gap-2 pt-6 border-t border-border/50">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse-glow" />
-                              <span>Educational security testing framework</span>
-                            </div>
-                            <div className="flex gap-2">
-                              <Button variant="outline" onClick={() => setIsOwaspScanOpen(false)} className="glow-hover">
-                                Close Scanner
-                              </Button>
-                              <Button 
-                                onClick={() => {
-                                  setSelectedOwaspTests(['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10']);
-                                }}
-                                variant="secondary" 
-                                className="glow-hover"
-                              >
-                                <CheckCircle className="h-4 w-4 mr-2" />
-                                Select All Tests
-                              </Button>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      
-                      <Dialog open={isZapScanOpen} onOpenChange={setIsZapScanOpen}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="glow-hover group">
-                            <Zap className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-                            Custom ZAP Scan
-                            {zapScanRunning && (
-                              <div className="ml-2 w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                            )}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto gradient-card border-primary/20">
-                          <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2 text-xl">
-                              <div className="relative">
-                                <Zap className="h-6 w-6 text-orange-500 animate-pulse" />
-                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-ping" />
-                              </div>
-                              OWASP ZAP Terminal Wrapper
-                              <Badge variant="secondary" className="ml-2 animate-pulse-glow">
-                                AUTOMATED SECURITY TESTING
-                              </Badge>
-                            </DialogTitle>
-                            <DialogDescription className="text-base">
-                              Launch OWASP ZAP security scans via terminal wrapper integration. Configure and execute automated vulnerability assessments.
-                            </DialogDescription>
-                          </DialogHeader>
+                       {/* Social Engineering */}
+                       <Dialog open={isSocialEngPentestOpen} onOpenChange={setIsSocialEngPentestOpen}>
+                         <DialogTrigger asChild>
+                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
+                             <CardContent className="p-6 text-center">
+                               <div className="flex flex-col items-center gap-4">
+                                 <div className="relative">
+                                   <Users className="h-12 w-12 text-purple-500 animate-pulse" />
+                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full animate-ping" />
+                                 </div>
+                                 <div>
+                                   <h3 className="text-lg font-semibold text-glow">Social Engineering</h3>
+                                   <p className="text-sm text-muted-foreground">Phishing • OSINT • Human Factor</p>
+                                 </div>
+                                 <Badge className="bg-purple-500/10 text-purple-500 animate-pulse-glow">
+                                   Human Factor
+                                 </Badge>
+                               </div>
+                             </CardContent>
+                           </Card>
+                         </DialogTrigger>
+                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
+                           <DialogHeader>
+                             <DialogTitle className="flex items-center gap-2 text-xl">
+                               <div className="relative">
+                                 <Users className="h-6 w-6 text-purple-500 animate-pulse" />
+                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-purple-500 rounded-full animate-ping" />
+                               </div>
+                               Social Engineering Assessment
+                               <Badge className="ml-2 bg-purple-500/10 text-purple-500 animate-pulse-glow">
+                                 HUMAN FACTOR
+                               </Badge>
+                             </DialogTitle>
+                             <DialogDescription className="text-base">
+                               Human-focused security testing including phishing campaigns, OSINT gathering, and awareness assessment
+                             </DialogDescription>
+                           </DialogHeader>
+                           
+                           <SocialEngPentestingContent />
+                         </DialogContent>
+                       </Dialog>
 
-                          <div className="space-y-6">
-                            {/* Scan Configuration */}
-                            <Card className="gradient-card border border-primary/20">
-                              <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                  <Target className="h-5 w-5 text-primary" />
-                                  Scan Configuration
-                                </CardTitle>
-                                <CardDescription>
-                                  Configure ZAP scan parameters before launching terminal-based execution
-                                </CardDescription>
-                              </CardHeader>
-                              <CardContent className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="space-y-2">
-                                    <Label htmlFor="zap-target">Target URL *</Label>
-                                    <Input
-                                      id="zap-target"
-                                      placeholder="https://example.com"
-                                      value={zapScanConfig.target}
-                                      onChange={(e) => setZapScanConfig({ ...zapScanConfig, target: e.target.value })}
-                                      className="glow-hover"
-                                      disabled={zapScanRunning}
-                                    />
-                                  </div>
-
-                                  <div className="space-y-2">
-                                    <Label htmlFor="zap-scan-type">Scan Type</Label>
-                                    <Select value={zapScanConfig.scanType} onValueChange={(value) => setZapScanConfig({ ...zapScanConfig, scanType: value })} disabled={zapScanRunning}>
-                                      <SelectTrigger className="glow-hover">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent className="bg-popover border border-border z-50">
-                                        <SelectItem value="baseline">Baseline Scan (Fast)</SelectItem>
-                                        <SelectItem value="full">Full Scan (Comprehensive)</SelectItem>
-                                        <SelectItem value="api">API Scan (REST/GraphQL)</SelectItem>
-                                        <SelectItem value="custom">Custom Configuration</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="space-y-2">
-                                    <Label htmlFor="zap-report-format">Report Format</Label>
-                                    <Select value={zapScanConfig.reportFormat} onValueChange={(value) => setZapScanConfig({ ...zapScanConfig, reportFormat: value })} disabled={zapScanRunning}>
-                                      <SelectTrigger className="glow-hover">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent className="bg-popover border border-border z-50">
-                                        <SelectItem value="html">HTML Report</SelectItem>
-                                        <SelectItem value="xml">XML Report</SelectItem>
-                                        <SelectItem value="json">JSON Report</SelectItem>
-                                        <SelectItem value="md">Markdown Report</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-
-                                  <div className="space-y-2">
-                                    <Label htmlFor="zap-max-duration">Max Duration (minutes)</Label>
-                                    <Input
-                                      id="zap-max-duration"
-                                      type="number"
-                                      min="5"
-                                      max="480"
-                                      value={zapScanConfig.maxDuration}
-                                      onChange={(e) => setZapScanConfig({ ...zapScanConfig, maxDuration: parseInt(e.target.value) || 60 })}
-                                      className="glow-hover"
-                                      disabled={zapScanRunning}
-                                    />
-                                  </div>
-                                </div>
-
-                                {/* Scan Options */}
-                                <div className="space-y-3">
-                                  <div className="flex items-center justify-between">
-                                    <div className="space-y-0.5">
-                                      <Label className="text-base">Spider Crawling</Label>
-                                      <p className="text-sm text-muted-foreground">Crawl the application to discover URLs</p>
-                                    </div>
-                                    <Switch 
-                                      checked={zapScanConfig.spiderEnabled} 
-                                      onCheckedChange={(checked) => setZapScanConfig({...zapScanConfig, spiderEnabled: checked})}
-                                      disabled={zapScanRunning}
-                                    />
-                                  </div>
-
-                                  <div className="flex items-center justify-between">
-                                    <div className="space-y-0.5">
-                                      <Label className="text-base">Active Scanning</Label>
-                                      <p className="text-sm text-muted-foreground">Perform active vulnerability testing</p>
-                                    </div>
-                                    <Switch 
-                                      checked={zapScanConfig.activeScanEnabled} 
-                                      onCheckedChange={(checked) => setZapScanConfig({...zapScanConfig, activeScanEnabled: checked})}
-                                      disabled={zapScanRunning}
-                                    />
-                                  </div>
-
-                                  <div className="flex items-center justify-between">
-                                    <div className="space-y-0.5">
-                                      <Label className="text-base">Include Alpha Rules</Label>
-                                      <p className="text-sm text-muted-foreground">Enable experimental detection rules</p>
-                                    </div>
-                                    <Switch 
-                                      checked={zapScanConfig.includeAlphaRules} 
-                                      onCheckedChange={(checked) => setZapScanConfig({...zapScanConfig, includeAlphaRules: checked})}
-                                      disabled={zapScanRunning}
-                                    />
-                                  </div>
-
-                                  <div className="flex items-center justify-between">
-                                    <div className="space-y-0.5">
-                                      <Label className="text-base">Include Beta Rules</Label>
-                                      <p className="text-sm text-muted-foreground">Enable beta-stage detection rules</p>
-                                    </div>
-                                    <Switch 
-                                      checked={zapScanConfig.includeBetaRules} 
-                                      onCheckedChange={(checked) => setZapScanConfig({...zapScanConfig, includeBetaRules: checked})}
-                                      disabled={zapScanRunning}
-                                    />
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-
-                            {/* Authentication Configuration */}
-                            <Card className="gradient-card border border-primary/20">
-                              <CardHeader>
-                                <div className="flex items-center justify-between">
-                                  <div>
-                                    <CardTitle className="flex items-center gap-2">
-                                      <Lock className="h-5 w-5 text-green-500" />
-                                      Authentication (Optional)
-                                    </CardTitle>
-                                    <CardDescription>
-                                      Configure authentication for protected areas
-                                    </CardDescription>
-                                  </div>
-                                  <Switch 
-                                    checked={zapScanConfig.authEnabled} 
-                                    onCheckedChange={(checked) => setZapScanConfig({...zapScanConfig, authEnabled: checked})}
-                                    disabled={zapScanRunning}
-                                  />
-                                </div>
-                              </CardHeader>
-                              {zapScanConfig.authEnabled && (
-                                <CardContent className="space-y-4">
-                                  <div className="space-y-2">
-                                    <Label htmlFor="zap-auth-url">Login URL</Label>
-                                    <Input
-                                      id="zap-auth-url"
-                                      placeholder="https://example.com/login"
-                                      value={zapScanConfig.authUrl}
-                                      onChange={(e) => setZapScanConfig({ ...zapScanConfig, authUrl: e.target.value })}
-                                      className="glow-hover"
-                                      disabled={zapScanRunning}
-                                    />
-                                  </div>
-                                  
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                      <Label htmlFor="zap-username">Username</Label>
-                                      <Input
-                                        id="zap-username"
-                                        placeholder="username"
-                                        value={zapScanConfig.username}
-                                        onChange={(e) => setZapScanConfig({ ...zapScanConfig, username: e.target.value })}
-                                        className="glow-hover"
-                                        disabled={zapScanRunning}
-                                      />
-                                    </div>
-                                    
-                                    <div className="space-y-2">
-                                      <Label htmlFor="zap-password">Password</Label>
-                                      <Input
-                                        id="zap-password"
-                                        type="password"
-                                        placeholder="password"
-                                        value={zapScanConfig.password}
-                                        onChange={(e) => setZapScanConfig({ ...zapScanConfig, password: e.target.value })}
-                                        className="glow-hover"
-                                        disabled={zapScanRunning}
-                                      />
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              )}
-                            </Card>
-
-                            {/* URL Exclusions */}
-                            <Card className="gradient-card border border-primary/20">
-                              <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                                  URL Exclusions
-                                </CardTitle>
-                                <CardDescription>
-                                  Specify URLs or patterns to exclude from scanning
-                                </CardDescription>
-                              </CardHeader>
-                              <CardContent className="space-y-4">
-                                {zapScanConfig.excludeUrls.map((url, index) => (
-                                  <div key={index} className="flex items-center gap-2">
-                                    <div className="flex-1">
-                                      <Input
-                                        placeholder="/admin/, /logout, .*\\.pdf$"
-                                        value={url}
-                                        onChange={(e) => handleExcludeUrlChange(index, e.target.value)}
-                                        className="glow-hover font-mono text-sm"
-                                        disabled={zapScanRunning}
-                                      />
-                                    </div>
-                                    {zapScanConfig.excludeUrls.length > 1 && (
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removeExcludeUrl(index)}
-                                        className="text-destructive hover:text-destructive glow-hover"
-                                        disabled={zapScanRunning}
-                                      >
-                                        <AlertTriangle className="h-4 w-4" />
-                                      </Button>
-                                    )}
-                                  </div>
-                                ))}
-                                
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={addExcludeUrl}
-                                  className="glow-hover"
-                                  disabled={zapScanRunning}
-                                >
-                                  <Target className="h-4 w-4 mr-2" />
-                                  Add Exclusion
-                                </Button>
-                              </CardContent>
-                            </Card>
-
-                            {/* Scan Progress */}
-                            {zapScanRunning && (
-                              <Card className="gradient-card border border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-orange-600/5">
-                                <CardHeader>
-                                  <CardTitle className="flex items-center gap-2">
-                                    <RefreshCw className="h-5 w-5 text-orange-500 animate-spin" />
-                                    Scan in Progress
-                                  </CardTitle>
-                                  <CardDescription>
-                                    ZAP is currently scanning {zapScanConfig.target}
-                                  </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                  <div className="space-y-2">
-                                    <div className="flex justify-between text-sm">
-                                      <span>Scan Progress</span>
-                                      <span>{Math.round(zapScanProgress)}%</span>
-                                    </div>
-                                    <Progress value={zapScanProgress} className="glow animate-pulse" />
-                                  </div>
-                                  
-                                  <div className="text-sm text-muted-foreground">
-                                    <p>Terminal commands being executed:</p>
-                                    <ul className="text-xs font-mono bg-muted/50 p-3 rounded mt-2 space-y-1">
-                                      <li>• zap.sh -daemon -host 0.0.0.0 -port 8080</li>
-                                      {zapScanConfig.spiderEnabled && <li>• zap-cli spider {zapScanConfig.target}</li>}
-                                      {zapScanConfig.activeScanEnabled && <li>• zap-cli active-scan {zapScanConfig.target}</li>}
-                                      <li>• zap-cli report -o scan-report.{zapScanConfig.reportFormat} -f {zapScanConfig.reportFormat}</li>
-                                    </ul>
-                                  </div>
-
-                                  <Button
-                                    variant="destructive"
-                                    onClick={handleZapScanStop}
-                                    className="glow-hover"
-                                  >
-                                    <AlertTriangle className="h-4 w-4 mr-2" />
-                                    Stop Scan
-                                  </Button>
-                                </CardContent>
-                              </Card>
-                            )}
-
-                            {/* Backend Integration Info */}
-                            <Card className="gradient-card border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-600/5">
-                              <CardContent className="p-4">
-                                <div className="flex items-start gap-3">
-                                  <Code className="h-5 w-5 text-blue-500 mt-0.5" />
-                                  <div className="space-y-2">
-                                    <div className="font-semibold text-blue-400">Backend Terminal Integration</div>
-                                    <div className="text-sm text-muted-foreground space-y-1">
-                                      <p><strong>API Endpoint:</strong> POST /api/security/zap/scan</p>
-                                      <p><strong>Required Dependencies:</strong> OWASP ZAP, zap-cli</p>
-                                      <p><strong>Terminal Commands:</strong> Sanitized shell execution</p>
-                                      <p><strong>Security:</strong> Process isolation, input validation</p>
-                                      <p><strong>Reports:</strong> Generated in secure directory with access controls</p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </div>
-
-                          <div className="flex justify-end gap-2 pt-4 border-t border-border/50">
-                            <Button 
-                              variant="outline" 
-                              onClick={() => setIsZapScanOpen(false)}
-                              className="glow-hover"
-                              disabled={zapScanRunning}
-                            >
-                              Cancel
-                            </Button>
-                            <Button 
-                              onClick={handleZapScanLaunch}
-                              disabled={zapScanRunning || !zapScanConfig.target.trim()}
-                              className="glow-hover group"
-                            >
-                              {zapScanRunning ? (
-                                <>
-                                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                  Scanning...
-                                </>
-                              ) : (
-                                <>
-                                  <Zap className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-                                  Launch ZAP Scan
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      <Dialog open={isPentestOpen} onOpenChange={setIsPentestOpen}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="glow-hover group">
-                            <Target className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-                            AD - Hacking
-                            <div className="ml-2 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[1400px] max-h-[95vh] gradient-card border-primary/20">
-                          <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2 text-xl">
-                              <div className="relative">
-                                <Users className="h-6 w-6 text-blue-500 animate-pulse" />
-                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping" />
-                              </div>
-                              Active Directory Penetration Testing
-                              <Badge variant="secondary" className="text-xs animate-pulse">
-                                AD ASSESSMENT
-                              </Badge>
-                            </DialogTitle>
-                            <DialogDescription className="text-base">
-                              Comprehensive Active Directory security assessment using modern tools: BloodHound, CrackMapExec, Mimikatz
-                            </DialogDescription>
-                          </DialogHeader>
-
-                          <Tabs defaultValue="config" className="space-y-4">
-                            <TabsList className="grid w-full grid-cols-6 bg-background/50 backdrop-blur">
-                              <TabsTrigger value="config" className="glow-hover">Configuration</TabsTrigger>
-                              <TabsTrigger value="bloodhound" className="glow-hover">BloodHound</TabsTrigger>
-                              <TabsTrigger value="crackmapexec" className="glow-hover">CrackMapExec</TabsTrigger>
-                              <TabsTrigger value="attacks" className="glow-hover">Attack Techniques</TabsTrigger>
-                              <TabsTrigger value="findings" className="glow-hover">Findings</TabsTrigger>
-                              <TabsTrigger value="reporting" className="glow-hover">Reporting</TabsTrigger>
-                            </TabsList>
-
-                            {/* Configuration Tab */}
-                            <TabsContent value="config" className="space-y-4">
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* AD Target Configuration */}
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                      <Target className="h-5 w-5 text-blue-500" />
-                                      AD Target Configuration
-                                    </CardTitle>
-                                    <CardDescription>Configure Active Directory target and authentication</CardDescription>
-                                  </CardHeader>
-                                  <CardContent className="space-y-4">
-                                    <div className="space-y-2">
-                                      <Label htmlFor="ad-domain">Domain</Label>
-                                      <Input 
-                                        id="ad-domain"
-                                        placeholder="company.local"
-                                        className="glow-focus"
-                                      />
-                                    </div>
-                                    
-                                    <div className="space-y-2">
-                                      <Label htmlFor="domain-controller">Domain Controller</Label>
-                                      <Input 
-                                        id="domain-controller"
-                                        placeholder="dc01.company.local"
-                                        className="glow-focus"
-                                      />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div className="space-y-2">
-                                        <Label htmlFor="ad-username">Username</Label>
-                                        <Input 
-                                          id="ad-username"
-                                          placeholder="testuser"
-                                          className="glow-focus"
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="ad-password">Password</Label>
-                                        <Input 
-                                          id="ad-password"
-                                          type="password"
-                                          placeholder="Password123!"
-                                          className="glow-focus"
-                                        />
-                                      </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                      <Label htmlFor="ntlm-hash">NTLM Hash (Alternative)</Label>
-                                      <Input 
-                                        id="ntlm-hash"
-                                        placeholder="aad3b435b51404eeaad3b435b51404ee:5fbc3d5fec8206a30f4b6c473d68ae76"
-                                        className="glow-focus"
-                                      />
-                                    </div>
-
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center space-x-2">
-                                        <Switch id="stealth-mode" />
-                                        <Label htmlFor="stealth-mode">Stealth Mode</Label>
-                                      </div>
-                                      <div className="flex items-center space-x-2">
-                                        <Switch id="kerberos-auth" />
-                                        <Label htmlFor="kerberos-auth">Use Kerberos</Label>
-                                      </div>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-
-                                {/* Tool Status */}
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                      <Activity className="h-5 w-5 text-green-500" />
-                                      AD Tool Status
-                                    </CardTitle>
-                                    <CardDescription>Current status of AD penetration testing tools</CardDescription>
-                                  </CardHeader>
-                                  <CardContent className="space-y-4">
-                                    <div className="space-y-3">
-                                      <div className="p-3 rounded-lg bg-background/50 space-y-2">
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-3">
-                                            <Network className="h-5 w-5 text-blue-500" />
-                                            <span className="font-medium">BloodHound</span>
-                                          </div>
-                                          <Badge variant="outline">Ready</Badge>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground ml-8">
-                                          Graph-based AD attack path analysis and privilege escalation discovery
-                                        </p>
-                                      </div>
-                                      
-                                      <div className="p-3 rounded-lg bg-background/50 space-y-2">
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-3">
-                                            <Terminal className="h-5 w-5 text-red-500" />
-                                            <span className="font-medium">CrackMapExec</span>
-                                          </div>
-                                          <Badge variant="outline">Ready</Badge>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground ml-8">
-                                          Network enumeration and lateral movement exploitation framework
-                                        </p>
-                                      </div>
-                                      
-                                      <div className="p-3 rounded-lg bg-background/50 space-y-2">
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-3">
-                                            <Key className="h-5 w-5 text-yellow-500" />
-                                            <span className="font-medium">Mimikatz</span>
-                                          </div>
-                                          <Badge variant="outline">Ready</Badge>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground ml-8">
-                                          Credential extraction and Pass-the-Hash/Pass-the-Ticket attacks
-                                        </p>
-                                      </div>
-                                      
-                                      <div className="p-3 rounded-lg bg-background/50 space-y-2">
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-3">
-                                            <Shield className="h-5 w-5 text-purple-500" />
-                                            <span className="font-medium">Impacket Suite</span>
-                                          </div>
-                                          <Badge variant="outline">Ready</Badge>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground ml-8">
-                                          Python toolkit for protocol implementation and AD exploitation
-                                        </p>
-                                      </div>
-                                    </div>
-
-                                    <Button className="w-full glow-hover">
-                                      <PlayCircle className="h-4 w-4 mr-2" />
-                                      Start Full AD Assessment
-                                    </Button>
-                                  </CardContent>
-                                </Card>
-                              </div>
-                            </TabsContent>
-
-                            {/* BloodHound Tab */}
-                            <TabsContent value="bloodhound" className="space-y-4">
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                      <Network className="h-5 w-5 text-blue-500" />
-                                      BloodHound Analysis
-                                    </CardTitle>
-                                    <CardDescription>Attack path analysis and AD enumeration</CardDescription>
-                                  </CardHeader>
-                                  <CardContent className="space-y-4">
-                                    <div className="space-y-3">
-                                      <div className="flex items-center justify-between">
-                                        <Label>Collection Method</Label>
-                                        <Select defaultValue="sharphound">
-                                          <SelectTrigger className="w-32">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            <SelectItem value="sharphound">SharpHound</SelectItem>
-                                            <SelectItem value="azurehound">AzureHound</SelectItem>
-                                            <SelectItem value="bloodhound-python">Python</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                      </div>
-
-                                      <div className="space-y-2">
-                                        <Label>Custom Queries</Label>
-                                        <div className="space-y-2">
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="domain-admins" defaultChecked />
-                                            <Label htmlFor="domain-admins" className="text-sm">Find Domain Admins</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="kerberoastable" defaultChecked />
-                                            <Label htmlFor="kerberoastable" className="text-sm">Kerberoastable Users</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="asreproastable" defaultChecked />
-                                            <Label htmlFor="asreproastable" className="text-sm">ASREPRoastable Users</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="shortest-paths" />
-                                            <Label htmlFor="shortest-paths" className="text-sm">Shortest Paths to DA</Label>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <Button className="w-full glow-hover">
-                                        <Search className="h-4 w-4 mr-2" />
-                                        Run BloodHound Collection
-                                      </Button>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                      <Eye className="h-5 w-5 text-green-500" />
-                                      Analysis Results
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <div className="text-center py-8 text-muted-foreground">
-                                      <Network className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                      <p>Run BloodHound collection to see analysis results</p>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              </div>
-                            </TabsContent>
-
-                            {/* CrackMapExec Tab */}
-                            <TabsContent value="crackmapexec" className="space-y-4">
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                      <Terminal className="h-5 w-5 text-red-500" />
-                                      CrackMapExec Configuration
-                                    </CardTitle>
-                                    <CardDescription>Configure lateral movement and enumeration</CardDescription>
-                                  </CardHeader>
-                                  <CardContent className="space-y-4">
-                                    <div className="space-y-3">
-                                      <div>
-                                        <Label>Protocols</Label>
-                                        <div className="grid grid-cols-3 gap-2 mt-2">
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="smb" defaultChecked />
-                                            <Label htmlFor="smb" className="text-sm">SMB</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="ldap" defaultChecked />
-                                            <Label htmlFor="ldap" className="text-sm">LDAP</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="winrm" />
-                                            <Label htmlFor="winrm" className="text-sm">WinRM</Label>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <div>
-                                        <Label>Modules</Label>
-                                        <div className="grid grid-cols-2 gap-2 mt-2">
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="lsassy" defaultChecked />
-                                            <Label htmlFor="lsassy" className="text-sm">Lsassy</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="nanodump" />
-                                            <Label htmlFor="nanodump" className="text-sm">Nanodump</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="procdump" />
-                                            <Label htmlFor="procdump" className="text-sm">Procdump</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <Checkbox id="handlekatz" />
-                                            <Label htmlFor="handlekatz" className="text-sm">HandleKatz</Label>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                          <Label htmlFor="threads">Threads</Label>
-                                          <Input 
-                                            id="threads"
-                                            type="number"
-                                            defaultValue="5"
-                                            min="1"
-                                            max="20"
-                                            className="glow-focus"
-                                          />
-                                        </div>
-                                        <div className="space-y-2">
-                                          <Label htmlFor="timeout">Timeout (s)</Label>
-                                          <Input 
-                                            id="timeout"
-                                            type="number"
-                                            defaultValue="30"
-                                            min="10"
-                                            max="120"
-                                            className="glow-focus"
-                                          />
-                                        </div>
-                                      </div>
-
-                                      <Button className="w-full glow-hover">
-                                        <Terminal className="h-4 w-4 mr-2" />
-                                        Execute CrackMapExec
-                                      </Button>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                      <Activity className="h-5 w-5 text-orange-500" />
-                                      Execution Results
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <div className="text-center py-8 text-muted-foreground">
-                                      <Terminal className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                      <p>Execute CrackMapExec to see results</p>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              </div>
-                            </TabsContent>
-
-                            {/* Attack Techniques Tab */}
-                            <TabsContent value="attacks" className="space-y-4">
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-lg">
-                                      <Key className="h-5 w-5 text-yellow-500" />
-                                      Kerberoasting
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <p className="text-sm text-muted-foreground mb-4">
-                                      Extract service account passwords by requesting service tickets
-                                    </p>
-                                    <Button size="sm" className="w-full glow-hover">
-                                      <PlayCircle className="h-4 w-4 mr-2" />
-                                      Execute Attack
-                                    </Button>
-                                  </CardContent>
-                                </Card>
-
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-lg">
-                                      <Lock className="h-5 w-5 text-red-500" />
-                                      ASREPRoasting
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <p className="text-sm text-muted-foreground mb-4">
-                                      Target users with "Do not require Kerberos preauthentication"
-                                    </p>
-                                    <Button size="sm" className="w-full glow-hover">
-                                      <PlayCircle className="h-4 w-4 mr-2" />
-                                      Execute Attack
-                                    </Button>
-                                  </CardContent>
-                                </Card>
-
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-lg">
-                                      <Unlock className="h-5 w-5 text-purple-500" />
-                                      DCSync
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <p className="text-sm text-muted-foreground mb-4">
-                                      Simulate domain controller replication to extract password hashes
-                                    </p>
-                                    <Button size="sm" className="w-full glow-hover">
-                                      <PlayCircle className="h-4 w-4 mr-2" />
-                                      Execute Attack
-                                    </Button>
-                                  </CardContent>
-                                </Card>
-
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-lg">
-                                      <Server className="h-5 w-5 text-blue-500" />
-                                      Golden Ticket
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <p className="text-sm text-muted-foreground mb-4">
-                                      Create forged TGT tickets using krbtgt hash
-                                    </p>
-                                    <Button size="sm" className="w-full glow-hover">
-                                      <PlayCircle className="h-4 w-4 mr-2" />
-                                      Execute Attack
-                                    </Button>
-                                  </CardContent>
-                                </Card>
-
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-lg">
-                                      <Globe className="h-5 w-5 text-green-500" />
-                                      Silver Ticket
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <p className="text-sm text-muted-foreground mb-4">
-                                      Create forged service tickets using service account hash
-                                    </p>
-                                    <Button size="sm" className="w-full glow-hover">
-                                      <PlayCircle className="h-4 w-4 mr-2" />
-                                      Execute Attack
-                                    </Button>
-                                  </CardContent>
-                                </Card>
-
-                                <Card className="gradient-card border-primary/20">
-                                  <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-lg">
-                                      <Settings className="h-5 w-5 text-orange-500" />
-                                      Delegation Abuse
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <p className="text-sm text-muted-foreground mb-4">
-                                      Exploit unconstrained and constrained delegation
-                                    </p>
-                                    <Button size="sm" className="w-full glow-hover">
-                                      <PlayCircle className="h-4 w-4 mr-2" />
-                                      Execute Attack
-                                    </Button>
-                                  </CardContent>
-                                </Card>
-                              </div>
-                            </TabsContent>
-
-                            {/* Findings Tab */}
-                            <TabsContent value="findings" className="space-y-4">
-                              <Card className="gradient-card border-primary/20">
-                                <CardHeader>
-                                  <CardTitle className="flex items-center gap-2">
-                                    <Search className="h-5 w-5 text-green-500" />
-                                    Security Findings
-                                  </CardTitle>
-                                  <CardDescription>Discovered vulnerabilities and attack paths</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                  <div className="text-center py-12 text-muted-foreground">
-                                    <AlertTriangle className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                                    <h3 className="text-lg font-medium mb-2">No Findings Yet</h3>
-                                    <p>Run AD assessment tools to discover security issues</p>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </TabsContent>
-
-                            {/* Reporting Tab */}
-                            <TabsContent value="reporting" className="space-y-4">
-                              <Card className="gradient-card border-primary/20">
-                                <CardHeader>
-                                  <CardTitle className="flex items-center gap-2">
-                                    <FileText className="h-5 w-5 text-blue-500" />
-                                    Generate Reports
-                                  </CardTitle>
-                                  <CardDescription>Export findings and recommendations</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Button className="glow-hover h-20 flex-col">
-                                      <Download className="h-6 w-6 mb-2" />
-                                      Executive Summary
-                                    </Button>
-                                    <Button className="glow-hover h-20 flex-col">
-                                      <FileText className="h-6 w-6 mb-2" />
-                                      Technical Report
-                                    </Button>
-                                    <Button className="glow-hover h-20 flex-col">
-                                      <Network className="h-6 w-6 mb-2" />
-                                      BloodHound Data
-                                    </Button>
-                                    <Button className="glow-hover h-20 flex-col">
-                                      <Terminal className="h-6 w-6 mb-2" />
-                                      Raw Outputs
-                                    </Button>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </TabsContent>
-                          </Tabs>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  </TabsContent>
+                       {/* Physical Security Testing */}
+                       <Dialog open={isPhysicalPentestOpen} onOpenChange={setIsPhysicalPentestOpen}>
+                         <DialogTrigger asChild>
+                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
+                             <CardContent className="p-6 text-center">
+                               <div className="flex flex-col items-center gap-4">
+                                 <div className="relative">
+                                   <Building className="h-12 w-12 text-orange-500 animate-pulse" />
+                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full animate-ping" />
+                                 </div>
+                                 <div>
+                                   <h3 className="text-lg font-semibold text-glow">Physical Security</h3>
+                                   <p className="text-sm text-muted-foreground">Locks • Access Control • RFID</p>
+                                 </div>
+                                 <Badge className="bg-orange-500/10 text-orange-500 animate-pulse-glow">
+                                   Physical Access
+                                 </Badge>
+                               </div>
+                             </CardContent>
+                           </Card>
+                         </DialogTrigger>
+                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
+                           <DialogHeader>
+                             <DialogTitle className="flex items-center gap-2 text-xl">
+                               <div className="relative">
+                                 <Building className="h-6 w-6 text-orange-500 animate-pulse" />
+                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-ping" />
+                               </div>
+                               Physical Security Assessment
+                               <Badge className="ml-2 bg-orange-500/10 text-orange-500 animate-pulse-glow">
+                                 PHYSICAL ACCESS
+                               </Badge>
+                             </DialogTitle>
+                             <DialogDescription className="text-base">
+                               Physical security testing including lock picking, access control bypass, and RFID/badge cloning
+                             </DialogDescription>
+                           </DialogHeader>
+                           
+                           <PhysicalPentestingContent />
+                         </DialogContent>
+                       </Dialog>
+                     </div>
+                   </TabsContent>
                   
                   <TabsContent value="osint" className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
