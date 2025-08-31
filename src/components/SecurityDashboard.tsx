@@ -2672,7 +2672,7 @@ const SecurityDashboard = () => {
         <div className="container mx-auto flex h-14 items-center justify-between px-6">
           <div className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg">IPS Security Center</span>
+            <span className="font-bold text-lg">IPS Security Test Center</span>
           </div>
           
           {/* Navigation Links */}
