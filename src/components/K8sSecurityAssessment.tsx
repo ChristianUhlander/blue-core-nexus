@@ -65,7 +65,10 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { modernPentestApi } from "@/services/modernPentestApi";
+import { ToolConfigurationForm } from "@/components/ToolConfigurationForm";
+import { RealtimeTerminal } from "@/components/RealtimeTerminal";
 import { PentestTarget, KdiggerConfig, KubeHunterConfig, KubeBenchConfig } from "@/types/modernPentest";
+import { toolConfigurations } from "@/data/toolConfigurations";
 
 interface K8sSecurityAssessmentProps {
   sessionId?: string;
@@ -554,6 +557,34 @@ export const K8sSecurityAssessment: React.FC<K8sSecurityAssessmentProps> = ({
 
         {/* Configuration Tab */}
         <TabsContent value="config" className="space-y-6">
+          {/* Tool Configuration Forms */}
+          <div className="grid gap-6">
+            <ToolConfigurationForm
+              tool={toolConfigurations.kdigger}
+              onConfigurationChange={(config) => {
+                console.log('kdigger config changed:', config);
+              }}
+              onExecute={executeKdigger}
+              isExecuting={toolExecutions.find(t => t.id === 'kdigger')?.status === 'running'}
+            />
+            
+            <ToolConfigurationForm
+              tool={toolConfigurations.kubehunter}
+              onConfigurationChange={(config) => {
+                console.log('kube-hunter config changed:', config);
+              }}
+              onExecute={executeKubeHunter}
+              isExecuting={toolExecutions.find(t => t.id === 'kube-hunter')?.status === 'running'}
+            />
+          </div>
+
+          {/* Real-time Terminal */}
+          <RealtimeTerminal
+            sessionId={sessionId}
+            isExecuting={toolExecutions.some(t => t.status === 'running')}
+            currentTool={toolExecutions.find(t => t.status === 'running')?.tool}
+          />
+          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* K8s Configuration */}
             <Card>
