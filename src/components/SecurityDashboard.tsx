@@ -79,6 +79,7 @@ const SecurityDashboard = () => {
   const [isThreatAnalysisOpen, setIsThreatAnalysisOpen] = useState(false);
   const [isWazuhManagementOpen, setIsWazuhManagementOpen] = useState(false);
   const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
+  const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
   
   // IppsY chat pane state
   const [isIppsYOpen, setIsIppsYOpen] = useState(false);
@@ -2712,6 +2713,7 @@ const SecurityDashboard = () => {
             <Button 
               variant="outline" 
               size="sm" 
+              onClick={() => setIsSchedulerOpen(true)}
               className="flex items-center gap-2 glow-hover transition-all duration-200"
             >
               <Calendar className="h-4 w-4" />
@@ -6786,6 +6788,394 @@ const SecurityDashboard = () => {
                 </DialogDescription>
               </DialogHeader>
               <IntelligentReportingSystem />
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {/* Security Test Scheduler */}
+        {isSchedulerOpen && (
+          <Dialog open={isSchedulerOpen} onOpenChange={setIsSchedulerOpen}>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  Security Test Scheduler
+                </DialogTitle>
+                <DialogDescription>
+                  Schedule automated security tests including pentests, vulnerability scans, and OSINT reconnaissance.
+                </DialogDescription>
+              </DialogHeader>
+              
+              <Tabs defaultValue="pentest" className="w-full">
+                <TabsList className="grid grid-cols-4 w-full">
+                  <TabsTrigger value="pentest">Penetration Tests</TabsTrigger>
+                  <TabsTrigger value="vulnerability">Vulnerability Scans</TabsTrigger>
+                  <TabsTrigger value="osint">OSINT Research</TabsTrigger>
+                  <TabsTrigger value="monitoring">Continuous Monitoring</TabsTrigger>
+                </TabsList>
+
+                {/* Penetration Tests */}
+                <TabsContent value="pentest" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Target className="h-4 w-4" />
+                        Automated Penetration Testing
+                      </CardTitle>
+                      <CardDescription>
+                        Schedule comprehensive penetration tests with AI-driven methodologies
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Test Scenario</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select pentest type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="web-app">Web Application Assessment</SelectItem>
+                              <SelectItem value="network">Network Penetration Test</SelectItem>
+                              <SelectItem value="ad-pentest">Active Directory Assessment</SelectItem>
+                              <SelectItem value="wireless">Wireless Security Test</SelectItem>
+                              <SelectItem value="social-eng">Social Engineering Test</SelectItem>
+                              <SelectItem value="physical">Physical Security Test</SelectItem>
+                              <SelectItem value="cloud">Cloud Security Assessment</SelectItem>
+                              <SelectItem value="mobile">Mobile App Security Test</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Target Environment</Label>
+                          <Input placeholder="e.g., 192.168.1.0/24 or example.com" />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Tools Configuration</Label>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="nmap" />
+                            <Label htmlFor="nmap">Nmap</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="metasploit" />
+                            <Label htmlFor="metasploit">Metasploit</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="burpsuite" />
+                            <Label htmlFor="burpsuite">Burp Suite</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="bloodhound" />
+                            <Label htmlFor="bloodhound">BloodHound</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="crackmapexec" />
+                            <Label htmlFor="crackmapexec">CrackMapExec</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="sqlmap" />
+                            <Label htmlFor="sqlmap">SQLMap</Label>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Schedule Date & Time</Label>
+                          <Input type="datetime-local" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Recurrence</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select frequency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="once">One-time</SelectItem>
+                              <SelectItem value="daily">Daily</SelectItem>
+                              <SelectItem value="weekly">Weekly</SelectItem>
+                              <SelectItem value="monthly">Monthly</SelectItem>
+                              <SelectItem value="quarterly">Quarterly</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* Vulnerability Scans */}
+                <TabsContent value="vulnerability" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <ShieldAlert className="h-4 w-4" />
+                        OpenVAS Vulnerability Scanning
+                      </CardTitle>
+                      <CardDescription>
+                        Schedule automated vulnerability assessments with GVM/OpenVAS
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Scan Profile</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select scan profile" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="full-fast">Full and Fast</SelectItem>
+                              <SelectItem value="full-deep">Full and Very Deep</SelectItem>
+                              <SelectItem value="system-discovery">System Discovery</SelectItem>
+                              <SelectItem value="host-discovery">Host Discovery</SelectItem>
+                              <SelectItem value="web-application">Web Application Tests</SelectItem>
+                              <SelectItem value="brute-force">Brute Force Tests</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Target Networks</Label>
+                          <Textarea placeholder="192.168.1.0/24&#10;10.0.0.0/8&#10;example.com" />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Port Range</Label>
+                        <Input placeholder="1-65535 or 22,80,443,8080" />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Schedule Date & Time</Label>
+                          <Input type="datetime-local" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Recurrence</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select frequency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="once">One-time</SelectItem>
+                              <SelectItem value="daily">Daily</SelectItem>
+                              <SelectItem value="weekly">Weekly</SelectItem>
+                              <SelectItem value="monthly">Monthly</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="email-alerts" />
+                        <Label htmlFor="email-alerts">Send email alerts for critical vulnerabilities</Label>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* OSINT Research */}
+                <TabsContent value="osint" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Search className="h-4 w-4" />
+                        OSINT Intelligence Gathering
+                      </CardTitle>
+                      <CardDescription>
+                        Schedule automated open source intelligence reconnaissance
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Research Type</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select OSINT type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="domain">Domain Intelligence</SelectItem>
+                              <SelectItem value="email">Email Investigation</SelectItem>
+                              <SelectItem value="social">Social Media Research</SelectItem>
+                              <SelectItem value="company">Company Profiling</SelectItem>
+                              <SelectItem value="person">Person Investigation</SelectItem>
+                              <SelectItem value="ip">IP Address Research</SelectItem>
+                              <SelectItem value="phone">Phone Number Investigation</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Target</Label>
+                          <Input placeholder="domain.com, email@example.com, or person name" />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>OSINT Modules</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="shodan" />
+                            <Label htmlFor="shodan">Shodan Search</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="virustotal" />
+                            <Label htmlFor="virustotal">VirusTotal</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="whois" />
+                            <Label htmlFor="whois">WHOIS Lookup</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="dns" />
+                            <Label htmlFor="dns">DNS Research</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="social-media" />
+                            <Label htmlFor="social-media">Social Media</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="breach-data" />
+                            <Label htmlFor="breach-data">Breach Databases</Label>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Schedule Date & Time</Label>
+                          <Input type="datetime-local" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Recurrence</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select frequency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="once">One-time</SelectItem>
+                              <SelectItem value="weekly">Weekly</SelectItem>
+                              <SelectItem value="monthly">Monthly</SelectItem>
+                              <SelectItem value="quarterly">Quarterly</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* Continuous Monitoring */}
+                <TabsContent value="monitoring" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Activity className="h-4 w-4" />
+                        Continuous Security Monitoring
+                      </CardTitle>
+                      <CardDescription>
+                        Schedule ongoing security monitoring and alerting
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Monitoring Services</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="wazuh-monitoring" />
+                            <Label htmlFor="wazuh-monitoring">Wazuh SIEM Monitoring</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="zap-monitoring" />
+                            <Label htmlFor="zap-monitoring">OWASP ZAP Web Monitoring</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="k8s-monitoring" />
+                            <Label htmlFor="k8s-monitoring">Kubernetes Security</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="threat-intel" />
+                            <Label htmlFor="threat-intel">Threat Intelligence</Label>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Alert Threshold</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select alert level" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="critical">Critical Only</SelectItem>
+                              <SelectItem value="high">High & Critical</SelectItem>
+                              <SelectItem value="medium">Medium & Above</SelectItem>
+                              <SelectItem value="all">All Alerts</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Monitoring Interval</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select interval" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="5min">Every 5 minutes</SelectItem>
+                              <SelectItem value="15min">Every 15 minutes</SelectItem>
+                              <SelectItem value="1hour">Every hour</SelectItem>
+                              <SelectItem value="4hours">Every 4 hours</SelectItem>
+                              <SelectItem value="24hours">Daily</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Notification Channels</Label>
+                        <div className="flex gap-4">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="email-notif" />
+                            <Label htmlFor="email-notif">Email</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="slack" />
+                            <Label htmlFor="slack">Slack</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="teams" />
+                            <Label htmlFor="teams">Microsoft Teams</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="webhook" />
+                            <Label htmlFor="webhook">Webhook</Label>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+              
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button variant="outline" onClick={() => setIsSchedulerOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => {
+                  toast({
+                    title: "Schedule Created",
+                    description: "Security test has been scheduled successfully",
+                  });
+                  setIsSchedulerOpen(false);
+                }}>
+                  <PlayCircle className="h-4 w-4 mr-2" />
+                  Schedule Test
+                </Button>
+              </div>
             </DialogContent>
           </Dialog>
         )}
