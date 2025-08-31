@@ -4735,36 +4735,56 @@ const SecurityDashboard = () => {
                                   </CardHeader>
                                   <CardContent className="space-y-4">
                                     <div className="space-y-3">
-                                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/50">
-                                        <div className="flex items-center gap-3">
-                                          <Network className="h-5 w-5 text-blue-500" />
-                                          <span className="font-medium">BloodHound</span>
+                                      <div className="p-3 rounded-lg bg-background/50 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-3">
+                                            <Network className="h-5 w-5 text-blue-500" />
+                                            <span className="font-medium">BloodHound</span>
+                                          </div>
+                                          <Badge variant="outline">Ready</Badge>
                                         </div>
-                                        <Badge variant="outline">Ready</Badge>
+                                        <p className="text-sm text-muted-foreground ml-8">
+                                          Graph-based AD attack path analysis and privilege escalation discovery
+                                        </p>
                                       </div>
                                       
-                                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/50">
-                                        <div className="flex items-center gap-3">
-                                          <Terminal className="h-5 w-5 text-red-500" />
-                                          <span className="font-medium">CrackMapExec</span>
+                                      <div className="p-3 rounded-lg bg-background/50 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-3">
+                                            <Terminal className="h-5 w-5 text-red-500" />
+                                            <span className="font-medium">CrackMapExec</span>
+                                          </div>
+                                          <Badge variant="outline">Ready</Badge>
                                         </div>
-                                        <Badge variant="outline">Ready</Badge>
+                                        <p className="text-sm text-muted-foreground ml-8">
+                                          Network enumeration and lateral movement exploitation framework
+                                        </p>
                                       </div>
                                       
-                                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/50">
-                                        <div className="flex items-center gap-3">
-                                          <Key className="h-5 w-5 text-yellow-500" />
-                                          <span className="font-medium">Mimikatz</span>
+                                      <div className="p-3 rounded-lg bg-background/50 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-3">
+                                            <Key className="h-5 w-5 text-yellow-500" />
+                                            <span className="font-medium">Mimikatz</span>
+                                          </div>
+                                          <Badge variant="outline">Ready</Badge>
                                         </div>
-                                        <Badge variant="outline">Ready</Badge>
+                                        <p className="text-sm text-muted-foreground ml-8">
+                                          Credential extraction and Pass-the-Hash/Pass-the-Ticket attacks
+                                        </p>
                                       </div>
                                       
-                                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/50">
-                                        <div className="flex items-center gap-3">
-                                          <Shield className="h-5 w-5 text-purple-500" />
-                                          <span className="font-medium">Impacket Suite</span>
+                                      <div className="p-3 rounded-lg bg-background/50 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-3">
+                                            <Shield className="h-5 w-5 text-purple-500" />
+                                            <span className="font-medium">Impacket Suite</span>
+                                          </div>
+                                          <Badge variant="outline">Ready</Badge>
                                         </div>
-                                        <Badge variant="outline">Ready</Badge>
+                                        <p className="text-sm text-muted-foreground ml-8">
+                                          Python toolkit for protocol implementation and AD exploitation
+                                        </p>
                                       </div>
                                     </div>
 
