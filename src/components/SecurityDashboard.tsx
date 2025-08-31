@@ -4620,7 +4620,7 @@ const SecurityDashboard = () => {
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" className="glow-hover group">
                             <Target className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-                            Penetration Testing
+                            AD - Hacking
                             <div className="ml-2 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                           </Button>
                         </DialogTrigger>
