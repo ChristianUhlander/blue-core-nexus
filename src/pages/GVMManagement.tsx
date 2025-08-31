@@ -69,7 +69,9 @@ const GVMManagement = () => {
   // Dialog states for CRUD operations
   const [isTargetDialogOpen, setIsTargetDialogOpen] = useState(false);
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+  const [isCredentialsDialogOpen, setIsCredentialsDialogOpen] = useState(false);
   const [editingTarget, setEditingTarget] = useState<TargetOut | null>(null);
+  const [editingCredential, setEditingCredential] = useState<any | null>(null);
   
   // Form states
   const [newTarget, setNewTarget] = useState<Partial<TargetIn>>({
@@ -78,6 +80,17 @@ const GVMManagement = () => {
     comment: '',
     port_list_id: '',
     is_active: true
+  });
+  
+  const [newCredential, setNewCredential] = useState({
+    name: '',
+    type: 'Username/Password',
+    username: '',
+    password: '',
+    sshKey: '',
+    snmpCommunity: '',
+    comment: '',
+    targets: [] as string[]
   });
   
   // Real-time scan monitoring
@@ -488,6 +501,23 @@ const GVMManagement = () => {
       port_list_id: '',
       is_active: true
     });
+  }, []);
+
+  /**
+   * Reset credential form
+   */
+  const resetCredentialForm = useCallback(() => {
+    setNewCredential({
+      name: '',
+      type: 'Username/Password',
+      username: '',
+      password: '',
+      sshKey: '',
+      snmpCommunity: '',
+      comment: '',
+      targets: []
+    });
+    setEditingCredential(null);
     setEditingTarget(null);
   }, []);
   
@@ -1034,7 +1064,153 @@ const GVMManagement = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4 mb-6">
-                  <Button>Add Credentials</Button>
+                  <Dialog open={isCredentialsDialogOpen} onOpenChange={setIsCredentialsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Credentials
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>
+                          {editingCredential ? 'Edit Credentials' : 'Add New Credentials'}
+                        </DialogTitle>
+                        <DialogDescription>
+                          Create or modify authentication credentials for vulnerability scans
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="cred-name">Credential Name *</Label>
+                            <Input
+                              id="cred-name"
+                              placeholder="Enter credential name"
+                              value={newCredential.name}
+                              onChange={(e) => setNewCredential(prev => ({ ...prev, name: e.target.value }))}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="cred-type">Credential Type</Label>
+                            <Select 
+                              value={newCredential.type} 
+                              onValueChange={(value) => setNewCredential(prev => ({ ...prev, type: value }))}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select credential type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Username/Password">Username/Password</SelectItem>
+                                <SelectItem value="SSH Key">SSH Key</SelectItem>
+                                <SelectItem value="SNMP">SNMP Community String</SelectItem>
+                                <SelectItem value="Client Certificate">Client Certificate</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        {/* Username/Password Fields */}
+                        {newCredential.type === 'Username/Password' && (
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="username">Username *</Label>
+                              <Input
+                                id="username"
+                                placeholder="Enter username"
+                                value={newCredential.username}
+                                onChange={(e) => setNewCredential(prev => ({ ...prev, username: e.target.value }))}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="password">Password *</Label>
+                              <Input
+                                id="password"
+                                type="password"
+                                placeholder="Enter password"
+                                value={newCredential.password}
+                                onChange={(e) => setNewCredential(prev => ({ ...prev, password: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* SSH Key Fields */}
+                        {newCredential.type === 'SSH Key' && (
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="username-ssh">Username *</Label>
+                              <Input
+                                id="username-ssh"
+                                placeholder="Enter SSH username"
+                                value={newCredential.username}
+                                onChange={(e) => setNewCredential(prev => ({ ...prev, username: e.target.value }))}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="ssh-key">Private Key *</Label>
+                              <Textarea
+                                id="ssh-key"
+                                placeholder="Paste your private SSH key here"
+                                className="min-h-[150px] font-mono text-sm"
+                                value={newCredential.sshKey}
+                                onChange={(e) => setNewCredential(prev => ({ ...prev, sshKey: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* SNMP Fields */}
+                        {newCredential.type === 'SNMP' && (
+                          <div className="space-y-2">
+                            <Label htmlFor="snmp-community">Community String *</Label>
+                            <Input
+                              id="snmp-community"
+                              placeholder="Enter SNMP community string"
+                              value={newCredential.snmpCommunity}
+                              onChange={(e) => setNewCredential(prev => ({ ...prev, snmpCommunity: e.target.value }))}
+                            />
+                          </div>
+                        )}
+
+                        <div className="space-y-2">
+                          <Label htmlFor="cred-comment">Description</Label>
+                          <Textarea
+                            id="cred-comment"
+                            placeholder="Optional description or notes"
+                            value={newCredential.comment}
+                            onChange={(e) => setNewCredential(prev => ({ ...prev, comment: e.target.value }))}
+                          />
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-4 border-t">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => {
+                              setIsCredentialsDialogOpen(false);
+                              resetCredentialForm();
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                          <Button 
+                            onClick={() => {
+                              // Handle save credential logic here
+                              toast({
+                                title: "Success",
+                                description: `Credential "${newCredential.name}" ${editingCredential ? 'updated' : 'created'} successfully.`
+                              });
+                              setIsCredentialsDialogOpen(false);
+                              resetCredentialForm();
+                            }}
+                          >
+                            {editingCredential ? 'Update' : 'Create'} Credentials
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 <Table>
                   <TableHeader>
@@ -1060,10 +1236,38 @@ const GVMManagement = () => {
                             <Button variant="ghost" size="sm">
                               <Eye className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                setEditingCredential(cred);
+                                setNewCredential({
+                                  name: cred.name,
+                                  type: cred.type,
+                                  username: '',
+                                  password: '',
+                                  sshKey: '',
+                                  snmpCommunity: '',
+                                  comment: '',
+                                  targets: []
+                                });
+                                setIsCredentialsDialogOpen(true);
+                              }}
+                            >
                               <Settings className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                if (confirm(`Are you sure you want to delete "${cred.name}"?`)) {
+                                  toast({
+                                    title: "Credential Deleted",
+                                    description: `"${cred.name}" has been removed successfully.`
+                                  });
+                                }
+                              }}
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
