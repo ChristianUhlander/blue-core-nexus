@@ -4267,7 +4267,7 @@ const SecurityDashboard = () => {
                             )}
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[900px] max-h-[90vh] gradient-card border-primary/20">
+                        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto gradient-card border-primary/20">
                           <DialogHeader>
                             <DialogTitle className="flex items-center gap-2 text-xl">
                               <div className="relative">
