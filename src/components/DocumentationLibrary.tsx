@@ -1156,6 +1156,368 @@ This system creates a robust, automated security operations pipeline that scales
           tags: ['security-operations', 'ticketing', 'attack-plans', 'automation', 'remediation']
         }
       ]
+    },
+    {
+      id: 'siem-monitoring',
+      title: 'SIEM Monitoring',
+      description: 'Wazuh SIEM management and log analysis',
+      icon: Eye,
+      badge: 'Real-time',
+      items: [
+        {
+          id: 'wazuh-siem-management',
+          title: 'Wazuh SIEM Management Guide',
+          description: 'Complete guide to Wazuh SIEM deployment, log sources, endpoint monitoring, and threat detection',
+          type: 'guide',
+          difficulty: 'advanced',
+          estimatedTime: '60 minutes',
+          content: `# Wazuh SIEM Management Guide
+
+## Overview
+
+Wazuh SIEM (Security Information and Event Management) is the centralized security monitoring and incident detection engine of the IPS Security Center. It provides real-time log analysis, threat detection, compliance monitoring, and security incident response capabilities across your entire infrastructure.
+
+## What is Wazuh SIEM?
+
+Wazuh is an open-source security platform that unifies XDR (Extended Detection and Response) and SIEM capabilities. In the context of the IPS Security Center, it serves as:
+
+- **Central Log Aggregator**: Collects security events from all systems
+- **Threat Detection Engine**: Analyzes patterns to identify security incidents  
+- **Compliance Monitor**: Ensures adherence to security standards
+- **Incident Response Hub**: Orchestrates response to security events
+- **Forensic Analysis Tool**: Provides detailed investigation capabilities
+
+## Architecture Overview
+
+### Core Components
+
+\`\`\`typescript
+interface WazuhArchitecture {
+  manager: {
+    role: 'Central coordination and analysis';
+    components: ['Rule Engine', 'Event Correlation', 'Alert Management'];
+    port: 1514; // Agent communication
+    api_port: 55000; // REST API
+  };
+  agents: {
+    role: 'Data collection from endpoints';
+    types: ['File Integrity', 'Log Collection', 'Rootkit Detection'];
+    communication: 'Encrypted (AES + Blowfish)';
+  };
+  indexer: {
+    role: 'Data storage and search';
+    technology: 'OpenSearch/Elasticsearch';
+    port: 9200;
+  };
+  dashboard: {
+    role: 'Visualization and management';
+    technology: 'OpenSearch Dashboards';
+    port: 443;
+  };
+}
+\`\`\`
+
+### Data Flow Pipeline
+
+\`\`\`
+Log Sources → Wazuh Agents → Wazuh Manager → Rules Engine → Alerts → Dashboard/API
+     ↓              ↓              ↓             ↓          ↓         ↓
+  Endpoints    Collection     Normalization  Analysis  Notification  Action
+\`\`\`
+
+## Data Sources and Endpoints
+
+### 1. **System Infrastructure Logs**
+
+#### Linux/Unix Systems
+\`\`\`bash
+# System logs
+/var/log/syslog          # System events
+/var/log/auth.log        # Authentication events  
+/var/log/secure          # SSH, sudo, su events
+/var/log/messages        # General system messages
+/var/log/dmesg           # Kernel messages
+
+# Service-specific logs
+/var/log/apache2/        # Web server logs
+/var/log/nginx/          # Reverse proxy logs
+/var/log/mysql/          # Database logs
+/var/log/postgresql/     # PostgreSQL logs
+\`\`\`
+
+#### Windows Systems
+\`\`\`powershell
+# Event logs
+Security                 # Authentication, privileges
+System                   # System components, drivers
+Application              # Applications, services
+Setup                    # System setup, updates
+
+# IIS logs (if applicable)
+C:\\inetpub\\logs\\LogFiles\\
+
+# Custom application logs
+%ProgramData%\\ApplicationName\\Logs\\
+\`\`\`
+
+#### Network Infrastructure
+\`\`\`yaml
+# Firewall logs
+iptables_logs: /var/log/iptables.log
+pf_logs: /var/log/pflog
+cisco_asa: syslog_endpoint:514
+
+# Network device logs  
+switches: 
+  - device: "10.0.1.1"
+    type: "cisco_ios"
+    syslog_facility: "local0"
+    
+routers:
+  - device: "10.0.1.254" 
+    type: "juniper"
+    syslog_facility: "local1"
+\`\`\`
+
+### 2. **Application Security Logs**
+
+#### Web Application Logs
+\`\`\`json
+{
+  "apache_access": {
+    "path": "/var/log/apache2/access.log",
+    "format": "combined",
+    "events": ["HTTP requests", "Response codes", "User agents"]
+  },
+  "apache_error": {
+    "path": "/var/log/apache2/error.log", 
+    "events": ["Application errors", "Security warnings", "Module failures"]
+  },
+  "nginx_access": {
+    "path": "/var/log/nginx/access.log",
+    "format": "json",
+    "events": ["Request details", "Response times", "Client IPs"]
+  }
+}
+\`\`\`
+
+#### Database Security Events
+\`\`\`sql
+-- MySQL/MariaDB
+SET GLOBAL general_log = 'ON';
+SET GLOBAL general_log_file = '/var/log/mysql/general.log';
+SET GLOBAL slow_query_log = 'ON';
+
+-- PostgreSQL
+log_statement = 'all'
+log_connections = on
+log_disconnections = on
+log_checkpoints = on
+\`\`\`
+
+### 3. **Cloud Infrastructure Logs**
+
+#### AWS CloudTrail Integration
+\`\`\`json
+{
+  "aws_cloudtrail": {
+    "s3_bucket": "company-cloudtrail-logs",
+    "regions": ["us-east-1", "us-west-2"],
+    "events": ["API calls", "Console sign-ins", "Resource modifications", "IAM changes"],
+    "integration_method": "S3 bucket monitoring"
+  }
+}
+\`\`\`
+
+### 4. **Container and Orchestration Logs**
+
+#### Kubernetes Cluster Logs
+\`\`\`yaml
+kubernetes_logs:
+  api_server: 
+    path: "/var/log/kube-apiserver.log"
+    events: ["API requests", "Authentication", "Authorization"]
+    
+  kubelet:
+    path: "/var/log/kubelet.log"  
+    events: ["Pod lifecycle", "Resource allocation", "Node status"]
+    
+  audit_logs:
+    path: "/var/log/kubernetes/audit.log"
+    events: ["Resource access", "Policy violations", "Admin actions"]
+\`\`\`
+
+## Log Processing and Analysis
+
+### 1. **Custom Rule Development**
+
+#### Security Event Rules
+\`\`\`xml
+<!-- SQL Injection Detection -->
+<rule id="100001" level="12">
+  <if_sid>31100</if_sid>
+  <regex>union|select|insert|delete|update|drop|create|alter</regex>
+  <description>Possible SQL injection attack</description>
+  <group>web_attack,sql_injection</group>
+</rule>
+
+<!-- Brute Force Detection -->  
+<rule id="100002" level="10" frequency="10" timeframe="60">
+  <if_matched_sid>5716</if_matched_sid>
+  <description>Multiple SSH authentication failures</description>
+  <group>authentication_failures,brute_force</group>
+</rule>
+\`\`\`
+
+## Integration Patterns
+
+### 1. **REST API Integration**
+
+\`\`\`python
+import requests
+
+class WazuhAPIClient:
+    def __init__(self, base_url: str, username: str, password: str):
+        self.base_url = base_url
+        self.session = requests.Session()
+        self.authenticate(username, password)
+    
+    def get_agents(self):
+        """Get all registered agents"""
+        response = self.session.get(f"{self.base_url}/agents")
+        return response.json()["data"]["affected_items"]
+    
+    def get_alerts(self, limit: int = 500, severity: str = None):
+        """Get security alerts"""
+        params = {"limit": limit}
+        if severity:
+            params["q"] = f"rule.level>={severity}"
+        
+        response = self.session.get(f"{self.base_url}/alerts", params=params)
+        return response.json()["data"]["affected_items"]
+\`\`\`
+
+### 2. **Real-time Event Processing**
+
+\`\`\`python
+def process_security_event(event):
+    """Process incoming security events"""
+    
+    if event.get("rule", {}).get("level", 0) >= 10:
+        # High severity - immediate action
+        create_incident(event)
+        notify_security_team(event)
+    
+    elif "authentication_failure" in event.get("rule", {}).get("groups", []):
+        # Track failed logins
+        track_failed_login(event)
+    
+    # Store for compliance and forensics
+    store_event(event)
+\`\`\`
+
+## Alert Management and Response
+
+### Alert Severity Classification
+
+\`\`\`yaml
+severity_levels:
+  0-3:   # Informational
+    priority: "Low"
+    response_time: "24 hours"
+    action: "Log for analysis"
+    
+  4-7:   # Warning  
+    priority: "Medium"
+    response_time: "4 hours"
+    action: "Investigate and assess"
+    
+  8-11:  # Error
+    priority: "High" 
+    response_time: "1 hour"
+    action: "Immediate investigation"
+    
+  12-15: # Critical
+    priority: "Critical"
+    response_time: "15 minutes"
+    action: "Immediate response and containment"
+\`\`\`
+
+## Compliance and Reporting
+
+### Compliance Framework Mapping
+
+#### PCI DSS Requirements
+\`\`\`yaml
+pci_dss_mapping:
+  requirement_10:  # Logging and monitoring
+    rules: [5700, 5701, 5706, 5707]  # Authentication events
+    description: "Track and monitor all access to network resources"
+    
+  requirement_11:  # Security testing
+    rules: [100001, 100020, 100021]  # Attack detection
+    description: "Regularly test security systems and processes"
+\`\`\`
+
+## Performance Optimization
+
+### Log Processing Optimization
+
+\`\`\`xml
+<!-- Efficient rule structure -->
+<rule id="100030" level="0">
+  <if_sid>5716</if_sid>
+  <regex>^Failed password for</regex>
+  <description>SSH authentication failure (parent rule)</description>
+</rule>
+
+<rule id="100031" level="5">
+  <if_sid>100030</if_sid>
+  <regex>invalid user</regex>
+  <description>SSH login attempt with invalid user</description>
+  <group>authentication_failures</group>
+</rule>
+\`\`\`
+
+## Key Benefits
+
+### Real-time Threat Detection
+- **Continuous Monitoring**: 24/7 analysis of security events
+- **Pattern Recognition**: Advanced correlation to identify attack patterns
+- **False Positive Reduction**: Machine learning-enhanced rule tuning
+- **Automated Response**: Immediate containment of detected threats
+
+### Comprehensive Coverage
+- **Multi-platform Support**: Windows, Linux, macOS, mobile devices
+- **Cloud Integration**: AWS, Azure, GCP native log ingestion
+- **Container Monitoring**: Docker, Kubernetes, container orchestration
+- **Network Visibility**: Firewall, router, switch, and IDS/IPS integration
+
+### Compliance Assurance  
+- **Regulatory Frameworks**: PCI DSS, HIPAA, SOC 2, ISO 27001
+- **Automated Reporting**: Scheduled compliance reports and dashboards
+- **Audit Trail**: Complete forensic investigation capabilities
+- **Data Retention**: Configurable retention policies for compliance requirements
+
+This comprehensive SIEM deployment provides the visibility and control needed to maintain a strong security posture across your entire infrastructure.`,
+          prerequisites: [
+            'Advanced Linux/Windows administration',
+            'Network security fundamentals',
+            'Log analysis experience',
+            'Security operations knowledge',
+            'API integration experience'
+          ],
+          expectedOutcomes: [
+            'Deploy and configure Wazuh SIEM effectively',
+            'Integrate multiple log sources and endpoints',
+            'Create custom detection rules and alerts',
+            'Implement automated incident response',
+            'Maintain compliance with security frameworks',
+            'Optimize SIEM performance and storage'
+          ],
+          tags: ['siem', 'wazuh', 'log-analysis', 'threat-detection', 'compliance', 'monitoring']
+        }
+      ]
     }
   ];
 
