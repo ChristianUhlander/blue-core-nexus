@@ -2709,6 +2709,14 @@ const SecurityDashboard = () => {
             >
               Alerts
             </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="hover:text-primary transition-colors"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Scheduler
+            </Button>
           </nav>
           
           <Button
