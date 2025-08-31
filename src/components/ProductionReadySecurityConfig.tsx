@@ -407,6 +407,81 @@ export const ProductionReadySecurityConfig: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="ticketing" className="space-y-4">
+          {/* How It Works Explanation */}
+          <Card className="border-primary/20 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Ticket className="h-5 w-5 text-primary" />
+                How Automated Ticketing Works
+              </CardTitle>
+              <CardDescription>
+                Understand the vulnerability-to-ticket pipeline
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="text-center">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                    <Target className="h-5 w-5 text-primary" />
+                  </div>
+                  <h4 className="font-semibold text-sm mb-1">1. Scan Runs</h4>
+                  <p className="text-xs text-muted-foreground">Attack plan executes on schedule</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-2">
+                    <Shield className="h-5 w-5 text-red-600" />
+                  </div>
+                  <h4 className="font-semibold text-sm mb-1">2. Vuln Found</h4>
+                  <p className="text-xs text-muted-foreground">Security issue discovered</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-2">
+                    <Ticket className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <h4 className="font-semibold text-sm mb-1">3. Ticket Created</h4>
+                  <p className="text-xs text-muted-foreground">Auto-generated in Jira/ServiceNow</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mx-auto mb-2">
+                    <Settings className="h-5 w-5 text-yellow-600" />
+                  </div>
+                  <h4 className="font-semibold text-sm mb-1">4. Fix Applied</h4>
+                  <p className="text-xs text-muted-foreground">Developer resolves issue</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  </div>
+                  <h4 className="font-semibold text-sm mb-1">5. Auto-Verified</h4>
+                  <p className="text-xs text-muted-foreground">System retests and confirms fix</p>
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <h5 className="font-semibold mb-2">Ticket Contains:</h5>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li>• Vulnerability details & CVSS score</li>
+                    <li>• Affected systems & endpoints</li>
+                    <li>• Step-by-step remediation guide</li>
+                    <li>• Code examples & references</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold mb-2">Auto-Assignment Rules:</h5>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li>• Critical issues → Security team</li>
+                    <li>• Web app vulns → Frontend team</li>
+                    <li>• API issues → Backend team</li>
+                    <li>• Infrastructure → DevOps team</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Ticketing Integration</CardTitle>

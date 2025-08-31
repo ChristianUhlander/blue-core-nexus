@@ -837,6 +837,325 @@ This documentation provides the foundation for implementing a robust, scalable r
           tags: ['backend', 'api', 'llm', 'reporting', 'architecture']
         }
       ]
+    },
+    {
+      id: 'security-operations',
+      title: 'Security Operations',
+      description: 'Production security workflows and automation',
+      icon: Shield,
+      badge: 'Production',
+      items: [
+        {
+          id: 'ticketing-attack-plans',
+          title: 'Ticketing System & Attack Plans',
+          description: 'Complete guide to automated security operations, ticketing integration, and continuous vulnerability management',
+          type: 'guide',
+          difficulty: 'intermediate',
+          estimatedTime: '45 minutes',
+          content: `# Ticketing System & Attack Plans Guide
+
+## Overview
+
+The Production Security Center implements a continuous **Find-Fix-Verify** security operations model through automated attack plans and integrated ticketing systems. This creates a seamless workflow where security vulnerabilities are automatically discovered, tracked, remediated, and verified.
+
+## Attack Plans Architecture
+
+### What Are Attack Plans?
+
+Attack Plans are **automated, scheduled security assessments** that continuously monitor your infrastructure for vulnerabilities. Think of them as your security team's automated assistants that never sleep.
+
+### Core Components
+
+#### 1. **Automated Scanning Engine**
+\`\`\`typescript
+interface AttackPlan {
+  id: string;
+  name: string;                    // e.g., "Daily Web App Scan"
+  description: string;             // What this plan does  
+  schedule: 'daily' | 'weekly' | 'monthly' | 'custom';
+  enabled: boolean;                // Can be toggled on/off
+  status: 'idle' | 'running' | 'completed' | 'failed';
+  categories: string[];            // e.g., ['web-application', 'owasp-top10']
+  targets: string[];               // e.g., ['app.company.com', 'api.company.com']
+  lastRun?: Date;
+  nextRun?: Date;
+}
+\`\`\`
+
+#### 2. **Pre-configured Attack Categories**
+- **Web Application Security**: OWASP Top 10, SQL injection, XSS, authentication bypass
+- **API Security**: REST/GraphQL testing, authentication flaws, business logic errors
+- **Infrastructure Security**: Network scanning, port enumeration, service discovery
+- **Cloud Security**: AWS/Azure/GCP misconfigurations, IAM assessment, container security
+
+#### 3. **Scheduling System**
+- **Daily**: Critical assets scanned every 24 hours
+- **Weekly**: Comprehensive infrastructure audits
+- **Monthly**: Deep-dive assessments and compliance checks
+- **Custom**: User-defined intervals and time windows
+
+## Ticketing System Integration
+
+### Automated Vulnerability-to-Ticket Pipeline
+
+When an attack plan discovers a vulnerability, the system automatically:
+
+1. **Analyzes** the finding (severity, impact, exploitability)
+2. **Creates** a structured ticket in your chosen system
+3. **Assigns** based on predefined rules
+4. **Tracks** remediation progress
+5. **Verifies** fixes through re-testing
+
+### Supported Ticketing Systems
+
+#### Jira Integration
+\`\`\`json
+{
+  "provider": "jira",
+  "apiUrl": "https://company.atlassian.net",
+  "credentials": {
+    "username": "security@company.com",
+    "token": "ATATT3xFfGF0..."
+  },
+  "projectKey": "SEC",
+  "issueType": "Security Bug",
+  "priority": "High"
+}
+\`\`\`
+
+#### ServiceNow Integration  
+\`\`\`json
+{
+  "provider": "servicenow",
+  "apiUrl": "https://company.service-now.com",
+  "credentials": {
+    "username": "api_user",
+    "token": "abc123..."
+  },
+  "table": "incident",
+  "category": "Security",
+  "priority": "1 - Critical"
+}
+\`\`\`
+
+#### Custom API Integration
+\`\`\`json
+{
+  "provider": "custom",
+  "apiUrl": "https://your-ticketing-api.com/tickets",
+  "headers": {
+    "Authorization": "Bearer token",
+    "Content-Type": "application/json"
+  },
+  "mapping": {
+    "title": "vulnerability.title",
+    "description": "vulnerability.description",
+    "severity": "vulnerability.cvss_score"
+  }
+}
+\`\`\`
+
+## Ticket Structure & Format
+
+### Standard Ticket Fields
+
+Every automatically generated ticket contains:
+
+\`\`\`typescript
+interface SecurityTicket {
+  // Identification
+  ticketId: string;                // "SEC-123"
+  vulnerabilityId: string;         // "CVE-2024-0001" or internal ID
+  
+  // Content
+  title: string;                   // "SQL Injection in Login Form"
+  description: string;             // Detailed vulnerability information
+  severity: 'Critical' | 'High' | 'Medium' | 'Low';
+  
+  // Classification
+  category: string;                // "Web Application", "Network", etc.
+  cweId?: string;                  // CWE-89 (SQL Injection)
+  cvssScore?: number;              // 9.1
+  
+  // Location
+  affectedAssets: string[];        // ["app.company.com", "api.company.com"]
+  url?: string;                    // Specific endpoint if applicable
+  
+  // Remediation
+  recommendedActions: string[];    // Step-by-step fix instructions
+  references: string[];            // Links to documentation, patches
+  
+  // Workflow
+  assignedTo: string;              // Team or individual
+  priority: string;                // Based on business impact
+  labels: string[];                // For categorization and filtering
+}
+\`\`\`
+
+### Example Generated Ticket
+
+\`\`\`markdown
+**Title**: Critical SQL Injection Vulnerability in User Authentication
+
+**Description**: 
+A SQL injection vulnerability was discovered in the user login endpoint that allows attackers to bypass authentication and potentially access sensitive user data.
+
+**Technical Details**:
+- **Endpoint**: https://app.company.com/api/login
+- **Parameter**: username (POST body)
+- **Attack Vector**: \`admin' OR '1'='1' --\`
+- **CVSS Score**: 9.1 (Critical)
+- **CWE**: CWE-89 (SQL Injection)
+
+**Impact**:
+- Authentication bypass
+- Potential data exfiltration
+- Database manipulation possible
+
+**Remediation Steps**:
+1. Implement parameterized queries/prepared statements
+2. Add input validation and sanitization
+3. Apply principle of least privilege to database user
+4. Enable SQL query logging for monitoring
+
+**References**:
+- OWASP SQL Injection Prevention: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+- Fix Examples: [Internal KB Link]
+
+**Verification**:
+- [ ] Code review completed
+- [ ] Automated retest passed
+- [ ] Penetration test verification
+\`\`\`
+
+## Remediation Tracking Workflow
+
+### Lifecycle States
+
+\`\`\`typescript
+interface RemediationTracking {
+  ticketId: string;
+  vulnerabilityId: string;
+  status: 'open' | 'in_progress' | 'resolved' | 'verified' | 'reopened';
+  assignedTo: string;
+  createdAt: Date;
+  updatedAt: Date;
+  verificationAttempts: number;
+  autoRetest: boolean;
+  retestSchedule?: Date;
+}
+\`\`\`
+
+### State Transitions
+
+1. **Open**: Vulnerability discovered, ticket created
+2. **In Progress**: Developer/team assigned and working on fix
+3. **Resolved**: Fix implemented, ready for verification
+4. **Verified**: Automated retest confirms vulnerability is fixed
+5. **Reopened**: Retest failed, vulnerability still present
+
+## Configuration Best Practices
+
+### Attack Plan Strategy
+
+#### High-Value Targets (Daily Scans)
+\`\`\`javascript
+const criticalAssets = [
+  'app.company.com',      // Customer-facing application
+  'api.company.com',      // Public API endpoints  
+  'admin.company.com',    // Administrative interfaces
+  'payment.company.com'   // Payment processing
+];
+\`\`\`
+
+#### Infrastructure Assessment (Weekly)
+\`\`\`javascript
+const infrastructureTargets = [
+  '10.0.0.0/24',         // Internal network ranges
+  'vpn.company.com',     // VPN endpoints
+  'mail.company.com',    // Email infrastructure
+  'dns1.company.com'     // DNS servers
+];
+\`\`\`
+
+### Ticketing Configuration
+
+#### Auto-Assignment Rules
+\`\`\`json
+{
+  "assignment_rules": [
+    {
+      "condition": "category == 'Web Application'",
+      "assignee": "web-dev-team",
+      "cc": ["security-team"]
+    },
+    {
+      "condition": "severity == 'Critical'",
+      "assignee": "security-incident-team",
+      "priority": "Immediate"
+    },
+    {
+      "condition": "cvss_score >= 7.0",
+      "assignee": "senior-developer",
+      "labels": ["high-risk", "security"]
+    }
+  ]
+}
+\`\`\`
+
+## Metrics and Reporting
+
+### Key Performance Indicators
+
+#### Discovery Metrics
+- Vulnerabilities found per scan
+- False positive rate
+- Coverage metrics (assets scanned vs. total assets)
+- Time to discovery (0-day to detection)
+
+#### Response Metrics  
+- Mean Time to Acknowledge (MTTA)
+- Mean Time to Resolve (MTTR)
+- Fix rate percentage
+- SLA compliance rate
+
+#### Quality Metrics
+- Vulnerability recurrence rate
+- Verification success rate
+- Escalation frequency
+- Team response effectiveness
+
+## Security Considerations
+
+### Data Protection
+- **Encryption**: All ticket data encrypted in transit and at rest
+- **Access Control**: Role-based access to vulnerability details
+- **Audit Logging**: Complete trail of all ticket modifications
+- **Data Retention**: Configurable retention policies for compliance
+
+### API Security
+- **Authentication**: API tokens with limited scope and expiration
+- **Rate Limiting**: Prevent abuse of ticketing APIs
+- **IP Whitelisting**: Restrict API access to authorized networks
+- **Webhook Verification**: Validate incoming webhook signatures
+
+This system creates a robust, automated security operations pipeline that scales with your organization while maintaining the human oversight needed for effective security management.`,
+          prerequisites: [
+            'Basic understanding of security operations',
+            'Familiarity with ticketing systems (Jira/ServiceNow)',
+            'Knowledge of vulnerability management',
+            'Understanding of DevSecOps workflows'
+          ],
+          expectedOutcomes: [
+            'Configure automated attack plans effectively',
+            'Set up ticketing system integrations',
+            'Understand remediation tracking workflows',
+            'Implement continuous security operations',
+            'Monitor and optimize security processes'
+          ],
+          tags: ['security-operations', 'ticketing', 'attack-plans', 'automation', 'remediation']
+        }
+      ]
     }
   ];
 
