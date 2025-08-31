@@ -3109,63 +3109,83 @@ const SecurityDashboard = () => {
                               </div>
                               
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {apiConnections.map((connection, index) => (
-                                  <Card key={connection.service} className="gradient-card border hover:border-primary/50 transition-all duration-300 group">
+                                {agents.slice(0, 4).map((agent, index) => (
+                                  <Card key={agent.id} className="gradient-card border hover:border-primary/50 transition-all duration-300 group">
                                     <CardContent className="p-4">
                                       <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-3">
                                           <div className="relative">
                                             <div className={`w-4 h-4 rounded-full ${
-                                              connection.status === 'connected' 
+                                              agent.status === 'active' 
                                                 ? 'bg-green-500 shadow-lg shadow-green-500/50' 
-                                                : 'bg-red-500 shadow-lg shadow-red-500/50'
+                                                : agent.status === 'disconnected'
+                                                ? 'bg-red-500 shadow-lg shadow-red-500/50'
+                                                : 'bg-yellow-500 shadow-lg shadow-yellow-500/50'
                                             } animate-pulse`} />
                                             <div className={`absolute inset-0 w-4 h-4 rounded-full ${
-                                              connection.status === 'connected' 
+                                              agent.status === 'active' 
                                                 ? 'border-2 border-green-500 animate-ping' 
-                                                : 'border-2 border-red-500 animate-ping'
+                                                : agent.status === 'disconnected'
+                                                ? 'border-2 border-red-500 animate-ping'
+                                                : 'border-2 border-yellow-500 animate-ping'
                                             } opacity-30`} />
                                           </div>
                                           <div>
                                             <span className="font-semibold text-sm group-hover:text-primary transition-colors">
-                                              {connection.service}
+                                              {agent.name}
                                             </span>
                                             <div className="flex items-center gap-1 mt-1">
                                               <Badge 
-                                                variant={connection.status === 'connected' ? 'default' : 'destructive'}
+                                                variant={
+                                                  agent.status === 'active' ? 'default' : 
+                                                  agent.status === 'disconnected' ? 'destructive' : 'secondary'
+                                                }
                                                 className="text-xs animate-pulse-glow"
                                               >
-                                                {connection.status === 'connected' ? 'ONLINE' : 'OFFLINE'}
+                                                {agent.status.toUpperCase()}
                                               </Badge>
                                               <span className="text-xs text-muted-foreground font-mono">
-                                                {connection.endpoint}
+                                                {agent.ip}
                                               </span>
                                             </div>
                                           </div>
                                         </div>
                                         <div className={`p-2 rounded-full ${
-                                          connection.status === 'connected' 
+                                          agent.status === 'active' 
                                             ? 'bg-primary/10 text-primary' 
                                             : 'bg-destructive/10 text-destructive'
                                         }`}>
-                                          {connection.status === 'connected' ? (
+                                          {agent.status === 'active' ? (
                                             <CheckCircle className="h-4 w-4" />
                                           ) : (
                                             <WifiOff className="h-4 w-4" />
                                           )}
                                         </div>
                                       </div>
-                                      <p className="text-xs text-muted-foreground">{connection.description}</p>
+                                      <div className="space-y-2">
+                                        <div className="flex items-center justify-between text-xs">
+                                          <span className="text-muted-foreground">OS:</span>
+                                          <span className="font-mono">{agent.os?.name || agent.os?.platform || 'Unknown'}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-xs">
+                                          <span className="text-muted-foreground">Version:</span>
+                                          <span className="font-mono">{agent.version}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-xs">
+                                          <span className="text-muted-foreground">Last Seen:</span>
+                                          <span className="font-mono">{agent.lastKeepAlive}</span>
+                                        </div>
+                                      </div>
                                       
-                                      {/* Connection Progress Bar */}
+                                      {/* Agent Health Progress */}
                                       <div className="mt-3">
                                         <div className="flex justify-between text-xs mb-1">
-                                          <span>Connection Health</span>
-                                          <span>{connection.status === 'connected' ? '100%' : '0%'}</span>
+                                          <span>Agent Health</span>
+                                          <span>{agent.status === 'active' ? '100%' : '0%'}</span>
                                         </div>
                                         <Progress 
-                                          value={connection.status === 'connected' ? 100 : 0} 
-                                          className={`h-2 ${connection.status === 'connected' ? 'glow' : ''}`}
+                                          value={agent.status === 'active' ? 100 : 0} 
+                                          className={`h-2 ${agent.status === 'active' ? 'glow' : ''}`}
                                         />
                                       </div>
                                     </CardContent>
