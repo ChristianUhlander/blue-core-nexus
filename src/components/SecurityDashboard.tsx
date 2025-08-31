@@ -24,6 +24,9 @@ import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterfa
 import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 import { AutomaticOSINTAgent } from "./AutomaticOSINTAgent";
+import { ADPentestingModule } from "./ADPentestingModule";
+import { NetworkPentestingModule } from "./NetworkPentestingModule";
+import { WebAppPentestingModule } from "./WebAppPentestingModule";
 
 import WazuhManagement from "../pages/WazuhManagement";
 import GVMManagement from "../pages/GVMManagement";
@@ -89,67 +92,52 @@ const SecurityDashboard = () => {
   const [isSocialEngPentestOpen, setIsSocialEngPentestOpen] = useState(false);
   const [isPhysicalPentestOpen, setIsPhysicalPentestOpen] = useState(false);
   
+  // Target configuration for pentest modules
+  const pentestTargetConfig = {
+    type: 'kubernetes' as const,
+    primary: 'cluster.local',
+    scope: {
+      inScope: [],
+      outOfScope: [],
+      domains: [],
+      ipRanges: [],
+      ports: [],
+      k8sNamespaces: ['default', 'kube-system'],
+      adDomains: []
+    },
+    environment: 'staging' as const,
+    businessCriticality: 'medium' as const,
+    compliance: []
+  };
+
   // Pentesting content components
-  const ADPentestingContent = () => (
-    <ScrollArea className="h-[70vh] rounded-md border">
-      <div className="space-y-6 p-6">
-        <Card className="gradient-card border-red-500/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-red-500" />
-              Active Directory Assessment
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>BloodHound, CrackMapExec, and AD attack techniques will be configured here</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </ScrollArea>
-  );
+  const ADPentestingContent = () => {
+    console.log('ADPentestingContent rendering with config:', pentestTargetConfig);
+    return (
+      <ScrollArea className="h-[70vh] rounded-md border">
+        <ADPentestingModule 
+          sessionId="demo-session"
+          targetConfig={pentestTargetConfig}
+        />
+      </ScrollArea>
+    );
+  };
 
   const WebPentestingContent = () => (
     <ScrollArea className="h-[70vh] rounded-md border">
-      <div className="space-y-6 p-6">
-        <Card className="gradient-card border-yellow-500/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-yellow-500" />
-              Web Application Assessment
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <Zap className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>OWASP ZAP and Top 10 vulnerability testing interface</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <WebAppPentestingModule 
+        sessionId="demo-session"
+        targetConfig={pentestTargetConfig}
+      />
     </ScrollArea>
   );
 
   const NetworkPentestingContent = () => (
     <ScrollArea className="h-[70vh] rounded-md border">
-      <div className="space-y-6 p-6">
-        <Card className="gradient-card border-blue-500/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Network className="h-5 w-5 text-blue-500" />
-              Network Infrastructure Assessment
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <Network className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Port scanning, vulnerability detection, and network enumeration tools</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <NetworkPentestingModule 
+        sessionId="demo-session"
+        targetConfig={pentestTargetConfig}
+      />
     </ScrollArea>
   );
 
