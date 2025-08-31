@@ -4013,23 +4013,25 @@ const SecurityDashboard = () => {
                             {/* Scan Results Table */}
                             <Card className="gradient-card border border-primary/20">
                               <CardHeader className="pb-3">
-                                <div className="flex items-center justify-between">
-                                  <CardTitle className="text-lg flex items-center gap-2">
-                                    <Scan className="h-5 w-5 text-primary animate-pulse" />
-                                    Scan Results
-                                    <Badge variant="outline" className="text-xs">
-                                      {getFilteredScans().length} Results
-                                    </Badge>
-                                  </CardTitle>
-                                  <div className="flex gap-2">
-                                    <Button variant="outline" size="sm" className="glow-hover">
-                                      <RefreshCw className="h-4 w-4 mr-2" />
-                                      Refresh
-                                    </Button>
-                                    <Button variant="outline" size="sm" className="glow-hover">
-                                      <Download className="h-4 w-4 mr-2" />
-                                      Export
-                                    </Button>
+                                <div className="overflow-x-auto">
+                                  <div className="flex items-center justify-between min-w-full">
+                                    <CardTitle className="text-lg flex items-center gap-2 shrink-0">
+                                      <Scan className="h-5 w-5 text-primary animate-pulse" />
+                                      Scan Results
+                                      <Badge variant="outline" className="text-xs">
+                                        {getFilteredScans().length} Results
+                                      </Badge>
+                                    </CardTitle>
+                                    <div className="flex gap-2 shrink-0">
+                                      <Button variant="outline" size="sm" className="glow-hover">
+                                        <RefreshCw className="h-4 w-4 mr-2" />
+                                        Refresh
+                                      </Button>
+                                      <Button variant="outline" size="sm" className="glow-hover">
+                                        <Download className="h-4 w-4 mr-2" />
+                                        Export
+                                      </Button>
+                                    </div>
                                   </div>
                                 </div>
                               </CardHeader>
