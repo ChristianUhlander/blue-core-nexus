@@ -5165,7 +5165,7 @@ const SecurityDashboard = () => {
                             <div className="ml-2 w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[1300px] max-h-[90vh] gradient-card border-primary/20">
+                        <DialogContent className="sm:max-w-[1400px] max-h-[95vh] gradient-card border-primary/20">
                           <DialogHeader>
                             <DialogTitle className="flex items-center gap-2 text-xl">
                               <div className="relative">
@@ -5182,19 +5182,174 @@ const SecurityDashboard = () => {
                             </DialogDescription>
                           </DialogHeader>
 
-                          <div className="space-y-6">
-                            {/* Target Configuration and Statistics */}
-                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                          <div className="flex flex-col lg:flex-row gap-6 h-full">
+                            {/* Left Panel - Module Selection (Primary Focus) */}
+                            <div className="flex-1 min-w-0">
+                              <Card className="gradient-card border border-blue-500/20 h-full">
+                                <CardHeader className="pb-3 sticky top-0 bg-card/95 backdrop-blur-sm z-10 rounded-t-lg">
+                                  <div className="flex items-center justify-between">
+                                    <CardTitle className="text-xl flex items-center gap-2">
+                                      <Search className="h-6 w-6 text-blue-500 animate-pulse" />
+                                      Intelligence Modules
+                                      <Badge variant="outline" className="text-sm font-semibold">
+                                        {selectedSpiderfootModules.length}/{spiderfootModules.length} Selected
+                                      </Badge>
+                                    </CardTitle>
+                                    <div className="flex gap-2">
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => setSelectedSpiderfootModules(spiderfootModules.map(m => m.id))}
+                                        className="glow-hover"
+                                      >
+                                        Select All
+                                      </Button>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => setSelectedSpiderfootModules([])}
+                                        className="glow-hover"
+                                      >
+                                        Clear All
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </CardHeader>
+                                <CardContent className="overflow-y-auto max-h-[60vh]">
+                                  <Tabs defaultValue="network" className="space-y-4">
+                                    <TabsList className="grid w-full grid-cols-3 mb-6">
+                                      <TabsTrigger value="network" className="text-sm">Network & DNS</TabsTrigger>
+                                      <TabsTrigger value="threat" className="text-sm">Threat Intel</TabsTrigger>
+                                      <TabsTrigger value="search" className="text-sm">Search & People</TabsTrigger>
+                                    </TabsList>
+                                    
+                                    <TabsContent value="network" className="space-y-3">
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {spiderfootModules.filter(m => ['network', 'subdomains', 'certificates'].includes(m.category)).map(module => (
+                                          <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
+                                            <Checkbox
+                                              id={`sf-module-${module.id}`}
+                                              checked={selectedSpiderfootModules.includes(module.id)}
+                                              onCheckedChange={(checked) => {
+                                                if (checked) {
+                                                  setSelectedSpiderfootModules([...selectedSpiderfootModules, module.id]);
+                                                } else {
+                                                  setSelectedSpiderfootModules(selectedSpiderfootModules.filter(id => id !== module.id));
+                                                }
+                                              }}
+                                              className="glow-hover"
+                                            />
+                                            <div className="flex-1 min-w-0">
+                                              <label htmlFor={`sf-module-${module.id}`} className="text-sm font-medium cursor-pointer line-clamp-1">
+                                                {module.name}
+                                              </label>
+                                              <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                                {module.description}
+                                              </p>
+                                              <div className="flex items-center gap-2 mt-2">
+                                                <Badge variant={module.risk === 'high' ? 'destructive' : module.risk === 'medium' ? 'default' : 'secondary'} className="text-xs">
+                                                  {module.risk}
+                                                </Badge>
+                                                <Badge variant="outline" className="text-xs">
+                                                  {module.category}
+                                                </Badge>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </TabsContent>
+                                    
+                                    <TabsContent value="threat" className="space-y-3">
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {spiderfootModules.filter(m => m.category === 'threat').map(module => (
+                                          <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
+                                            <Checkbox
+                                              id={`sf-module-${module.id}`}
+                                              checked={selectedSpiderfootModules.includes(module.id)}
+                                              onCheckedChange={(checked) => {
+                                                if (checked) {
+                                                  setSelectedSpiderfootModules([...selectedSpiderfootModules, module.id]);
+                                                } else {
+                                                  setSelectedSpiderfootModules(selectedSpiderfootModules.filter(id => id !== module.id));
+                                                }
+                                              }}
+                                              className="glow-hover"
+                                            />
+                                            <div className="flex-1 min-w-0">
+                                              <label htmlFor={`sf-module-${module.id}`} className="text-sm font-medium cursor-pointer line-clamp-1">
+                                                {module.name}
+                                              </label>
+                                              <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                                {module.description}
+                                              </p>
+                                              <div className="flex items-center gap-2 mt-2">
+                                                <Badge variant={module.risk === 'high' ? 'destructive' : module.risk === 'medium' ? 'default' : 'secondary'} className="text-xs">
+                                                  {module.risk}
+                                                </Badge>
+                                                <Badge variant="outline" className="text-xs">
+                                                  {module.category}
+                                                </Badge>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </TabsContent>
+                                    
+                                    <TabsContent value="search" className="space-y-3">
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {spiderfootModules.filter(m => ['search', 'people'].includes(m.category)).map(module => (
+                                          <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
+                                            <Checkbox
+                                              id={`sf-module-${module.id}`}
+                                              checked={selectedSpiderfootModules.includes(module.id)}
+                                              onCheckedChange={(checked) => {
+                                                if (checked) {
+                                                  setSelectedSpiderfootModules([...selectedSpiderfootModules, module.id]);
+                                                } else {
+                                                  setSelectedSpiderfootModules(selectedSpiderfootModules.filter(id => id !== module.id));
+                                                }
+                                              }}
+                                              className="glow-hover"
+                                            />
+                                            <div className="flex-1 min-w-0">
+                                              <label htmlFor={`sf-module-${module.id}`} className="text-sm font-medium cursor-pointer line-clamp-1">
+                                                {module.name}
+                                              </label>
+                                              <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                                {module.description}
+                                              </p>
+                                              <div className="flex items-center gap-2 mt-2">
+                                                <Badge variant={module.risk === 'high' ? 'destructive' : module.risk === 'medium' ? 'default' : 'secondary'} className="text-xs">
+                                                  {module.risk}
+                                                </Badge>
+                                                <Badge variant="outline" className="text-xs">
+                                                  {module.category}
+                                                </Badge>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </TabsContent>
+                                  </Tabs>
+                                </CardContent>
+                              </Card>
+                            </div>
+
+                            {/* Right Panel - Configuration & Stats */}
+                            <div className="w-full lg:w-96 space-y-4">
                               {/* Target Configuration */}
-                              <Card className="lg:col-span-2 gradient-card border border-blue-500/20">
+                              <Card className="gradient-card border border-blue-500/20">
                                 <CardHeader className="pb-3">
                                   <CardTitle className="text-lg flex items-center gap-2">
                                     <Target className="h-5 w-5 text-blue-500 animate-pulse" />
-                                    OSINT Target Configuration
+                                    Target Configuration
                                   </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                  <div className="grid grid-cols-2 gap-3">
+                                  <div className="space-y-3">
                                     <div className="space-y-2">
                                       <Label htmlFor="sf-target-type">Target Type</Label>
                                       <Select value={spiderfootTargetType} onValueChange={setSpiderfootTargetType}>
@@ -5256,28 +5411,28 @@ const SecurityDashboard = () => {
                                         </SelectContent>
                                       </Select>
                                     </div>
-                                  </div>
-                                  
-                                  <div className="space-y-2">
-                                    <Label htmlFor="sf-target">Target Value *</Label>
-                                    <div className="flex items-center gap-2">
-                                      {React.createElement(getTargetTypeIcon(spiderfootTargetType), { 
-                                        className: "h-4 w-4 text-muted-foreground" 
-                                      })}
-                                      <Input
-                                        id="sf-target"
-                                        placeholder={
-                                          spiderfootTargetType === 'domain' ? 'example.com' :
-                                          spiderfootTargetType === 'ip' ? '192.168.1.1' :
-                                          spiderfootTargetType === 'email' ? 'user@domain.com' :
-                                          spiderfootTargetType === 'phone' ? '+1-555-123-4567' :
-                                          spiderfootTargetType === 'name' ? 'John Doe' :
-                                          'Company Name'
-                                        }
-                                        value={spiderfootTarget}
-                                        onChange={(e) => setSpiderfootTarget(e.target.value)}
-                                        className="glow-hover flex-1"
-                                      />
+                                    
+                                    <div className="space-y-2">
+                                      <Label htmlFor="sf-target">Target Value *</Label>
+                                      <div className="flex items-center gap-2">
+                                        {React.createElement(getTargetTypeIcon(spiderfootTargetType), { 
+                                          className: "h-4 w-4 text-muted-foreground" 
+                                        })}
+                                        <Input
+                                          id="sf-target"
+                                          placeholder={
+                                            spiderfootTargetType === 'domain' ? 'example.com' :
+                                            spiderfootTargetType === 'ip' ? '192.168.1.1' :
+                                            spiderfootTargetType === 'email' ? 'user@domain.com' :
+                                            spiderfootTargetType === 'phone' ? '+1-555-123-4567' :
+                                            spiderfootTargetType === 'name' ? 'John Doe' :
+                                            'Company Name'
+                                          }
+                                          value={spiderfootTarget}
+                                          onChange={(e) => setSpiderfootTarget(e.target.value)}
+                                          className="glow-hover flex-1"
+                                        />
+                                      </div>
                                     </div>
                                   </div>
                                   
@@ -5316,7 +5471,7 @@ const SecurityDashboard = () => {
                               </Card>
 
                               {/* Statistics */}
-                              <Card className="lg:col-span-2 gradient-card border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5">
+                              <Card className="gradient-card border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5">
                                 <CardHeader className="pb-3">
                                   <CardTitle className="text-lg flex items-center gap-2">
                                     <BarChart3 className="h-5 w-5 text-blue-500 animate-pulse" />
@@ -5324,197 +5479,34 @@ const SecurityDashboard = () => {
                                   </CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                  <div className="grid grid-cols-2 gap-4">
                                     <div className="text-center group cursor-pointer hover-scale">
-                                      <div className="text-3xl font-bold text-red-500">
+                                      <div className="text-2xl font-bold text-red-500">
                                         {getSpiderfootStats().high}
                                       </div>
-                                      <div className="text-sm font-medium text-red-400">High Risk</div>
+                                      <div className="text-xs font-medium text-red-400">High Risk</div>
                                     </div>
                                     <div className="text-center group cursor-pointer hover-scale">
-                                      <div className="text-3xl font-bold text-yellow-500">
+                                      <div className="text-2xl font-bold text-yellow-500">
                                         {getSpiderfootStats().medium}
                                       </div>
-                                      <div className="text-sm font-medium text-yellow-400">Medium Risk</div>
+                                      <div className="text-xs font-medium text-yellow-400">Medium Risk</div>
                                     </div>
                                     <div className="text-center group cursor-pointer hover-scale">
-                                      <div className="text-3xl font-bold text-green-500">
+                                      <div className="text-2xl font-bold text-green-500">
                                         {getSpiderfootStats().low}
                                       </div>
-                                      <div className="text-sm font-medium text-green-400">Low Risk</div>
+                                      <div className="text-xs font-medium text-green-400">Low Risk</div>
                                     </div>
                                     <div className="text-center group cursor-pointer hover-scale">
-                                      <div className="text-3xl font-bold text-blue-500 animate-pulse">
+                                      <div className="text-2xl font-bold text-blue-500 animate-pulse">
                                         {getSpiderfootStats().total}
                                       </div>
-                                      <div className="text-sm font-medium text-blue-400">Selected</div>
+                                      <div className="text-xs font-medium text-blue-400">Selected</div>
                                     </div>
                                   </div>
                                 </CardContent>
                               </Card>
-                            </div>
-
-                            {/* OSINT Module Selection */}
-                            <Card className="gradient-card border border-blue-500/20">
-                              <CardHeader className="pb-3">
-                                <div className="flex items-center justify-between">
-                                  <CardTitle className="text-lg flex items-center gap-2">
-                                    <Search className="h-5 w-5 text-blue-500 animate-pulse" />
-                                    OSINT Intelligence Modules
-                                    <Badge variant="outline" className="text-xs">
-                                      {selectedSpiderfootModules.length}/{spiderfootModules.length} Selected
-                                    </Badge>
-                                  </CardTitle>
-                                  <div className="flex gap-2">
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm"
-                                      onClick={() => setSelectedSpiderfootModules(spiderfootModules.map(m => m.id))}
-                                      className="glow-hover"
-                                    >
-                                      Select All
-                                    </Button>
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm"
-                                      onClick={() => setSelectedSpiderfootModules([])}
-                                      className="glow-hover"
-                                    >
-                                      Clear All
-                                    </Button>
-                                  </div>
-                                </div>
-                              </CardHeader>
-                              <CardContent>
-                                <Tabs defaultValue="network" className="space-y-4">
-                                  <TabsList className="grid w-full grid-cols-6">
-                                    <TabsTrigger value="network">Network</TabsTrigger>
-                                    <TabsTrigger value="threat">Threat Intel</TabsTrigger>
-                                    <TabsTrigger value="search">Search Engines</TabsTrigger>
-                                    <TabsTrigger value="people">People</TabsTrigger>
-                                    <TabsTrigger value="certificates">Certificates</TabsTrigger>
-                                    <TabsTrigger value="subdomains">Subdomains</TabsTrigger>
-                                  </TabsList>
-                                  
-                                  {['network', 'threat', 'search', 'people', 'certificates', 'subdomains'].map(category => {
-                                    const categoryModules = spiderfootModules.filter(m => 
-                                      m.category.toLowerCase().includes(category === 'threat' ? 'threat intel' : 
-                                      category === 'search' ? 'search engines' : category)
-                                    );
-                                    
-                                    return (
-                                      <TabsContent key={category} value={category}>
-                                        <ScrollArea className="h-[400px] rounded-md border">
-                                          <div className="space-y-3 p-4">
-                                            {categoryModules.map((module, index) => (
-                                              <Card key={module.id} className={`gradient-card border transition-all duration-300 ${
-                                                selectedSpiderfootModules.includes(module.id) 
-                                                  ? 'border-primary/50 bg-primary/5' 
-                                                  : 'border-border/30'
-                                              } animate-fade-in`} style={{animationDelay: `${index * 0.05}s`}}>
-                                                <CardContent className="p-4">
-                                                  <div className="flex items-center gap-4">
-                                                    <Checkbox
-                                                      checked={selectedSpiderfootModules.includes(module.id)}
-                                                      onCheckedChange={() => toggleSpiderfootModule(module.id)}
-                                                    />
-                                                    
-                                                    <div className="flex-1">
-                                                      <div className="flex items-center justify-between mb-2">
-                                                        <h3 className="font-semibold text-sm">{module.name}</h3>
-                                                        <div className="flex items-center gap-2">
-                                                          <Badge variant="outline" className="text-xs font-mono">
-                                                            {module.id}
-                                                          </Badge>
-                                                          <Badge 
-                                                            variant={
-                                                              module.risk === 'HIGH' ? 'destructive' : 
-                                                              module.risk === 'MEDIUM' ? 'secondary' : 'outline'
-                                                            }
-                                                            className="text-xs"
-                                                          >
-                                                            {module.risk}
-                                                          </Badge>
-                                                        </div>
-                                                      </div>
-                                                      <p className="text-sm text-muted-foreground">{module.description}</p>
-                                                      <div className="mt-2 flex items-center gap-2">
-                                                        <Badge variant="outline" className="text-xs">
-                                                          {module.category}
-                                                        </Badge>
-                                                        {module.enabled && (
-                                                          <div className="flex items-center gap-1 text-xs text-green-400">
-                                                            <CheckCircle className="h-3 w-3" />
-                                                            <span>API Ready</span>
-                                                          </div>
-                                                        )}
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </CardContent>
-                                              </Card>
-                                            ))}
-                                          </div>
-                                        </ScrollArea>
-                                      </TabsContent>
-                                    );
-                                  })}
-                                </Tabs>
-                              </CardContent>
-                            </Card>
-
-                            {/* API Configuration */}
-                            <Card className="gradient-card border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-indigo-500/5">
-                              <CardHeader className="pb-3">
-                                <CardTitle className="text-lg flex items-center gap-2">
-                                  <Code className="h-5 w-5 text-blue-500" />
-                                  API Configuration & Endpoints
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="space-y-3">
-                                    <h4 className="text-sm font-semibold">Spiderfoot API Endpoints</h4>
-                                    <div className="space-y-2 text-xs font-mono bg-muted/50 p-3 rounded border">
-                                      <div>POST /api/startscan - Start new scan</div>
-                                      <div>GET /api/scanstatus/{'<scanId>'} - Check status</div>
-                                      <div>GET /api/scaneventresults/{'<scanId>'} - Get results</div>
-                                      <div>GET /api/modules - List modules</div>
-                                      <div>GET /api/scans - List all scans</div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="space-y-3">
-                                    <h4 className="text-sm font-semibold">Connection Status</h4>
-                                    <div className="flex items-center gap-2 p-3 rounded border bg-red-500/10">
-                                      <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-lg shadow-red-500/50" />
-                                      <div>
-                                        <div className="text-sm font-medium text-red-400">Spiderfoot API</div>
-                                        <div className="text-xs text-muted-foreground">localhost:5001 - OFFLINE</div>
-                                      </div>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground">
-                                      Configure Spiderfoot server connection in settings to enable real-time OSINT scanning.
-                                    </p>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </div>
-
-                          <div className="flex justify-between items-center gap-2 pt-6 border-t border-border/50">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse-glow" />
-                              <span>Open Source Intelligence Automation</span>
-                            </div>
-                            <div className="flex gap-2">
-                              <Button variant="outline" onClick={() => setIsSpiderfootOpen(false)} className="glow-hover">
-                                Close OSINT Scanner
-                              </Button>
-                              <Button className="glow-hover group">
-                                <Settings className="h-4 w-4 mr-2 group-hover:animate-spin" />
-                                Configure API
-                              </Button>
                             </div>
                           </div>
                         </DialogContent>
