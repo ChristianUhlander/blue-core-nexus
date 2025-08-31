@@ -2880,7 +2880,7 @@ const SecurityDashboard = () => {
                     </TabsTrigger>
                     <TabsTrigger value="webapp" className="flex items-center gap-2">
                       <Zap className="h-4 w-4" />
-                      Web App
+                      Pentesting
                     </TabsTrigger>
                     <TabsTrigger value="osint" className="flex items-center gap-2">
                       <Search className="h-4 w-4" />
