@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle, Brain, Archive } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle, Brain, Archive, Network, Terminal, Key, PlayCircle, Unlock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -4638,258 +4638,497 @@ const SecurityDashboard = () => {
                           <DialogHeader>
                             <DialogTitle className="flex items-center gap-2 text-xl">
                               <div className="relative">
-                                <Target className="h-6 w-6 text-red-500 animate-pulse" />
-                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+                                <Users className="h-6 w-6 text-blue-500 animate-pulse" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping" />
                               </div>
-                              K8s Penetration Testing Framework
-                              <Badge variant="destructive" className="text-xs animate-pulse">
-                                ACTIVE TESTING
+                              Active Directory Penetration Testing
+                              <Badge variant="secondary" className="text-xs animate-pulse">
+                                AD ASSESSMENT
                               </Badge>
                             </DialogTitle>
                             <DialogDescription className="text-base">
-                              Comprehensive security assessment for Kubernetes environments with real-time tool integration
+                              Comprehensive Active Directory security assessment using modern tools: BloodHound, CrackMapExec, Mimikatz
                             </DialogDescription>
                           </DialogHeader>
 
-                          <Tabs defaultValue="session" className="space-y-4">
+                          <Tabs defaultValue="config" className="space-y-4">
                             <TabsList className="grid w-full grid-cols-6 bg-background/50 backdrop-blur">
-                              <TabsTrigger value="session" className="glow-hover">Session Setup</TabsTrigger>
-                              <TabsTrigger value="targets" className="glow-hover">Target Discovery</TabsTrigger>
-                              <TabsTrigger value="tools" className="glow-hover">Tool Integration</TabsTrigger>
-                              <TabsTrigger value="k8s-tests" className="glow-hover">K8s Security</TabsTrigger>
+                              <TabsTrigger value="config" className="glow-hover">Configuration</TabsTrigger>
+                              <TabsTrigger value="bloodhound" className="glow-hover">BloodHound</TabsTrigger>
+                              <TabsTrigger value="crackmapexec" className="glow-hover">CrackMapExec</TabsTrigger>
+                              <TabsTrigger value="attacks" className="glow-hover">Attack Techniques</TabsTrigger>
                               <TabsTrigger value="findings" className="glow-hover">Findings</TabsTrigger>
                               <TabsTrigger value="reporting" className="glow-hover">Reporting</TabsTrigger>
                             </TabsList>
 
-                            {/* Session Setup Tab */}
-                            <TabsContent value="session" className="space-y-4">
+                            {/* Configuration Tab */}
+                            <TabsContent value="config" className="space-y-4">
                               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* Session Configuration */}
+                                {/* AD Target Configuration */}
                                 <Card className="gradient-card border-primary/20">
                                   <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                      <Play className="h-5 w-5 text-green-500" />
-                                      New Pentest Session
+                                      <Target className="h-5 w-5 text-blue-500" />
+                                      AD Target Configuration
                                     </CardTitle>
-                                    <CardDescription>Configure comprehensive security assessment</CardDescription>
+                                    <CardDescription>Configure Active Directory target and authentication</CardDescription>
                                   </CardHeader>
                                   <CardContent className="space-y-4">
                                     <div className="space-y-2">
-                                      <Label htmlFor="session-name">Session Name</Label>
+                                      <Label htmlFor="ad-domain">Domain</Label>
                                       <Input 
-                                        id="session-name"
-                                        value={pentestSession.name}
-                                        onChange={(e) => setPentestSession({...pentestSession, name: e.target.value})}
-                                        placeholder="K8s Security Assessment - Q1 2024"
+                                        id="ad-domain"
+                                        placeholder="company.local"
                                         className="glow-focus"
                                       />
                                     </div>
                                     
                                     <div className="space-y-2">
-                                      <Label htmlFor="session-description">Description</Label>
-                                      <Textarea 
-                                        id="session-description"
-                                        value={pentestSession.description}
-                                        onChange={(e) => setPentestSession({...pentestSession, description: e.target.value})}
-                                        placeholder="Comprehensive security assessment of production K8s cluster including RBAC, network policies, and container security..."
-                                        className="glow-focus min-h-[100px]"
+                                      <Label htmlFor="domain-controller">Domain Controller</Label>
+                                      <Input 
+                                        id="domain-controller"
+                                        placeholder="dc01.company.local"
+                                        className="glow-focus"
                                       />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                       <div className="space-y-2">
-                                        <Label>Methodology</Label>
-                                        <Select 
-                                          value={pentestSession.methodology} 
-                                          onValueChange={(value) => setPentestSession({...pentestSession, methodology: value})}
-                                        >
-                                          <SelectTrigger className="glow-focus">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            <SelectItem value="owasp">OWASP Testing Guide</SelectItem>
-                                            <SelectItem value="nist">NIST Cybersecurity Framework</SelectItem>
-                                            <SelectItem value="ptes">PTES Standard</SelectItem>
-                                            <SelectItem value="osstmm">OSSTMM</SelectItem>
-                                            <SelectItem value="custom">Custom Framework</SelectItem>
-                                          </SelectContent>
-                                        </Select>
+                                        <Label htmlFor="ad-username">Username</Label>
+                                        <Input 
+                                          id="ad-username"
+                                          placeholder="testuser"
+                                          className="glow-focus"
+                                        />
                                       </div>
-
                                       <div className="space-y-2">
-                                        <Label>Current Phase</Label>
-                                        <Select 
-                                          value={pentestSession.phase} 
-                                          onValueChange={(value) => setPentestSession({...pentestSession, phase: value})}
-                                        >
-                                          <SelectTrigger className="glow-focus">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            <SelectItem value="reconnaissance">Reconnaissance</SelectItem>
-                                            <SelectItem value="scanning">Scanning & Enumeration</SelectItem>
-                                            <SelectItem value="enumeration">Service Enumeration</SelectItem>
-                                            <SelectItem value="exploitation">Exploitation</SelectItem>
-                                            <SelectItem value="post_exploitation">Post-Exploitation</SelectItem>
-                                            <SelectItem value="reporting">Reporting</SelectItem>
-                                          </SelectContent>
-                                        </Select>
+                                        <Label htmlFor="ad-password">Password</Label>
+                                        <Input 
+                                          id="ad-password"
+                                          type="password"
+                                          placeholder="Password123!"
+                                          className="glow-focus"
+                                        />
                                       </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                      <Label>Team Members</Label>
-                                      <div className="flex gap-2">
-                                        <Input 
-                                          value={newTeamMember}
-                                          onChange={(e) => setNewTeamMember(e.target.value)}
-                                          placeholder="Enter team member name"
-                                          className="glow-focus"
-                                        />
-                                        <Button 
-                                          onClick={() => {
-                                            if (newTeamMember.trim()) {
-                                              setPentestSession({
-                                                ...pentestSession,
-                                                team: {
-                                                  ...pentestSession.team,
-                                                  members: [...pentestSession.team.members, newTeamMember.trim()]
-                                                }
-                                              });
-                                              setNewTeamMember('');
-                                            }
-                                          }}
-                                          size="sm"
-                                          className="glow-hover"
-                                        >
-                                          <User className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                      <div className="flex flex-wrap gap-2 mt-2">
-                                        {pentestSession.team.members.map((member, index) => (
-                                          <Badge key={index} variant="secondary" className="text-xs">
-                                            {member}
-                                            <X 
-                                              className="h-3 w-3 ml-1 cursor-pointer hover:text-red-500" 
-                                              onClick={() => {
-                                                setPentestSession({
-                                                  ...pentestSession,
-                                                  team: {
-                                                    ...pentestSession.team,
-                                                    members: pentestSession.team.members.filter((_, i) => i !== index)
-                                                  }
-                                                });
-                                              }}
-                                            />
-                                          </Badge>
-                                        ))}
-                                      </div>
+                                      <Label htmlFor="ntlm-hash">NTLM Hash (Alternative)</Label>
+                                      <Input 
+                                        id="ntlm-hash"
+                                        placeholder="aad3b435b51404eeaad3b435b51404ee:5fbc3d5fec8206a30f4b6c473d68ae76"
+                                        className="glow-focus"
+                                      />
                                     </div>
 
-                                    <Button 
-                                      className="w-full glow-hover group" 
-                                      onClick={handleCreatePentestSession}
-                                      disabled={!pentestSession.name.trim()}
-                                    >
-                                      <Play className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-                                      Start Penetration Test Session
-                                    </Button>
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center space-x-2">
+                                        <Switch id="stealth-mode" />
+                                        <Label htmlFor="stealth-mode">Stealth Mode</Label>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <Switch id="kerberos-auth" />
+                                        <Label htmlFor="kerberos-auth">Use Kerberos</Label>
+                                      </div>
+                                    </div>
                                   </CardContent>
                                 </Card>
 
-                                {/* Active Sessions */}
+                                {/* Tool Status */}
                                 <Card className="gradient-card border-primary/20">
                                   <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                      <Activity className="h-5 w-5 text-blue-500" />
-                                      Active Sessions
-                                      <Badge variant="outline" className="text-xs">
-                                        {activePentestSessions.length} Running
-                                      </Badge>
+                                      <Activity className="h-5 w-5 text-green-500" />
+                                      AD Tool Status
                                     </CardTitle>
-                                    <CardDescription>Monitor ongoing penetration tests</CardDescription>
+                                    <CardDescription>Current status of AD penetration testing tools</CardDescription>
                                   </CardHeader>
-                                  <CardContent>
-                                    <ScrollArea className="h-[400px]">
-                                      <div className="space-y-3">
-                                        {activePentestSessions.map((session) => (
-                                          <div key={session.id} className="border rounded-lg p-4 hover:bg-primary/5 transition-colors group">
-                                            <div className="flex items-center justify-between mb-2">
-                                              <h4 className="font-medium group-hover:text-primary transition-colors">
-                                                {session.name}
-                                              </h4>
-                                              <Badge 
-                                                variant={session.status === 'active' ? 'default' : 'secondary'}
-                                                className="text-xs animate-pulse"
-                                              >
-                                                {session.status}
-                                              </Badge>
-                                            </div>
-                                            <p className="text-sm text-muted-foreground mb-3">{session.description}</p>
-                                            
-                                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                              <div>
-                                                <span className="text-muted-foreground">Phase:</span>
-                                                <Badge variant="outline" className="ml-2 text-xs">
-                                                  {session.phase}
-                                                </Badge>
-                                              </div>
-                                              <div>
-                                                <span className="text-muted-foreground">Findings:</span>
-                                                <span className="ml-2 font-medium text-red-500">
-                                                  {session.findings.filter(f => f.severity === 'critical' || f.severity === 'high').length} Critical/High
-                                                </span>
-                                              </div>
-                                              <div>
-                                                <span className="text-muted-foreground">Targets:</span>
-                                                <span className="ml-2 font-medium">{session.targets.length}</span>
-                                              </div>
-                                              <div>
-                                                <span className="text-muted-foreground">Duration:</span>
-                                                <span className="ml-2 font-medium">
-                                                  {Math.round((Date.now() - new Date(session.timeline.started).getTime()) / (1000 * 60 * 60))}h
-                                                </span>
-                                              </div>
-                                            </div>
-
-                                            <div className="flex justify-end gap-2 mt-3">
-                                              <Button 
-                                                size="sm" 
-                                                variant="outline" 
-                                                onClick={() => handleLoadSession(session.id)}
-                                                className="glow-hover"
-                                              >
-                                                <Eye className="h-3 w-3 mr-1" />
-                                                View
-                                              </Button>
-                                              <Button 
-                                                size="sm" 
-                                                variant="destructive" 
-                                                onClick={() => handleStopSession(session.id)}
-                                                className="glow-hover"
-                                              >
-                                                <X className="h-3 w-3 mr-1" />
-                                                Stop
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        ))}
-                                        
-                                        {activePentestSessions.length === 0 && (
-                                          <div className="text-center py-8 text-muted-foreground">
-                                            <Target className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                                            <p>No active penetration test sessions</p>
-                                            <p className="text-sm">Create a new session to begin security assessment</p>
-                                          </div>
-                                        )}
+                                  <CardContent className="space-y-4">
+                                    <div className="space-y-3">
+                                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/50">
+                                        <div className="flex items-center gap-3">
+                                          <Network className="h-5 w-5 text-blue-500" />
+                                          <span className="font-medium">BloodHound</span>
+                                        </div>
+                                        <Badge variant="outline">Ready</Badge>
                                       </div>
-                                    </ScrollArea>
+                                      
+                                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/50">
+                                        <div className="flex items-center gap-3">
+                                          <Terminal className="h-5 w-5 text-red-500" />
+                                          <span className="font-medium">CrackMapExec</span>
+                                        </div>
+                                        <Badge variant="outline">Ready</Badge>
+                                      </div>
+                                      
+                                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/50">
+                                        <div className="flex items-center gap-3">
+                                          <Key className="h-5 w-5 text-yellow-500" />
+                                          <span className="font-medium">Mimikatz</span>
+                                        </div>
+                                        <Badge variant="outline">Ready</Badge>
+                                      </div>
+                                      
+                                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/50">
+                                        <div className="flex items-center gap-3">
+                                          <Shield className="h-5 w-5 text-purple-500" />
+                                          <span className="font-medium">Impacket Suite</span>
+                                        </div>
+                                        <Badge variant="outline">Ready</Badge>
+                                      </div>
+                                    </div>
+
+                                    <Button className="w-full glow-hover">
+                                      <PlayCircle className="h-4 w-4 mr-2" />
+                                      Start Full AD Assessment
+                                    </Button>
                                   </CardContent>
                                 </Card>
                               </div>
                             </TabsContent>
 
-                            {/* Additional tabs will be implemented next... */}
+                            {/* BloodHound Tab */}
+                            <TabsContent value="bloodhound" className="space-y-4">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                      <Network className="h-5 w-5 text-blue-500" />
+                                      BloodHound Analysis
+                                    </CardTitle>
+                                    <CardDescription>Attack path analysis and AD enumeration</CardDescription>
+                                  </CardHeader>
+                                  <CardContent className="space-y-4">
+                                    <div className="space-y-3">
+                                      <div className="flex items-center justify-between">
+                                        <Label>Collection Method</Label>
+                                        <Select defaultValue="sharphound">
+                                          <SelectTrigger className="w-32">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="sharphound">SharpHound</SelectItem>
+                                            <SelectItem value="azurehound">AzureHound</SelectItem>
+                                            <SelectItem value="bloodhound-python">Python</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      <div className="space-y-2">
+                                        <Label>Custom Queries</Label>
+                                        <div className="space-y-2">
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="domain-admins" defaultChecked />
+                                            <Label htmlFor="domain-admins" className="text-sm">Find Domain Admins</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="kerberoastable" defaultChecked />
+                                            <Label htmlFor="kerberoastable" className="text-sm">Kerberoastable Users</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="asreproastable" defaultChecked />
+                                            <Label htmlFor="asreproastable" className="text-sm">ASREPRoastable Users</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="shortest-paths" />
+                                            <Label htmlFor="shortest-paths" className="text-sm">Shortest Paths to DA</Label>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <Button className="w-full glow-hover">
+                                        <Search className="h-4 w-4 mr-2" />
+                                        Run BloodHound Collection
+                                      </Button>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                      <Eye className="h-5 w-5 text-green-500" />
+                                      Analysis Results
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <div className="text-center py-8 text-muted-foreground">
+                                      <Network className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                      <p>Run BloodHound collection to see analysis results</p>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            </TabsContent>
+
+                            {/* CrackMapExec Tab */}
+                            <TabsContent value="crackmapexec" className="space-y-4">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                      <Terminal className="h-5 w-5 text-red-500" />
+                                      CrackMapExec Configuration
+                                    </CardTitle>
+                                    <CardDescription>Configure lateral movement and enumeration</CardDescription>
+                                  </CardHeader>
+                                  <CardContent className="space-y-4">
+                                    <div className="space-y-3">
+                                      <div>
+                                        <Label>Protocols</Label>
+                                        <div className="grid grid-cols-3 gap-2 mt-2">
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="smb" defaultChecked />
+                                            <Label htmlFor="smb" className="text-sm">SMB</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="ldap" defaultChecked />
+                                            <Label htmlFor="ldap" className="text-sm">LDAP</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="winrm" />
+                                            <Label htmlFor="winrm" className="text-sm">WinRM</Label>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div>
+                                        <Label>Modules</Label>
+                                        <div className="grid grid-cols-2 gap-2 mt-2">
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="lsassy" defaultChecked />
+                                            <Label htmlFor="lsassy" className="text-sm">Lsassy</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="nanodump" />
+                                            <Label htmlFor="nanodump" className="text-sm">Nanodump</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="procdump" />
+                                            <Label htmlFor="procdump" className="text-sm">Procdump</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox id="handlekatz" />
+                                            <Label htmlFor="handlekatz" className="text-sm">HandleKatz</Label>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                          <Label htmlFor="threads">Threads</Label>
+                                          <Input 
+                                            id="threads"
+                                            type="number"
+                                            defaultValue="5"
+                                            min="1"
+                                            max="20"
+                                            className="glow-focus"
+                                          />
+                                        </div>
+                                        <div className="space-y-2">
+                                          <Label htmlFor="timeout">Timeout (s)</Label>
+                                          <Input 
+                                            id="timeout"
+                                            type="number"
+                                            defaultValue="30"
+                                            min="10"
+                                            max="120"
+                                            className="glow-focus"
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <Button className="w-full glow-hover">
+                                        <Terminal className="h-4 w-4 mr-2" />
+                                        Execute CrackMapExec
+                                      </Button>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                      <Activity className="h-5 w-5 text-orange-500" />
+                                      Execution Results
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <div className="text-center py-8 text-muted-foreground">
+                                      <Terminal className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                      <p>Execute CrackMapExec to see results</p>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            </TabsContent>
+
+                            {/* Attack Techniques Tab */}
+                            <TabsContent value="attacks" className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                      <Key className="h-5 w-5 text-yellow-500" />
+                                      Kerberoasting
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                      Extract service account passwords by requesting service tickets
+                                    </p>
+                                    <Button size="sm" className="w-full glow-hover">
+                                      <PlayCircle className="h-4 w-4 mr-2" />
+                                      Execute Attack
+                                    </Button>
+                                  </CardContent>
+                                </Card>
+
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                      <Lock className="h-5 w-5 text-red-500" />
+                                      ASREPRoasting
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                      Target users with "Do not require Kerberos preauthentication"
+                                    </p>
+                                    <Button size="sm" className="w-full glow-hover">
+                                      <PlayCircle className="h-4 w-4 mr-2" />
+                                      Execute Attack
+                                    </Button>
+                                  </CardContent>
+                                </Card>
+
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                      <Unlock className="h-5 w-5 text-purple-500" />
+                                      DCSync
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                      Simulate domain controller replication to extract password hashes
+                                    </p>
+                                    <Button size="sm" className="w-full glow-hover">
+                                      <PlayCircle className="h-4 w-4 mr-2" />
+                                      Execute Attack
+                                    </Button>
+                                  </CardContent>
+                                </Card>
+
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                      <Server className="h-5 w-5 text-blue-500" />
+                                      Golden Ticket
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                      Create forged TGT tickets using krbtgt hash
+                                    </p>
+                                    <Button size="sm" className="w-full glow-hover">
+                                      <PlayCircle className="h-4 w-4 mr-2" />
+                                      Execute Attack
+                                    </Button>
+                                  </CardContent>
+                                </Card>
+
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                      <Globe className="h-5 w-5 text-green-500" />
+                                      Silver Ticket
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                      Create forged service tickets using service account hash
+                                    </p>
+                                    <Button size="sm" className="w-full glow-hover">
+                                      <PlayCircle className="h-4 w-4 mr-2" />
+                                      Execute Attack
+                                    </Button>
+                                  </CardContent>
+                                </Card>
+
+                                <Card className="gradient-card border-primary/20">
+                                  <CardHeader>
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                      <Settings className="h-5 w-5 text-orange-500" />
+                                      Delegation Abuse
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                      Exploit unconstrained and constrained delegation
+                                    </p>
+                                    <Button size="sm" className="w-full glow-hover">
+                                      <PlayCircle className="h-4 w-4 mr-2" />
+                                      Execute Attack
+                                    </Button>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            </TabsContent>
+
+                            {/* Findings Tab */}
+                            <TabsContent value="findings" className="space-y-4">
+                              <Card className="gradient-card border-primary/20">
+                                <CardHeader>
+                                  <CardTitle className="flex items-center gap-2">
+                                    <Search className="h-5 w-5 text-green-500" />
+                                    Security Findings
+                                  </CardTitle>
+                                  <CardDescription>Discovered vulnerabilities and attack paths</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="text-center py-12 text-muted-foreground">
+                                    <AlertTriangle className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                                    <h3 className="text-lg font-medium mb-2">No Findings Yet</h3>
+                                    <p>Run AD assessment tools to discover security issues</p>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </TabsContent>
+
+                            {/* Reporting Tab */}
+                            <TabsContent value="reporting" className="space-y-4">
+                              <Card className="gradient-card border-primary/20">
+                                <CardHeader>
+                                  <CardTitle className="flex items-center gap-2">
+                                    <FileText className="h-5 w-5 text-blue-500" />
+                                    Generate Reports
+                                  </CardTitle>
+                                  <CardDescription>Export findings and recommendations</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <Button className="glow-hover h-20 flex-col">
+                                      <Download className="h-6 w-6 mb-2" />
+                                      Executive Summary
+                                    </Button>
+                                    <Button className="glow-hover h-20 flex-col">
+                                      <FileText className="h-6 w-6 mb-2" />
+                                      Technical Report
+                                    </Button>
+                                    <Button className="glow-hover h-20 flex-col">
+                                      <Network className="h-6 w-6 mb-2" />
+                                      BloodHound Data
+                                    </Button>
+                                    <Button className="glow-hover h-20 flex-col">
+                                      <Terminal className="h-6 w-6 mb-2" />
+                                      Raw Outputs
+                                    </Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </TabsContent>
                           </Tabs>
                         </DialogContent>
                       </Dialog>
