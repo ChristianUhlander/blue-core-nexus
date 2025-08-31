@@ -2681,7 +2681,7 @@ const SecurityDashboard = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => document.getElementById('agentic-pentest')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => requestAnimationFrame(() => document.getElementById('agentic-pentest')?.scrollIntoView({ behavior: 'smooth' }))}
               className="hover:text-primary transition-colors"
             >
               AI Pentest
@@ -2689,7 +2689,7 @@ const SecurityDashboard = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => document.getElementById('security-admin')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => requestAnimationFrame(() => document.getElementById('security-admin')?.scrollIntoView({ behavior: 'smooth' }))}
               className="hover:text-primary transition-colors"
             >
               Administration
@@ -2697,7 +2697,7 @@ const SecurityDashboard = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => document.getElementById('services-status')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => requestAnimationFrame(() => document.getElementById('services-status')?.scrollIntoView({ behavior: 'smooth' }))}
               className="hover:text-primary transition-colors"
             >
               Services
@@ -2705,7 +2705,7 @@ const SecurityDashboard = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => document.getElementById('alert-feed')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => requestAnimationFrame(() => document.getElementById('alert-feed')?.scrollIntoView({ behavior: 'smooth' }))}
               className="hover:text-primary transition-colors"
             >
               Alerts
