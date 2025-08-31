@@ -81,6 +81,141 @@ const SecurityDashboard = () => {
   const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
   
+  // Pentesting dialog states
+  const [isADPentestOpen, setIsADPentestOpen] = useState(false);
+  const [isWebPentestOpen, setIsWebPentestOpen] = useState(false);
+  const [isNetworkPentestOpen, setIsNetworkPentestOpen] = useState(false);
+  const [isWirelessPentestOpen, setIsWirelessPentestOpen] = useState(false);
+  const [isSocialEngPentestOpen, setIsSocialEngPentestOpen] = useState(false);
+  const [isPhysicalPentestOpen, setIsPhysicalPentestOpen] = useState(false);
+  
+  // Pentesting content components
+  const ADPentestingContent = () => (
+    <ScrollArea className="h-[70vh] rounded-md border">
+      <div className="space-y-6 p-6">
+        <Card className="gradient-card border-red-500/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-red-500" />
+              Active Directory Assessment
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">
+              <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>BloodHound, CrackMapExec, and AD attack techniques will be configured here</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </ScrollArea>
+  );
+
+  const WebPentestingContent = () => (
+    <ScrollArea className="h-[70vh] rounded-md border">
+      <div className="space-y-6 p-6">
+        <Card className="gradient-card border-yellow-500/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-yellow-500" />
+              Web Application Assessment
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">
+              <Zap className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>OWASP ZAP and Top 10 vulnerability testing interface</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </ScrollArea>
+  );
+
+  const NetworkPentestingContent = () => (
+    <ScrollArea className="h-[70vh] rounded-md border">
+      <div className="space-y-6 p-6">
+        <Card className="gradient-card border-blue-500/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Network className="h-5 w-5 text-blue-500" />
+              Network Infrastructure Assessment
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">
+              <Network className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Port scanning, vulnerability detection, and network enumeration tools</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </ScrollArea>
+  );
+
+  const WirelessPentestingContent = () => (
+    <ScrollArea className="h-[70vh] rounded-md border">
+      <div className="space-y-6 p-6">
+        <Card className="gradient-card border-green-500/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wifi className="h-5 w-5 text-green-500" />
+              Wireless Security Assessment
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">
+              <Wifi className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>WiFi, Bluetooth, and RF security testing tools</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </ScrollArea>
+  );
+
+  const SocialEngPentestingContent = () => (
+    <ScrollArea className="h-[70vh] rounded-md border">
+      <div className="space-y-6 p-6">
+        <Card className="gradient-card border-purple-500/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-purple-500" />
+              Social Engineering Assessment
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">
+              <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Phishing campaigns, OSINT gathering, and human factor testing</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </ScrollArea>
+  );
+
+  const PhysicalPentestingContent = () => (
+    <ScrollArea className="h-[70vh] rounded-md border">
+      <div className="space-y-6 p-6">
+        <Card className="gradient-card border-orange-500/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Building className="h-5 w-5 text-orange-500" />
+              Physical Security Assessment
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">
+              <Building className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Lock picking, access control bypass, and RFID/badge cloning</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </ScrollArea>
+  );
+  
   // IppsY chat pane state
   const [isIppsYOpen, setIsIppsYOpen] = useState(false);
   
