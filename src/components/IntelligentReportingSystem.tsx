@@ -75,6 +75,7 @@ export const IntelligentReportingSystem: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [selectedAudience, setSelectedAudience] = useState<string>('technical');
   const [reportTitle, setReportTitle] = useState('Security Assessment Report');
+  const [reportSource, setReportSource] = useState<string>('combined');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generatedReport, setGeneratedReport] = useState<string>('');
@@ -496,6 +497,30 @@ ${content}
                     onChange={(e) => setReportTitle(e.target.value)}
                     placeholder="Security Assessment Report"
                   />
+                </div>
+
+                <div>
+                  <Label htmlFor="report-source">Report Data Source</Label>
+                  <Select value={reportSource} onValueChange={setReportSource}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select data source" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover border z-50">
+                      <SelectItem value="wazuh">Wazuh SIEM Logs</SelectItem>
+                      <SelectItem value="openvas">OpenVAS/GVM Scans</SelectItem>
+                      <SelectItem value="owaspzap">OWASP ZAP Results</SelectItem>
+                      <SelectItem value="spiderfoot">SpiderFoot OSINT</SelectItem>
+                      <SelectItem value="k8s">Kubernetes Security</SelectItem>
+                      <SelectItem value="network">Network Scans</SelectItem>
+                      <SelectItem value="webapp">Web Application Tests</SelectItem>
+                      <SelectItem value="ad">Active Directory Assessment</SelectItem>
+                      <SelectItem value="manual">Manual Input Data</SelectItem>
+                      <SelectItem value="combined">All Available Sources</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Choose the security tool or data source for report generation
+                  </p>
                 </div>
 
                 <div>
