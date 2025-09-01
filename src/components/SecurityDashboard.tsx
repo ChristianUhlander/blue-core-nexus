@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle, Brain, Network, Terminal, Key, PlayCircle, Unlock, Package } from "lucide-react";
+import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle, Brain, Network, Terminal, Key, PlayCircle, Unlock, Box } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -3442,7 +3442,7 @@ const SecurityDashboard = () => {
                       <Dialog open={isAgentStatusOpen} onOpenChange={setIsAgentStatusOpen}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" className="glow-hover group">
-                            <Package className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+                            <Box className="h-4 w-4 mr-2 group-hover:animate-pulse" />
                             SBOM Management
                             <div className="ml-2 w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
                           </Button>
@@ -3451,7 +3451,7 @@ const SecurityDashboard = () => {
                           <DialogHeader>
                             <DialogTitle className="flex items-center gap-2 text-xl">
                               <div className="relative">
-                                <Package className="h-6 w-6 text-primary animate-pulse" />
+                                <Box className="h-6 w-6 text-primary animate-pulse" />
                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-ping" />
                               </div>
                               Software Bill of Materials (SBOM)
