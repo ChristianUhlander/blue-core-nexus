@@ -2605,6 +2605,54 @@ const SecurityDashboard = () => {
       risk: 'MEDIUM',
       enabled: false
     },
+    {
+      id: 'sfp_portscan',
+      name: 'Port Scanner',
+      category: 'Network',
+      description: 'TCP port scanning and service detection',
+      risk: 'HIGH',
+      enabled: false
+    },
+    {
+      id: 'sfp_ipneighbors',
+      name: 'IP Neighbors',
+      category: 'Network',
+      description: 'Find neighboring IP addresses and subnets',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_bgp',
+      name: 'BGP AS Lookup',
+      category: 'Network',
+      description: 'BGP autonomous system information',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_geoip',
+      name: 'GeoIP Location',
+      category: 'Network',
+      description: 'Geographic location of IP addresses',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_greynoise',
+      name: 'GreyNoise',
+      category: 'Network',
+      description: 'Check IPs against GreyNoise intelligence',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_internetdb',
+      name: 'InternetDB',
+      category: 'Network',
+      description: 'Shodan InternetDB for quick IP lookups',
+      risk: 'LOW',
+      enabled: false
+    },
     
     // Threat Intelligence
     {
@@ -2631,6 +2679,70 @@ const SecurityDashboard = () => {
       risk: 'HIGH',
       enabled: false
     },
+    {
+      id: 'sfp_alienvault',
+      name: 'AlienVault OTX',
+      category: 'Threat Intel',
+      description: 'AlienVault Open Threat Exchange intelligence',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_threatminer',
+      name: 'ThreatMiner',
+      category: 'Threat Intel',
+      description: 'Threat intelligence and data mining platform',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_maltiverse',
+      name: 'Maltiverse',
+      category: 'Threat Intel',
+      description: 'IOC and threat intelligence lookup service',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_threatfox',
+      name: 'ThreatFox',
+      category: 'Threat Intel',
+      description: 'Abuse.ch ThreatFox IOC database',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_urlvoid',
+      name: 'URLVoid',
+      category: 'Threat Intel',
+      description: 'URL reputation and safety checking',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_abuseipdb',
+      name: 'AbuseIPDB',
+      category: 'Threat Intel',
+      description: 'IP address abuse and reputation database',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_spamhaus',
+      name: 'Spamhaus',
+      category: 'Threat Intel',
+      description: 'Spamhaus blocklist and reputation data',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_emergingthreats',
+      name: 'Emerging Threats',
+      category: 'Threat Intel',
+      description: 'Emerging Threats Intelligence feeds',
+      risk: 'MEDIUM',
+      enabled: false
+    },
     
     // Search Engines & Web
     {
@@ -2650,11 +2762,75 @@ const SecurityDashboard = () => {
       enabled: false
     },
     {
+      id: 'sfp_duckduckgo',
+      name: 'DuckDuckGo Search',
+      category: 'Search Engines',
+      description: 'Privacy-focused search engine queries',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_yandex',
+      name: 'Yandex Search',
+      category: 'Search Engines',
+      description: 'Yandex search engine reconnaissance',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_baidu',
+      name: 'Baidu Search',
+      category: 'Search Engines',
+      description: 'Chinese Baidu search engine queries',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
       id: 'sfp_pgp',
       name: 'PGP Key Servers',
       category: 'Search Engines',
       description: 'Search PGP key servers for email addresses',
       risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_pastebins',
+      name: 'Pastebin Search',
+      category: 'Search Engines',
+      description: 'Search pastebin sites for leaked data',
+      risk: 'HIGH',
+      enabled: false
+    },
+    {
+      id: 'sfp_github',
+      name: 'GitHub Search',
+      category: 'Search Engines',
+      description: 'GitHub code and repository search',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_wayback',
+      name: 'Wayback Machine',
+      category: 'Search Engines',
+      description: 'Internet Archive Wayback Machine lookups',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_commoncrawl',
+      name: 'Common Crawl',
+      category: 'Search Engines',
+      description: 'Common Crawl web archive search',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_securitytrails',
+      name: 'SecurityTrails',
+      category: 'Search Engines',
+      description: 'DNS and domain intelligence platform',
+      risk: 'MEDIUM',
       enabled: false
     },
     
@@ -2683,6 +2859,94 @@ const SecurityDashboard = () => {
       risk: 'LOW',
       enabled: false
     },
+    {
+      id: 'sfp_twitter',
+      name: 'Twitter/X Search',
+      category: 'People',
+      description: 'Twitter/X profile and tweet analysis',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_instagram',
+      name: 'Instagram',
+      category: 'People',
+      description: 'Instagram profile and post discovery',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_facebook',
+      name: 'Facebook',
+      category: 'People',
+      description: 'Facebook profile and page information',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_skype',
+      name: 'Skype Resolver',
+      category: 'People',
+      description: 'Skype username and profile resolution',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_telegram',
+      name: 'Telegram',
+      category: 'People',
+      description: 'Telegram username and channel search',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_reddit',
+      name: 'Reddit',
+      category: 'People',
+      description: 'Reddit user and post investigation',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_youtube',
+      name: 'YouTube',
+      category: 'People',
+      description: 'YouTube channel and video analysis',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_gravatar',
+      name: 'Gravatar',
+      category: 'People',
+      description: 'Gravatar profile and image lookup',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_fullcontact',
+      name: 'FullContact',
+      category: 'People',
+      description: 'Person and company profile enrichment',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_pipl',
+      name: 'Pipl Search',
+      category: 'People',
+      description: 'Deep people search and identity resolution',
+      risk: 'HIGH',
+      enabled: false
+    },
+    {
+      id: 'sfp_phonebook',
+      name: 'Phonebook.cz',
+      category: 'People',
+      description: 'Subdomain and email enumeration service',
+      risk: 'MEDIUM',
+      enabled: false
+    },
     
     // Certificate & SSL
     {
@@ -2701,6 +2965,46 @@ const SecurityDashboard = () => {
       risk: 'LOW',
       enabled: false
     },
+    {
+      id: 'sfp_sslmate',
+      name: 'SSLMate Certspotter',
+      category: 'Certificates',
+      description: 'Certificate monitoring and discovery',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_sslshopper',
+      name: 'SSL Shopper',
+      category: 'Certificates',
+      description: 'SSL certificate checker and validator',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_entrust',
+      name: 'Entrust Certificate Search',
+      category: 'Certificates',
+      description: 'Entrust certificate authority lookups',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_google_ct',
+      name: 'Google Certificate Transparency',
+      category: 'Certificates',
+      description: 'Google certificate transparency logs',
+      risk: 'LOW',
+      enabled: false
+    },
+    {
+      id: 'sfp_facebook_ct',
+      name: 'Facebook Certificate Transparency',
+      category: 'Certificates',
+      description: 'Facebook certificate transparency monitoring',
+      risk: 'LOW',
+      enabled: false
+    },
     
     // Subdomain Discovery
     {
@@ -2716,6 +3020,70 @@ const SecurityDashboard = () => {
       name: 'DNS Brute Force',
       category: 'Subdomains',
       description: 'Brute force subdomain discovery',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_subdomain_enum',
+      name: 'Subdomain Enumeration',
+      category: 'Subdomains',
+      description: 'Comprehensive subdomain enumeration techniques',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_dnsdb',
+      name: 'Farsight DNSDB',
+      category: 'Subdomains',
+      description: 'Passive DNS database for subdomain discovery',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_sublist3r',
+      name: 'Sublist3r Engine',
+      category: 'Subdomains',
+      description: 'Multi-source subdomain enumeration',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_amass',
+      name: 'OWASP Amass',
+      category: 'Subdomains',
+      description: 'In-depth attack surface mapping',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_subfinder',
+      name: 'Subfinder',
+      category: 'Subdomains',
+      description: 'Fast subdomain discovery tool integration',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_assetfinder',
+      name: 'Assetfinder',
+      category: 'Subdomains',
+      description: 'Find domains and subdomains related to target',
+      risk: 'MEDIUM',
+      enabled: false
+    },
+    {
+      id: 'sfp_cname_takeover',
+      name: 'CNAME Takeover',
+      category: 'Subdomains',
+      description: 'CNAME record takeover vulnerability detection',
+      risk: 'HIGH',
+      enabled: false
+    },
+    {
+      id: 'sfp_chaos',
+      name: 'ProjectDiscovery Chaos',
+      category: 'Subdomains',
+      description: 'Chaos dataset for subdomain reconnaissance',
       risk: 'MEDIUM',
       enabled: false
     }
