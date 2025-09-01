@@ -4553,7 +4553,7 @@ const SecurityDashboard = () => {
                                     
                                     <TabsContent value="network" className="space-y-3">
                                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        {spiderfootModules.filter(m => ['network', 'subdomains', 'certificates'].includes(m.category)).map(module => (
+                                        {spiderfootModules.filter(m => ['Network', 'Subdomains', 'Certificates'].includes(m.category)).map(module => (
                                           <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
                                             <Checkbox
                                               id={`sf-module-${module.id}`}
@@ -4590,7 +4590,7 @@ const SecurityDashboard = () => {
                                     
                                     <TabsContent value="threat" className="space-y-3">
                                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        {spiderfootModules.filter(m => m.category === 'threat').map(module => (
+                                        {spiderfootModules.filter(m => m.category === 'Threat Intel').map(module => (
                                           <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
                                             <Checkbox
                                               id={`sf-module-${module.id}`}
@@ -4627,7 +4627,7 @@ const SecurityDashboard = () => {
                                     
                                     <TabsContent value="search" className="space-y-3">
                                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        {spiderfootModules.filter(m => ['search', 'people'].includes(m.category)).map(module => (
+                                        {spiderfootModules.filter(m => ['Search Engines', 'People'].includes(m.category)).map(module => (
                                           <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
                                             <Checkbox
                                               id={`sf-module-${module.id}`}
