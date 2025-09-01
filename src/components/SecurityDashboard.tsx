@@ -27,6 +27,7 @@ import { AutomaticOSINTAgent } from "./AutomaticOSINTAgent";
 import { ADPentestingModule } from "./ADPentestingModule";
 import { NetworkPentestingModule } from "./NetworkPentestingModule";
 import { WebAppPentestingModule } from "./WebAppPentestingModule";
+import { OSINTPentestingModule } from "./OSINTPentestingModule";
 
 import WazuhManagement from "../pages/WazuhManagement";
 import GVMManagement from "../pages/GVMManagement";
@@ -91,6 +92,7 @@ const SecurityDashboard = () => {
   const [isWirelessPentestOpen, setIsWirelessPentestOpen] = useState(false);
   const [isSocialEngPentestOpen, setIsSocialEngPentestOpen] = useState(false);
   const [isPhysicalPentestOpen, setIsPhysicalPentestOpen] = useState(false);
+  const [isOSINTPentestOpen, setIsOSINTPentestOpen] = useState(false);
   
   // Target configuration for pentest modules
   const pentestTargetConfig = {
@@ -137,6 +139,19 @@ const SecurityDashboard = () => {
       <NetworkPentestingModule 
         sessionId="demo-session"
         targetConfig={pentestTargetConfig}
+      />
+    </ScrollArea>
+  );
+
+  // OSINT Pentesting content component
+  const OSINTPentestingContent = () => (
+    <ScrollArea className="h-[70vh] rounded-md border">
+      <OSINTPentestingModule 
+        sessionId="demo-session"
+        targetConfig={{
+          ...pentestTargetConfig,
+          type: 'domain'
+        }}
       />
     </ScrollArea>
   );
@@ -4379,9 +4394,51 @@ const SecurityDashboard = () => {
                            
                            <SocialEngPentestingContent />
                          </DialogContent>
-                       </Dialog>
+                        </Dialog>
 
-                       {/* Physical Security Testing */}
+                        {/* OSINT Reconnaissance */}
+                        <Dialog open={isOSINTPentestOpen} onOpenChange={setIsOSINTPentestOpen}>
+                          <DialogTrigger asChild>
+                            <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
+                              <CardContent className="p-6 text-center">
+                                <div className="flex flex-col items-center gap-4">
+                                  <div className="relative">
+                                    <Search className="h-12 w-12 text-blue-500 animate-pulse" />
+                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full animate-ping" />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-lg font-semibold text-glow">OSINT Reconnaissance</h3>
+                                    <p className="text-sm text-muted-foreground">SpiderFoot • Intelligence • Data Mining</p>
+                                  </div>
+                                  <Badge className="bg-blue-500/10 text-blue-500 animate-pulse-glow">
+                                    200+ Modules
+                                  </Badge>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
+                            <DialogHeader>
+                              <DialogTitle className="flex items-center gap-2 text-xl">
+                                <div className="relative">
+                                  <Search className="h-6 w-6 text-blue-500 animate-pulse" />
+                                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping" />
+                                </div>
+                                OSINT Intelligence Reconnaissance
+                                <Badge className="ml-2 bg-blue-500/10 text-blue-500 animate-pulse-glow">
+                                  INTELLIGENCE GATHERING
+                                </Badge>
+                              </DialogTitle>
+                              <DialogDescription className="text-base">
+                                Open Source Intelligence gathering with SpiderFoot's 200+ modules for comprehensive reconnaissance
+                              </DialogDescription>
+                            </DialogHeader>
+                            
+                            <OSINTPentestingContent />
+                          </DialogContent>
+                        </Dialog>
+
+                        {/* Physical Security Testing */}
                        <Dialog open={isPhysicalPentestOpen} onOpenChange={setIsPhysicalPentestOpen}>
                          <DialogTrigger asChild>
                            <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
@@ -6097,14 +6154,15 @@ const SecurityDashboard = () => {
                               <SelectValue placeholder="Select pentest type" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="web-app">Web Application Assessment</SelectItem>
-                              <SelectItem value="network">Network Penetration Test</SelectItem>
-                              <SelectItem value="ad-pentest">Active Directory Assessment</SelectItem>
-                              <SelectItem value="wireless">Wireless Security Test</SelectItem>
-                              <SelectItem value="social-eng">Social Engineering Test</SelectItem>
-                              <SelectItem value="physical">Physical Security Test</SelectItem>
-                              <SelectItem value="cloud">Cloud Security Assessment</SelectItem>
-                              <SelectItem value="mobile">Mobile App Security Test</SelectItem>
+                               <SelectItem value="web-app">Web Application Assessment</SelectItem>
+                               <SelectItem value="network">Network Penetration Test</SelectItem>
+                               <SelectItem value="ad-pentest">Active Directory Assessment</SelectItem>
+                               <SelectItem value="osint">OSINT Reconnaissance</SelectItem>
+                               <SelectItem value="wireless">Wireless Security Test</SelectItem>
+                               <SelectItem value="social-eng">Social Engineering Test</SelectItem>
+                               <SelectItem value="physical">Physical Security Test</SelectItem>
+                               <SelectItem value="cloud">Cloud Security Assessment</SelectItem>
+                               <SelectItem value="mobile">Mobile App Security Test</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -6137,10 +6195,14 @@ const SecurityDashboard = () => {
                             <Checkbox id="crackmapexec" />
                             <Label htmlFor="crackmapexec">CrackMapExec</Label>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="sqlmap" />
-                            <Label htmlFor="sqlmap">SQLMap</Label>
-                          </div>
+                           <div className="flex items-center space-x-2">
+                             <Checkbox id="spiderfoot" />
+                             <Label htmlFor="spiderfoot">SpiderFoot</Label>
+                           </div>
+                           <div className="flex items-center space-x-2">
+                             <Checkbox id="sqlmap" />
+                             <Label htmlFor="sqlmap">SQLMap</Label>
+                           </div>
                         </div>
                       </div>
                       

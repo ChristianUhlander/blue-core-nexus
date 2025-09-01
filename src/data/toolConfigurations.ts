@@ -638,5 +638,94 @@ export const toolConfigurations: Record<string, ToolConfig> = {
       intermediate: 'kube-hunter --remote 192.168.1.0/24 --report json',
       advanced: 'kube-hunter --remote 10.0.0.0/8 --active --report yaml --log DEBUG'
     }
+  },
+
+  spiderfoot: {
+    name: 'SpiderFoot',
+    description: 'Open Source Intelligence (OSINT) automation platform with 200+ modules',
+    category: 'osint',
+    automationCapable: true,
+    automationDescription: 'Automatically correlates intelligence from multiple sources and provides recursive discovery capabilities.',
+    commonFlags: [
+      // Basic scan types
+      {
+        flag: '-s',
+        description: 'Target to scan (domain, IP, netblock, etc.)',
+        category: 'basic',
+        type: 'string',
+        examples: ['example.com', '192.168.1.1', '192.168.1.0/24']
+      },
+      {
+        flag: '-m',
+        description: 'Modules to use (comma-separated)',
+        category: 'basic',
+        type: 'string',
+        examples: ['sfp_dnsresolve,sfp_whois', 'sfp_shodan,sfp_virustotal']
+      },
+      {
+        flag: '-t',
+        description: 'Scan type/template',
+        category: 'basic',
+        type: 'string',
+        examples: ['footprint', 'investigate', 'passive', 'all']
+      },
+      
+      // Output and format
+      {
+        flag: '-o',
+        description: 'Output format',
+        category: 'output',
+        type: 'string',
+        examples: ['json', 'csv', 'gexf', 'tab']
+      },
+      {
+        flag: '-q',
+        description: 'Quiet mode - minimal output',
+        category: 'output',
+        type: 'boolean'
+      },
+      {
+        flag: '-l',
+        description: 'Maximum number of results',
+        category: 'advanced',
+        type: 'string',
+        examples: ['100', '500', '1000']
+      },
+      
+      // Advanced options
+      {
+        flag: '-e',
+        description: 'Event types to collect',
+        category: 'advanced',
+        type: 'string',
+        examples: ['IP_ADDRESS', 'INTERNET_NAME', 'EMAILADDR']
+      },
+      {
+        flag: '-f',
+        description: 'Maximum depth for recursive scanning',
+        category: 'advanced',
+        type: 'string',
+        examples: ['1', '3', '5']
+      },
+      {
+        flag: '-n',
+        description: 'Use DNS server',
+        category: 'advanced',
+        type: 'string',
+        examples: ['8.8.8.8', '1.1.1.1']
+      },
+      {
+        flag: '-p',
+        description: 'HTTP proxy to use',
+        category: 'advanced',
+        type: 'string',
+        examples: ['http://proxy:8080', 'socks5://127.0.0.1:9050']
+      }
+    ],
+    examples: {
+      basic: 'spiderfoot -s example.com -t footprint',
+      intermediate: 'spiderfoot -s example.com -m sfp_dnsresolve,sfp_whois,sfp_shodan -o json',
+      advanced: 'spiderfoot -s example.com -t investigate -f 3 -l 1000 -o json -p http://proxy:8080'
+    }
   }
 };
