@@ -4188,6 +4188,11 @@ const SecurityDashboard = () => {
                   </TabsContent>
                   
                    <TabsContent value="webapp" className="mt-4">
+                     {(() => {
+                       console.log('🔥 Webapp pentesting modules grid rendering');
+                       console.log('🔍 OSINT pentest dialog state:', isOSINTPentestOpen);
+                       return null;
+                     })()}
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                        {/* AD Penetration Testing */}
                        <Dialog open={isADPentestOpen} onOpenChange={setIsADPentestOpen}>
