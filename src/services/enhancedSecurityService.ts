@@ -160,10 +160,12 @@ class EnhancedSecurityService {
 
   constructor() {
     this.initializeHealthStatuses();
-    this.initializeWebSocket();
-    this.startHealthCheckInterval();
+    // Skip WebSocket initialization in demo mode to prevent errors
+    console.log('EnhancedSecurityService initialized in demo mode (no WebSocket/API calls)');
+    // this.initializeWebSocket(); // Disabled for demo
+    // this.startHealthCheckInterval(); // Disabled for demo
     
-    logger.info('EnhancedSecurityService initialized for FastAPI backend');
+    logger.info('EnhancedSecurityService initialized for demo mode');
   }
 
   // ========== INITIALIZATION ==========
@@ -359,47 +361,25 @@ class EnhancedSecurityService {
 
   async getWazuhAgents(): Promise<WazuhAgent[]> {
     try {
-      const data = await this.makeRequest<{ agents: WazuhAgent[] }>(
-        `${config.api.baseUrl}/api/wazuh/agents`,
-        {},
-        'wazuh'
-      );
-      
-      logger.info(`Retrieved ${data.agents?.length || 0} Wazuh agents`);
-      return data.agents || [];
+      console.log('🔄 getWazuhAgents called (demo mode - returning empty array)');
+      // Skip API call in demo mode
+      return [];
       
     } catch (error) {
       logger.error('Error fetching Wazuh agents:', error);
-      
-      if (config.development.mockData) {
-        logger.info('Returning mock Wazuh agents data');
-        return this.getMockAgents();
-      }
-      
-      throw error;
+      return [];
     }
   }
 
   async getWazuhAlerts(limit = 50): Promise<WazuhAlert[]> {
     try {
-      const data = await this.makeRequest<{ alerts: WazuhAlert[] }>(
-        `${config.api.baseUrl}/api/wazuh/alerts?limit=${limit}`,
-        {},
-        'wazuh'
-      );
-      
-      logger.info(`Retrieved ${data.alerts?.length || 0} Wazuh alerts`);
-      return data.alerts || [];
+      console.log('🔄 getWazuhAlerts called (demo mode - returning empty array)');
+      // Skip API call in demo mode
+      return [];
       
     } catch (error) {
       logger.error('Error fetching Wazuh alerts:', error);
-      
-      if (config.development.mockData) {
-        logger.info('Returning mock Wazuh alerts data');
-        return this.getMockAlerts();
-      }
-      
-      throw error;
+      return [];
     }
   }
 
@@ -522,7 +502,9 @@ class EnhancedSecurityService {
   }
 
   async refreshHealthChecks(): Promise<void> {
-    await this.performHealthChecks();
+    console.log('🔄 refreshHealthChecks called (demo mode - skipping)');
+    // Skip health checks in demo mode
+    return Promise.resolve();
   }
 
   isWebSocketConnected(): boolean {

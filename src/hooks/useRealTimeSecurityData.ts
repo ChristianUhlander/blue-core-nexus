@@ -252,41 +252,31 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      // Parallel requests for better performance
-      const [healthResponse, alertsResponse, agentsResponse] = await Promise.allSettled([
-        k8sSecurityApi.checkAllServicesHealth(),
-        k8sSecurityApi.getWazuhAlerts({ limit: 50 }),
-        k8sSecurityApi.getWazuhAgents()
-      ]);
-
-      setState(prev => {
-        const newState = { ...prev, isLoading: false, lastUpdate: new Date().toISOString() };
-
-        // Update service health
-        if (healthResponse.status === 'fulfilled' && healthResponse.value.success) {
-          newState.services = { ...prev.services, ...healthResponse.value.data };
-          newState.isConnected = true;
-        }
-
-        // Update alerts
-        if (alertsResponse.status === 'fulfilled' && alertsResponse.value.success) {
-          newState.alerts = alertsResponse.value.data || [];
-        }
-
-        // Update agents
-        if (agentsResponse.status === 'fulfilled' && agentsResponse.value.success) {
-          newState.agents = agentsResponse.value.data || [];
-        }
-
-        return newState;
-      });
-
+      // Skip backend calls in demo mode to prevent errors
+      console.log('🔄 Refreshing security data (demo mode)');
+      
+      // Set mock data for demo
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        lastUpdate: new Date().toISOString(),
+        isConnected: false, // Keep as false since no real backend
+        services: {
+          wazuh: { ...prev.services.wazuh, online: false, error: 'Demo mode - no backend' },
+          gvm: { ...prev.services.gvm, online: false, error: 'Demo mode - no backend' },
+          zap: { ...prev.services.zap, online: false, error: 'Demo mode - no backend' },
+          spiderfoot: { ...prev.services.spiderfoot, online: false, error: 'Demo mode - no backend' }
+        },
+        alerts: [], // Mock data can be added here if needed
+        agents: [] // Mock data can be added here if needed
+      }));
+      
     } catch (error) {
       console.error('❌ Failed to refresh security data:', error);
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to refresh data',
+        error: 'Demo mode - backend services not available',
         isConnected: false
       }));
     }
@@ -297,18 +287,22 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
    */
   const refreshService = useCallback(async (service: keyof RealTimeSecurityState['services']) => {
     try {
-      const response = await k8sSecurityApi.checkServiceHealth(service);
+      console.log(`🔄 Refreshing ${service} service (demo mode)`);
       
-      if (response.success) {
-        setState(prev => ({
-          ...prev,
-          services: {
-            ...prev.services,
-            [service]: { ...prev.services[service], ...response.data }
-          },
-          lastUpdate: new Date().toISOString()
-        }));
-      }
+      // Update service status without backend call
+      setState(prev => ({
+        ...prev,
+        services: {
+          ...prev.services,
+          [service]: { 
+            ...prev.services[service], 
+            online: false, 
+            error: 'Demo mode - no backend',
+            lastCheck: new Date().toISOString()
+          }
+        },
+        lastUpdate: new Date().toISOString()
+      }));
     } catch (error) {
       console.error(`❌ Failed to refresh ${service} service:`, error);
     }
@@ -349,16 +343,12 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
    */
   const restartAgent = useCallback(async (agentId: string) => {
     try {
-      const response = await k8sSecurityApi.restartWazuhAgent(agentId);
+      console.log(`🔄 Restart agent ${agentId} (demo mode)`);
       
-      if (response.success) {
-        toast({
-          title: 'Agent Restart Initiated',
-          description: `Restart command sent to agent ${agentId}.`
-        });
-      } else {
-        throw new Error(response.error || 'Failed to restart agent');
-      }
+      toast({
+        title: 'Demo Mode',
+        description: `Agent restart simulated for ${agentId} - backend not available.`
+      });
 
     } catch (error) {
       console.error('❌ Failed to restart agent:', error);
