@@ -144,17 +144,20 @@ const SecurityDashboard = () => {
   );
 
   // OSINT Pentesting content component
-  const OSINTPentestingContent = () => (
-    <ScrollArea className="h-[70vh] rounded-md border">
-      <OSINTPentestingModule 
-        sessionId="demo-session"
-        targetConfig={{
-          ...pentestTargetConfig,
-          type: 'domain'
-        }}
-      />
-    </ScrollArea>
-  );
+  const OSINTPentestingContent = () => {
+    console.log('🔍 OSINTPentestingContent component rendering');
+    return (
+      <ScrollArea className="h-[70vh] rounded-md border">
+        <OSINTPentestingModule 
+          sessionId="demo-session"
+          targetConfig={{
+            ...pentestTargetConfig,
+            type: 'domain'
+          }}
+        />
+      </ScrollArea>
+    );
+  };
 
   const WirelessPentestingContent = () => (
     <ScrollArea className="h-[70vh] rounded-md border">
