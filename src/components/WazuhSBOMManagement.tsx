@@ -373,9 +373,6 @@ export const WazuhSBOMManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <p className="text-muted-foreground">
-            Generate and manage software inventories with vulnerability correlation
-          </p>
         </div>
         
         {lastScanTime && (
