@@ -3467,19 +3467,6 @@ const SecurityDashboard = () => {
                           <WazuhSBOMManagement />
 
                           <div className="flex justify-between items-center gap-2 pt-6 border-t border-border/50">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <div className="w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
-                              <span>Auto-refresh every 30s</span>
-                            </div>
-                            <div className="flex gap-2">
-                              <Button variant="outline" onClick={() => setIsAgentStatusOpen(false)} className="glow-hover">
-                                Close Dashboard
-                              </Button>
-                              <Button className="glow-hover group">
-                                <Settings className="h-4 w-4 mr-2 group-hover:animate-spin" />
-                                Manage All Agents
-                              </Button>
-                            </div>
                           </div>
                         </DialogContent>
                       </Dialog>
