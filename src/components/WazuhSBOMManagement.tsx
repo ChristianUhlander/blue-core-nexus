@@ -373,10 +373,6 @@ export const WazuhSBOMManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Package className="h-6 w-6 text-primary" />
-            Software Bill of Materials (SBOM)
-          </h2>
           <p className="text-muted-foreground">
             Generate and manage software inventories with vulnerability correlation
           </p>
