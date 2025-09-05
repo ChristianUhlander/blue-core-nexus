@@ -3315,9 +3315,6 @@ const SecurityDashboard = () => {
                             <Badge className="bg-primary/10 text-primary border-primary/30">
                               EXPERIMENTAL
                             </Badge>
-                            <Badge className="bg-muted/20 text-muted-foreground border-muted/30">
-                              PRODUCTION READY
-                            </Badge>
                           </div>
                         </div>
                       </div>
