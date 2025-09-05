@@ -28,7 +28,6 @@ import { ADPentestingModule } from "./ADPentestingModule";
 import { NetworkPentestingModule } from "./NetworkPentestingModule";
 import { WebAppPentestingModule } from "./WebAppPentestingModule";
 import { OSINTPentestingModule } from "./OSINTPentestingModule";
-
 import WazuhManagement from "../pages/WazuhManagement";
 import { WazuhSBOMManagement } from "./WazuhSBOMManagement";
 import GVMManagement from "../pages/GVMManagement";
@@ -72,7 +71,7 @@ const SecurityDashboard = () => {
   const [vulnerabilityData, setVulnerabilityData] = useState<any[]>([]);
   const [realScanResults, setRealScanResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Dialog state management
   const [isAgentStatusOpen, setIsAgentStatusOpen] = useState(false);
   const [isAgentConfigOpen, setIsAgentConfigOpen] = useState(false);
@@ -85,7 +84,7 @@ const SecurityDashboard = () => {
   const [isWazuhManagementOpen, setIsWazuhManagementOpen] = useState(false);
   const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
-  
+
   // Pentesting dialog states
   const [isADPentestOpen, setIsADPentestOpen] = useState(false);
   const [isWebPentestOpen, setIsWebPentestOpen] = useState(false);
@@ -94,7 +93,7 @@ const SecurityDashboard = () => {
   const [isSocialEngPentestOpen, setIsSocialEngPentestOpen] = useState(false);
   const [isPhysicalPentestOpen, setIsPhysicalPentestOpen] = useState(false);
   const [isOSINTPentestOpen, setIsOSINTPentestOpen] = useState(false);
-  
+
   // Target configuration for pentest modules
   const pentestTargetConfig = {
     type: 'kubernetes' as const,
@@ -115,51 +114,27 @@ const SecurityDashboard = () => {
 
   // Pentesting content components
   const ADPentestingContent = () => {
-    return (
-      <ScrollArea className="h-[70vh] rounded-md border">
-        <ADPentestingModule 
-          sessionId="demo-session"
-          targetConfig={pentestTargetConfig}
-        />
-      </ScrollArea>
-    );
+    return <ScrollArea className="h-[70vh] rounded-md border">
+        <ADPentestingModule sessionId="demo-session" targetConfig={pentestTargetConfig} />
+      </ScrollArea>;
   };
-
-  const WebPentestingContent = () => (
-    <ScrollArea className="h-[70vh] rounded-md border">
-      <WebAppPentestingModule 
-        sessionId="demo-session"
-        targetConfig={pentestTargetConfig}
-      />
-    </ScrollArea>
-  );
-
-  const NetworkPentestingContent = () => (
-    <ScrollArea className="h-[70vh] rounded-md border">
-      <NetworkPentestingModule 
-        sessionId="demo-session"
-        targetConfig={pentestTargetConfig}
-      />
-    </ScrollArea>
-  );
+  const WebPentestingContent = () => <ScrollArea className="h-[70vh] rounded-md border">
+      <WebAppPentestingModule sessionId="demo-session" targetConfig={pentestTargetConfig} />
+    </ScrollArea>;
+  const NetworkPentestingContent = () => <ScrollArea className="h-[70vh] rounded-md border">
+      <NetworkPentestingModule sessionId="demo-session" targetConfig={pentestTargetConfig} />
+    </ScrollArea>;
 
   // OSINT Pentesting content component
   const OSINTPentestingContent = () => {
-    return (
-      <ScrollArea className="h-[70vh] rounded-md border">
-        <OSINTPentestingModule 
-          sessionId="demo-session"
-          targetConfig={{
-            ...pentestTargetConfig,
-            type: 'domain'
-          }}
-        />
-      </ScrollArea>
-    );
+    return <ScrollArea className="h-[70vh] rounded-md border">
+        <OSINTPentestingModule sessionId="demo-session" targetConfig={{
+        ...pentestTargetConfig,
+        type: 'domain'
+      }} />
+      </ScrollArea>;
   };
-
-  const WirelessPentestingContent = () => (
-    <ScrollArea className="h-[70vh] rounded-md border">
+  const WirelessPentestingContent = () => <ScrollArea className="h-[70vh] rounded-md border">
       <div className="space-y-6 p-6">
         <Card className="gradient-card border-green-500/20">
           <CardHeader>
@@ -176,11 +151,8 @@ const SecurityDashboard = () => {
           </CardContent>
         </Card>
       </div>
-    </ScrollArea>
-  );
-
-  const SocialEngPentestingContent = () => (
-    <ScrollArea className="h-[70vh] rounded-md border">
+    </ScrollArea>;
+  const SocialEngPentestingContent = () => <ScrollArea className="h-[70vh] rounded-md border">
       <div className="space-y-6 p-6">
         <Card className="gradient-card border-purple-500/20">
           <CardHeader>
@@ -197,11 +169,8 @@ const SecurityDashboard = () => {
           </CardContent>
         </Card>
       </div>
-    </ScrollArea>
-  );
-
-  const PhysicalPentestingContent = () => (
-    <ScrollArea className="h-[70vh] rounded-md border">
+    </ScrollArea>;
+  const PhysicalPentestingContent = () => <ScrollArea className="h-[70vh] rounded-md border">
       <div className="space-y-6 p-6">
         <Card className="gradient-card border-orange-500/20">
           <CardHeader>
@@ -218,22 +187,20 @@ const SecurityDashboard = () => {
           </CardContent>
         </Card>
       </div>
-    </ScrollArea>
-  );
-  
+    </ScrollArea>;
+
   // IppsY chat pane state
   const [isIppsYOpen, setIsIppsYOpen] = useState(false);
-  
+
   // Documentation library state
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
-  
+
   // Production Security Config state
   const [isProductionConfigOpen, setIsProductionConfigOpen] = useState(false);
-  
+
   // Intelligent Reporting state
   const [isReportingOpen, setIsReportingOpen] = useState(false);
-  
-  
+
   // Scan and configuration state
   const [selectedAgent, setSelectedAgent] = useState<string>('');
   const [cveScanning, setCveScanning] = useState(false);
@@ -246,12 +213,8 @@ const SecurityDashboard = () => {
   const [spiderfootTarget, setSpiderfootTarget] = useState('');
   const [spiderfootTargetType, setSpiderfootTargetType] = useState('domain');
   const [spiderfootScanType, setSpiderfootScanType] = useState('footprint');
-  const [selectedSpiderfootModules, setSelectedSpiderfootModules] = useState<string[]>([
-    'sfp_dnsresolve', 'sfp_whois', 'sfp_shodan', 'sfp_virustotal', 'sfp_threatcrowd'
-  ]);
-  const [selectedOwaspTests, setSelectedOwaspTests] = useState<string[]>([
-    'A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10'
-  ]);
+  const [selectedSpiderfootModules, setSelectedSpiderfootModules] = useState<string[]>(['sfp_dnsresolve', 'sfp_whois', 'sfp_shodan', 'sfp_virustotal', 'sfp_threatcrowd']);
+  const [selectedOwaspTests, setSelectedOwaspTests] = useState<string[]>(['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10']);
   const [agentConfig, setAgentConfig] = useState({
     logLevel: 'info',
     scanFrequency: '1h',
@@ -262,9 +225,11 @@ const SecurityDashboard = () => {
     customRules: '',
     alertLevel: '7'
   });
-  
+
   // Toast hook - needs to be early for use in effects
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
 
   // Real-time WebSocket integration
   useEffect(() => {
@@ -275,105 +240,102 @@ const SecurityDashboard = () => {
     const initializeBackendConnections = async () => {
       try {
         console.log('🚀 Initializing production security backend integration...');
-        
+
         // Get initial service health status
         const healthStatuses = enhancedSecurityService.getHealthStatuses();
         setServiceHealths(healthStatuses);
-        
+
         // Setup real-time event listeners for each security service
-        const eventListeners: Array<{ event: string; handler: EventListener }> = [
-          // Wazuh real-time alerts
-          {
-            event: 'security:wazuh:message',
-            handler: (event: CustomEvent) => {
-              const data = event.detail;
-              if (data.type === 'alert') {
-                setRealTimeAlerts(prev => [data.alert, ...prev.slice(0, 49)]); // Keep last 50
-                toast({
-                  title: "🚨 Security Alert",
-                  description: `${data.alert.rule.description} on ${data.alert.agent.name}`,
-                  variant: data.alert.rule.level >= 7 ? "destructive" : "default"
-                });
-              }
-            }
-          },
-          
-          // Service health updates
-          {
-            event: 'security:health:wazuh',
-            handler: (event: CustomEvent) => {
-              setServiceHealths(prev => prev.map(service => 
-                service.service === 'wazuh' ? event.detail : service
-              ));
-              setBackendConnected(event.detail.status === 'healthy');
-            }
-          },
-          
-          // Vulnerability scan progress
-          {
-            event: 'security:scan:progress',
-            handler: (event: CustomEvent) => {
-              const { progress, service, results } = event.detail;
-              setScanProgress(progress);
-              
-              if (results && results.length > 0) {
-                setVulnerabilityData(prev => [...prev, ...results]);
-              }
-              
-              // Update scan completion
-              if (progress === 100) {
-                setCveScanning(false);
-                toast({
-                  title: "✅ Scan Complete",
-                  description: `Vulnerability scan finished. ${results?.length || 0} issues found.`
-                });
-              }
-            }
-          },
-          
-          // GVM/OpenVAS updates
-          {
-            event: 'security:health:gvm',
-            handler: (event: CustomEvent) => {
-              setServiceHealths(prev => prev.map(service => 
-                service.service === 'gvm' ? event.detail : service
-              ));
-            }
-          },
-          
-          // ZAP updates
-          {
-            event: 'security:health:zap',
-            handler: (event: CustomEvent) => {
-              setServiceHealths(prev => prev.map(service => 
-                service.service === 'zap' ? event.detail : service
-              ));
-            }
-          },
-          
-          // SpiderFoot updates
-          {
-            event: 'security:health:spiderfoot',
-            handler: (event: CustomEvent) => {
-              setServiceHealths(prev => prev.map(service => 
-                service.service === 'spiderfoot' ? event.detail : service
-              ));
+        const eventListeners: Array<{
+          event: string;
+          handler: EventListener;
+        }> = [
+        // Wazuh real-time alerts
+        {
+          event: 'security:wazuh:message',
+          handler: (event: CustomEvent) => {
+            const data = event.detail;
+            if (data.type === 'alert') {
+              setRealTimeAlerts(prev => [data.alert, ...prev.slice(0, 49)]); // Keep last 50
+              toast({
+                title: "🚨 Security Alert",
+                description: `${data.alert.rule.description} on ${data.alert.agent.name}`,
+                variant: data.alert.rule.level >= 7 ? "destructive" : "default"
+              });
             }
           }
-        ];
-        
+        },
+        // Service health updates
+        {
+          event: 'security:health:wazuh',
+          handler: (event: CustomEvent) => {
+            setServiceHealths(prev => prev.map(service => service.service === 'wazuh' ? event.detail : service));
+            setBackendConnected(event.detail.status === 'healthy');
+          }
+        },
+        // Vulnerability scan progress
+        {
+          event: 'security:scan:progress',
+          handler: (event: CustomEvent) => {
+            const {
+              progress,
+              service,
+              results
+            } = event.detail;
+            setScanProgress(progress);
+            if (results && results.length > 0) {
+              setVulnerabilityData(prev => [...prev, ...results]);
+            }
+
+            // Update scan completion
+            if (progress === 100) {
+              setCveScanning(false);
+              toast({
+                title: "✅ Scan Complete",
+                description: `Vulnerability scan finished. ${results?.length || 0} issues found.`
+              });
+            }
+          }
+        },
+        // GVM/OpenVAS updates
+        {
+          event: 'security:health:gvm',
+          handler: (event: CustomEvent) => {
+            setServiceHealths(prev => prev.map(service => service.service === 'gvm' ? event.detail : service));
+          }
+        },
+        // ZAP updates
+        {
+          event: 'security:health:zap',
+          handler: (event: CustomEvent) => {
+            setServiceHealths(prev => prev.map(service => service.service === 'zap' ? event.detail : service));
+          }
+        },
+        // SpiderFoot updates
+        {
+          event: 'security:health:spiderfoot',
+          handler: (event: CustomEvent) => {
+            setServiceHealths(prev => prev.map(service => service.service === 'spiderfoot' ? event.detail : service));
+          }
+        }];
+
         // Register all event listeners
-        eventListeners.forEach(({ event, handler }) => {
+        eventListeners.forEach(({
+          event,
+          handler
+        }) => {
           window.addEventListener(event, handler as EventListener);
         });
-        
+
         // Cleanup function
         return () => {
-          eventListeners.forEach(({ event, handler }) => {
+          eventListeners.forEach(({
+            event,
+            handler
+          }) => {
             window.removeEventListener(event, handler as EventListener);
           });
         };
-        
       } catch (error) {
         console.error('❌ Failed to initialize backend connections:', error);
         toast({
@@ -383,9 +345,7 @@ const SecurityDashboard = () => {
         });
       }
     };
-
     const cleanup = initializeBackendConnections();
-    
     return () => {
       cleanup.then(cleanupFn => cleanupFn?.());
     };
@@ -397,41 +357,30 @@ const SecurityDashboard = () => {
   const fetchRealTimeSecurityData = useCallback(async () => {
     setIsLoading(true);
     const errors: string[] = [];
-    
     try {
       // Parallel data fetching for better performance
       const dataPromises = [
-        // Fetch Wazuh agents
-        enhancedSecurityService.getWazuhAgents()
-          .then(agents => setRealTimeAgents(agents))
-          .catch(error => {
-            console.error('Failed to fetch Wazuh agents:', error);
-            errors.push('Wazuh agents data unavailable');
-          }),
-        
-        // Fetch Wazuh alerts
-        enhancedSecurityService.getWazuhAlerts(50)
-          .then(alerts => setRealTimeAlerts(alerts))
-          .catch(error => {
-            console.error('Failed to fetch Wazuh alerts:', error);
-            errors.push('Wazuh alerts data unavailable');
-          }),
-        
-        // Refresh health checks
-        enhancedSecurityService.refreshHealthChecks()
-          .then(() => {
-            const healthData = enhancedSecurityService.getHealthStatuses();
-            setServiceHealths(healthData);
-            setBackendConnected(healthData.some(h => h.status === 'healthy'));
-          })
-          .catch(error => {
-            console.error('Failed to refresh health checks:', error);
-            errors.push('Service health data unavailable');
-          })
-      ];
-      
+      // Fetch Wazuh agents
+      enhancedSecurityService.getWazuhAgents().then(agents => setRealTimeAgents(agents)).catch(error => {
+        console.error('Failed to fetch Wazuh agents:', error);
+        errors.push('Wazuh agents data unavailable');
+      }),
+      // Fetch Wazuh alerts
+      enhancedSecurityService.getWazuhAlerts(50).then(alerts => setRealTimeAlerts(alerts)).catch(error => {
+        console.error('Failed to fetch Wazuh alerts:', error);
+        errors.push('Wazuh alerts data unavailable');
+      }),
+      // Refresh health checks
+      enhancedSecurityService.refreshHealthChecks().then(() => {
+        const healthData = enhancedSecurityService.getHealthStatuses();
+        setServiceHealths(healthData);
+        setBackendConnected(healthData.some(h => h.status === 'healthy'));
+      }).catch(error => {
+        console.error('Failed to refresh health checks:', error);
+        errors.push('Service health data unavailable');
+      })];
       await Promise.allSettled(dataPromises);
-      
+
       // Show summary of any errors
       if (errors.length > 0) {
         toast({
@@ -445,7 +394,6 @@ const SecurityDashboard = () => {
           description: "All security services data updated successfully."
         });
       }
-      
     } catch (error) {
       console.error('Critical error in data fetching:', error);
       toast({
@@ -461,10 +409,9 @@ const SecurityDashboard = () => {
   // Initial data load
   useEffect(() => {
     fetchRealTimeSecurityData();
-    
+
     // Auto-refresh every 30 seconds
     const refreshInterval = setInterval(fetchRealTimeSecurityData, 30000);
-    
     return () => clearInterval(refreshInterval);
   }, [fetchRealTimeSecurityData]);
 
@@ -473,23 +420,20 @@ const SecurityDashboard = () => {
    */
   const handleStartCveScan = useCallback(async () => {
     if (cveScanning) return;
-    
     setCveScanning(true);
     setScanProgress(0);
     setVulnerabilityData([]);
-    
     try {
       // Check if GVM service is available
       const gvmHealth = serviceHealths.find(s => s.service === 'gvm');
       if (gvmHealth?.status !== 'healthy') {
         throw new Error('GVM/OpenVAS service is not available for vulnerability scanning');
       }
-      
       toast({
         title: "🔍 Starting CVE Scan",
         description: "Initiating comprehensive vulnerability assessment across all assets..."
       });
-      
+
       // PRODUCTION INTEGRATION: Start real vulnerability scan
       // This would typically trigger multiple scan types:
       // 1. Network discovery scan
@@ -497,45 +441,39 @@ const SecurityDashboard = () => {
       // 3. Service detection
       // 4. Vulnerability identification
       // 5. CVE correlation
-      
+
       const scanTargets = realTimeAgents.map(agent => ({
         id: agent.id,
         name: agent.name,
         ip: agent.ip,
         os: agent.os
       }));
-      
       console.log('🎯 Starting vulnerability scan for targets:', scanTargets);
-      
+
       // Simulate real scan progress with actual backend calls
       let progress = 0;
       const scanInterval = setInterval(async () => {
         progress += Math.random() * 15;
-        
         if (progress >= 100) {
           progress = 100;
           clearInterval(scanInterval);
           setCveScanning(false);
-          
+
           // Generate real vulnerability report
           const vulnerabilities = await generateVulnerabilityReport(scanTargets);
           setVulnerabilityData(vulnerabilities);
-          
           toast({
             title: "✅ CVE Scan Complete",
             description: `Found ${vulnerabilities.length} vulnerabilities across ${scanTargets.length} targets.`,
             variant: vulnerabilities.some(v => v.severity === 'Critical') ? "destructive" : "default"
           });
         }
-        
         setScanProgress(progress);
       }, 1500); // Update every 1.5 seconds
-      
     } catch (error) {
       console.error('CVE scan failed:', error);
       setCveScanning(false);
       setScanProgress(0);
-      
       toast({
         title: "❌ Scan Failed",
         description: error instanceof Error ? error.message : "Unable to start vulnerability scan",
@@ -549,49 +487,44 @@ const SecurityDashboard = () => {
    */
   const generateVulnerabilityReport = async (targets: any[]): Promise<any[]> => {
     // Simulate realistic CVE vulnerabilities based on actual CVE database
-    const commonCVEs = [
-      {
-        id: 'CVE-2024-0001',
-        name: 'Remote Code Execution in Apache HTTP Server',
-        severity: 'Critical',
-        cvss: 9.8,
-        description: 'A buffer overflow vulnerability allows remote attackers to execute arbitrary code',
-        affected_hosts: targets.slice(0, 2),
-        published: '2024-01-15',
-        solution: 'Update Apache HTTP Server to version 2.4.58 or later'
-      },
-      {
-        id: 'CVE-2024-0002', 
-        name: 'SQL Injection in MySQL Server',
-        severity: 'High',
-        cvss: 8.1,
-        description: 'SQL injection vulnerability in authentication mechanism',
-        affected_hosts: targets.slice(1, 3),
-        published: '2024-01-12',
-        solution: 'Apply MySQL security patch 8.0.36'
-      },
-      {
-        id: 'CVE-2024-0003',
-        name: 'Privilege Escalation in Linux Kernel',
-        severity: 'High', 
-        cvss: 7.8,
-        description: 'Local privilege escalation via race condition',
-        affected_hosts: targets.filter(t => t.os.platform === 'linux'),
-        published: '2024-01-10',
-        solution: 'Update kernel to version 5.15.0-91 or later'
-      },
-      {
-        id: 'CVE-2024-0004',
-        name: 'Information Disclosure in OpenSSL',
-        severity: 'Medium',
-        cvss: 5.3,
-        description: 'Memory disclosure vulnerability in SSL/TLS implementation',
-        affected_hosts: targets,
-        published: '2024-01-08',
-        solution: 'Update OpenSSL to version 3.0.13 or later'
-      }
-    ];
-    
+    const commonCVEs = [{
+      id: 'CVE-2024-0001',
+      name: 'Remote Code Execution in Apache HTTP Server',
+      severity: 'Critical',
+      cvss: 9.8,
+      description: 'A buffer overflow vulnerability allows remote attackers to execute arbitrary code',
+      affected_hosts: targets.slice(0, 2),
+      published: '2024-01-15',
+      solution: 'Update Apache HTTP Server to version 2.4.58 or later'
+    }, {
+      id: 'CVE-2024-0002',
+      name: 'SQL Injection in MySQL Server',
+      severity: 'High',
+      cvss: 8.1,
+      description: 'SQL injection vulnerability in authentication mechanism',
+      affected_hosts: targets.slice(1, 3),
+      published: '2024-01-12',
+      solution: 'Apply MySQL security patch 8.0.36'
+    }, {
+      id: 'CVE-2024-0003',
+      name: 'Privilege Escalation in Linux Kernel',
+      severity: 'High',
+      cvss: 7.8,
+      description: 'Local privilege escalation via race condition',
+      affected_hosts: targets.filter(t => t.os.platform === 'linux'),
+      published: '2024-01-10',
+      solution: 'Update kernel to version 5.15.0-91 or later'
+    }, {
+      id: 'CVE-2024-0004',
+      name: 'Information Disclosure in OpenSSL',
+      severity: 'Medium',
+      cvss: 5.3,
+      description: 'Memory disclosure vulnerability in SSL/TLS implementation',
+      affected_hosts: targets,
+      published: '2024-01-08',
+      solution: 'Update OpenSSL to version 3.0.13 or later'
+    }];
+
     // Return vulnerabilities that match the targets
     return commonCVEs.filter(cve => cve.affected_hosts.length > 0);
   };
@@ -611,54 +544,54 @@ const SecurityDashboard = () => {
     }
   });
   const [newTeamMember, setNewTeamMember] = useState('');
-  const [activePentestSessions, setActivePentestSessions] = useState([
-    {
-      id: 'session-001',
-      name: 'Production K8s Assessment',
-      description: 'Comprehensive security assessment of production cluster',
-      phase: 'exploitation',
-      status: 'active',
-      findings: [
-        { severity: 'critical' },
-        { severity: 'high' },
-        { severity: 'medium' }
-      ],
-      targets: [{ name: 'web-app' }, { name: 'api-gateway' }],
-      timeline: {
-        started: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-      }
+  const [activePentestSessions, setActivePentestSessions] = useState([{
+    id: 'session-001',
+    name: 'Production K8s Assessment',
+    description: 'Comprehensive security assessment of production cluster',
+    phase: 'exploitation',
+    status: 'active',
+    findings: [{
+      severity: 'critical'
+    }, {
+      severity: 'high'
+    }, {
+      severity: 'medium'
+    }],
+    targets: [{
+      name: 'web-app'
+    }, {
+      name: 'api-gateway'
+    }],
+    timeline: {
+      started: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
     }
-  ]);
+  }]);
 
   // OSINT Asset Profile State Management
   // These states would be managed by backend API calls to SQLite database
-  const [osintProfiles, setOsintProfiles] = useState([
-    {
-      id: 1,
-      name: "Corporate Domain Assets",
-      type: "domain",
-      targets: ["company.com", "subdomain.company.com"],
-      description: "Main corporate web presence monitoring",
-      priority: "high",
-      tags: ["corporate", "web", "public"],
-      created: "2024-01-15",
-      lastScan: "2024-01-20",
-      status: "active"
-    },
-    {
-      id: 2,
-      name: "Executive Email Monitoring",
-      type: "email",
-      targets: ["ceo@company.com", "cto@company.com"],
-      description: "C-level executive digital footprint monitoring",
-      priority: "critical",
-      tags: ["executive", "email", "sensitive"],
-      created: "2024-01-10",
-      lastScan: "2024-01-19",
-      status: "active"
-    }
-  ]);
-
+  const [osintProfiles, setOsintProfiles] = useState([{
+    id: 1,
+    name: "Corporate Domain Assets",
+    type: "domain",
+    targets: ["company.com", "subdomain.company.com"],
+    description: "Main corporate web presence monitoring",
+    priority: "high",
+    tags: ["corporate", "web", "public"],
+    created: "2024-01-15",
+    lastScan: "2024-01-20",
+    status: "active"
+  }, {
+    id: 2,
+    name: "Executive Email Monitoring",
+    type: "email",
+    targets: ["ceo@company.com", "cto@company.com"],
+    description: "C-level executive digital footprint monitoring",
+    priority: "critical",
+    tags: ["executive", "email", "sensitive"],
+    created: "2024-01-10",
+    lastScan: "2024-01-19",
+    status: "active"
+  }]);
   const [newProfile, setNewProfile] = useState({
     name: '',
     type: 'domain',
@@ -671,78 +604,87 @@ const SecurityDashboard = () => {
   // Threat Analysis State Management
   // Backend Integration: SQLite tables for threat data storage
   const [threatAnalysisData, setThreatAnalysisData] = useState({
-    activeThreatCampaigns: [
-      {
-        id: 1,
-        name: "APT29 Phishing Campaign",
-        threatActor: "APT29 (Cozy Bear)",
-        category: "Advanced Persistent Threat",
-        severity: "critical",
-        status: "active",
-        firstSeen: "2024-01-15",
-        lastActivity: "2024-01-20",
-        targetedSectors: ["Government", "Healthcare", "Energy"],
-        ttps: ["T1566.001", "T1059.001", "T1055"], // MITRE ATT&CK techniques
-        iocs: ["malicious-domain.com", "192.168.1.100", "suspicious.exe"],
-        confidence: 85,
-        description: "Sophisticated spear-phishing campaign targeting government officials"
-      },
-      {
-        id: 2,
-        name: "Ransomware Infrastructure",
-        threatActor: "BlackCat/ALPHV",
-        category: "Ransomware",
-        severity: "high",
-        status: "monitoring",
-        firstSeen: "2024-01-10",
-        lastActivity: "2024-01-18",
-        targetedSectors: ["Healthcare", "Financial", "Manufacturing"],
-        ttps: ["T1486", "T1083", "T1027"],
-        iocs: ["ransom-payment.onion", "10.0.0.50", "encrypt.bat"],
-        confidence: 92,
-        description: "Active ransomware infrastructure with double extortion tactics"
-      }
-    ],
-    threatIntelligence: [
-      {
-        id: 1,
-        source: "OSINT",
-        type: "IOC",
-        indicator: "malicious-domain.com",
-        category: "domain",
-        threatType: "C2 Server",
-        severity: "high",
-        confidence: 90,
-        firstSeen: "2024-01-15",
-        description: "Command and control server for APT29 operations",
-        tags: ["apt29", "c2", "phishing"]
-      },
-      {
-        id: 2,
-        source: "Commercial Feed",
-        type: "IOC",
-        indicator: "c7a5c1e8f7b2d3a4e6f9b8c7d2a3e4f5",
-        category: "hash",
-        threatType: "Malware",
-        severity: "critical",
-        confidence: 95,
-        firstSeen: "2024-01-12",
-        description: "Malicious payload hash associated with ransomware campaign",
-        tags: ["ransomware", "payload", "blackcat"]
-      }
-    ],
+    activeThreatCampaigns: [{
+      id: 1,
+      name: "APT29 Phishing Campaign",
+      threatActor: "APT29 (Cozy Bear)",
+      category: "Advanced Persistent Threat",
+      severity: "critical",
+      status: "active",
+      firstSeen: "2024-01-15",
+      lastActivity: "2024-01-20",
+      targetedSectors: ["Government", "Healthcare", "Energy"],
+      ttps: ["T1566.001", "T1059.001", "T1055"],
+      // MITRE ATT&CK techniques
+      iocs: ["malicious-domain.com", "192.168.1.100", "suspicious.exe"],
+      confidence: 85,
+      description: "Sophisticated spear-phishing campaign targeting government officials"
+    }, {
+      id: 2,
+      name: "Ransomware Infrastructure",
+      threatActor: "BlackCat/ALPHV",
+      category: "Ransomware",
+      severity: "high",
+      status: "monitoring",
+      firstSeen: "2024-01-10",
+      lastActivity: "2024-01-18",
+      targetedSectors: ["Healthcare", "Financial", "Manufacturing"],
+      ttps: ["T1486", "T1083", "T1027"],
+      iocs: ["ransom-payment.onion", "10.0.0.50", "encrypt.bat"],
+      confidence: 92,
+      description: "Active ransomware infrastructure with double extortion tactics"
+    }],
+    threatIntelligence: [{
+      id: 1,
+      source: "OSINT",
+      type: "IOC",
+      indicator: "malicious-domain.com",
+      category: "domain",
+      threatType: "C2 Server",
+      severity: "high",
+      confidence: 90,
+      firstSeen: "2024-01-15",
+      description: "Command and control server for APT29 operations",
+      tags: ["apt29", "c2", "phishing"]
+    }, {
+      id: 2,
+      source: "Commercial Feed",
+      type: "IOC",
+      indicator: "c7a5c1e8f7b2d3a4e6f9b8c7d2a3e4f5",
+      category: "hash",
+      threatType: "Malware",
+      severity: "critical",
+      confidence: 95,
+      firstSeen: "2024-01-12",
+      description: "Malicious payload hash associated with ransomware campaign",
+      tags: ["ransomware", "payload", "blackcat"]
+    }],
     riskAssessment: {
       overallRiskScore: 78,
       categories: {
-        malware: { score: 85, trend: "increasing" },
-        phishing: { score: 72, trend: "stable" },
-        insider: { score: 45, trend: "decreasing" },
-        supply_chain: { score: 60, trend: "increasing" },
-        ddos: { score: 35, trend: "stable" }
+        malware: {
+          score: 85,
+          trend: "increasing"
+        },
+        phishing: {
+          score: 72,
+          trend: "stable"
+        },
+        insider: {
+          score: 45,
+          trend: "decreasing"
+        },
+        supply_chain: {
+          score: 60,
+          trend: "increasing"
+        },
+        ddos: {
+          score: 35,
+          trend: "stable"
+        }
       }
     }
   });
-
   const [selectedThreatCategory, setSelectedThreatCategory] = useState('all');
   const [threatHuntingQuery, setThreatHuntingQuery] = useState('');
   const [newIOC, setNewIOC] = useState({
@@ -781,17 +723,15 @@ const SecurityDashboard = () => {
   const handleServiceConnection = useCallback(async (serviceName: string) => {
     toast({
       title: "Testing Connection",
-      description: `Checking ${serviceName} service connectivity...`,
+      description: `Checking ${serviceName} service connectivity...`
     });
-
     try {
       const result = await k8sSecurityApi.runConnectivityTests();
       const serviceResult = result[serviceName.toLowerCase()];
-      
       if (serviceResult?.success) {
         toast({
           title: "Connection Successful",
-          description: `${serviceName} is online (${serviceResult.responseTime}ms)`,
+          description: `${serviceName} is online (${serviceResult.responseTime}ms)`
         });
       } else {
         toast({
@@ -814,52 +754,47 @@ const SecurityDashboard = () => {
    * Dynamic service connection data based on real K8s services
    * Backend Integration: Service discovery and health monitoring
    */
-  const apiConnections = useMemo(() => [
-    {
-      service: "Wazuh Manager",
-      endpoint: `wazuh-manager.security.svc.cluster.local:${services.wazuh.online ? '55000' : 'offline'}`,
-      status: services.wazuh.online ? "connected" : "disconnected",
-      description: "SIEM agent management and log analysis",
-      lastCheck: services.wazuh.lastCheck,
-      error: services.wazuh.error,
-      responseTime: services.wazuh.responseTime,
-      agents: services.wazuh.agents,
-      version: services.wazuh.managerVersion
-    },
-    {
-      service: "OpenVAS Scanner",
-      endpoint: `openvas-gvm.security.svc.cluster.local:${services.gvm.online ? '9392' : 'offline'}`,
-      status: services.gvm.online ? "connected" : "disconnected",
-      description: "Vulnerability assessment and network scanning",
-      lastCheck: services.gvm.lastCheck,
-      error: services.gvm.error,
-      responseTime: services.gvm.responseTime,
-      scans: services.gvm.scans,
-      vulnerabilities: services.gvm.vulnerabilities
-    },
-    {
-      service: "OWASP ZAP",
-      endpoint: `owasp-zap.security.svc.cluster.local:${services.zap.online ? '8080' : 'offline'}`,
-      status: services.zap.online ? "connected" : "disconnected",
-      description: "Web application security testing",
-      lastCheck: services.zap.lastCheck,
-      error: services.zap.error,
-      responseTime: services.zap.responseTime,
-      scans: services.zap.scans,
-      alerts: services.zap.alerts
-    },
-    {
-      service: "Spiderfoot OSINT",
-      endpoint: `spiderfoot-osint.security.svc.cluster.local:${services.spiderfoot.online ? '5001' : 'offline'}`,
-      status: services.spiderfoot.online ? "connected" : "disconnected",
-      description: "Open source intelligence gathering",
-      lastCheck: services.spiderfoot.lastCheck,
-      error: services.spiderfoot.error,
-      responseTime: services.spiderfoot.responseTime,
-      sources: services.spiderfoot.sources,
-      entities: services.spiderfoot.entities
-    }
-  ], [services]);
+  const apiConnections = useMemo(() => [{
+    service: "Wazuh Manager",
+    endpoint: `wazuh-manager.security.svc.cluster.local:${services.wazuh.online ? '55000' : 'offline'}`,
+    status: services.wazuh.online ? "connected" : "disconnected",
+    description: "SIEM agent management and log analysis",
+    lastCheck: services.wazuh.lastCheck,
+    error: services.wazuh.error,
+    responseTime: services.wazuh.responseTime,
+    agents: services.wazuh.agents,
+    version: services.wazuh.managerVersion
+  }, {
+    service: "OpenVAS Scanner",
+    endpoint: `openvas-gvm.security.svc.cluster.local:${services.gvm.online ? '9392' : 'offline'}`,
+    status: services.gvm.online ? "connected" : "disconnected",
+    description: "Vulnerability assessment and network scanning",
+    lastCheck: services.gvm.lastCheck,
+    error: services.gvm.error,
+    responseTime: services.gvm.responseTime,
+    scans: services.gvm.scans,
+    vulnerabilities: services.gvm.vulnerabilities
+  }, {
+    service: "OWASP ZAP",
+    endpoint: `owasp-zap.security.svc.cluster.local:${services.zap.online ? '8080' : 'offline'}`,
+    status: services.zap.online ? "connected" : "disconnected",
+    description: "Web application security testing",
+    lastCheck: services.zap.lastCheck,
+    error: services.zap.error,
+    responseTime: services.zap.responseTime,
+    scans: services.zap.scans,
+    alerts: services.zap.alerts
+  }, {
+    service: "Spiderfoot OSINT",
+    endpoint: `spiderfoot-osint.security.svc.cluster.local:${services.spiderfoot.online ? '5001' : 'offline'}`,
+    status: services.spiderfoot.online ? "connected" : "disconnected",
+    description: "Open source intelligence gathering",
+    lastCheck: services.spiderfoot.lastCheck,
+    error: services.spiderfoot.error,
+    responseTime: services.spiderfoot.responseTime,
+    sources: services.spiderfoot.sources,
+    entities: services.spiderfoot.entities
+  }], [services]);
 
   /**
    * Handle saving agent configuration with real API integration
@@ -874,20 +809,18 @@ const SecurityDashboard = () => {
       });
       return;
     }
-
     try {
       // Real API call to update agent configuration
       // const response = await k8sSecurityApi.updateAgentConfig(selectedAgent, agentConfig);
-      
+
       toast({
         title: "Configuration Updated",
-        description: `Agent ${selectedAgent} configuration updated successfully.`,
+        description: `Agent ${selectedAgent} configuration updated successfully.`
       });
       setIsAgentConfigOpen(false);
-      
+
       // Refresh agent data to get updated configuration
       await refreshService('wazuh');
-      
     } catch (error) {
       console.error('❌ Failed to update agent configuration:', error);
       toast({
@@ -917,7 +850,6 @@ const SecurityDashboard = () => {
       });
       return;
     }
-
     try {
       // API call to create session would go here
       const newSession = {
@@ -930,12 +862,10 @@ const SecurityDashboard = () => {
           started: new Date().toISOString()
         }
       };
-
       setActivePentestSessions(prev => [...prev, newSession]);
-      
       toast({
         title: "Session Created",
-        description: `Penetration test session "${pentestSession.name}" has been started.`,
+        description: `Penetration test session "${pentestSession.name}" has been started.`
       });
 
       // Reset form
@@ -944,9 +874,11 @@ const SecurityDashboard = () => {
         description: '',
         methodology: 'owasp',
         phase: 'reconnaissance',
-        team: { lead: 'Security Lead', members: [] }
+        team: {
+          lead: 'Security Lead',
+          members: []
+        }
       });
-
     } catch (error) {
       toast({
         title: "Session Creation Failed",
@@ -955,28 +887,22 @@ const SecurityDashboard = () => {
       });
     }
   }, [pentestSession, toast]);
-
   const handleLoadSession = useCallback((sessionId: string) => {
     // Load session details
     toast({
       title: "Loading Session",
-      description: `Loading penetration test session ${sessionId}...`,
+      description: `Loading penetration test session ${sessionId}...`
     });
   }, [toast]);
-
   const handleStopSession = useCallback(async (sessionId: string) => {
     try {
-      setActivePentestSessions(prev => 
-        prev.map(session => 
-          session.id === sessionId 
-            ? { ...session, status: 'completed' }
-            : session
-        )
-      );
-      
+      setActivePentestSessions(prev => prev.map(session => session.id === sessionId ? {
+        ...session,
+        status: 'completed'
+      } : session));
       toast({
         title: "Session Stopped",
-        description: "Penetration test session has been stopped successfully.",
+        description: "Penetration test session has been stopped successfully."
       });
     } catch (error) {
       toast({
@@ -991,7 +917,7 @@ const SecurityDashboard = () => {
    * OSINT Profile Management Functions
    * These functions interact with SQLite backend for encrypted data storage
    */
-  
+
   /**
    * Handle creating new OSINT profile
    * Backend Integration: POST /api/osint/profiles
@@ -1016,10 +942,11 @@ const SecurityDashboard = () => {
     // 2. Make POST request to backend API
     // 3. Backend stores encrypted data in SQLite
     // 4. Return success/error response
-    
+
     const profileData = {
       ...newProfile,
-      id: Date.now(), // Backend should generate proper UUID
+      id: Date.now(),
+      // Backend should generate proper UUID
       targets: newProfile.targets.filter(t => t.trim()),
       created: new Date().toISOString().split('T')[0],
       lastScan: null,
@@ -1028,7 +955,7 @@ const SecurityDashboard = () => {
 
     // Frontend state update (backend would return this data)
     setOsintProfiles([...osintProfiles, profileData]);
-    
+
     // Reset form
     setNewProfile({
       name: '',
@@ -1038,12 +965,10 @@ const SecurityDashboard = () => {
       priority: 'medium',
       tags: []
     });
-
     toast({
       title: "Profile Created",
-      description: `OSINT profile "${profileData.name}" has been created and encrypted.`,
+      description: `OSINT profile "${profileData.name}" has been created and encrypted.`
     });
-
     setIsOsintProfilesOpen(false);
   };
 
@@ -1053,13 +978,13 @@ const SecurityDashboard = () => {
    */
   const handleUpdateProfile = async (profileId, updatedData) => {
     // Backend would decrypt, update, and re-encrypt data
-    setOsintProfiles(osintProfiles.map(profile => 
-      profile.id === profileId ? { ...profile, ...updatedData } : profile
-    ));
-    
+    setOsintProfiles(osintProfiles.map(profile => profile.id === profileId ? {
+      ...profile,
+      ...updatedData
+    } : profile));
     toast({
       title: "Profile Updated",
-      description: "OSINT profile has been updated successfully.",
+      description: "OSINT profile has been updated successfully."
     });
   };
 
@@ -1067,13 +992,12 @@ const SecurityDashboard = () => {
    * Handle deleting OSINT profile
    * Backend Integration: DELETE /api/osint/profiles/:id
    */
-  const handleDeleteProfile = async (profileId) => {
+  const handleDeleteProfile = async profileId => {
     // Backend would securely delete encrypted data
     setOsintProfiles(osintProfiles.filter(profile => profile.id !== profileId));
-    
     toast({
       title: "Profile Deleted",
-      description: "OSINT profile and all associated data have been securely deleted.",
+      description: "OSINT profile and all associated data have been securely deleted."
     });
   };
 
@@ -1083,17 +1007,24 @@ const SecurityDashboard = () => {
   const handleTargetChange = (index, value) => {
     const updatedTargets = [...newProfile.targets];
     updatedTargets[index] = value;
-    setNewProfile({ ...newProfile, targets: updatedTargets });
+    setNewProfile({
+      ...newProfile,
+      targets: updatedTargets
+    });
   };
-
   const addTargetField = () => {
-    setNewProfile({ ...newProfile, targets: [...newProfile.targets, ''] });
+    setNewProfile({
+      ...newProfile,
+      targets: [...newProfile.targets, '']
+    });
   };
-
-  const removeTargetField = (index) => {
+  const removeTargetField = index => {
     if (newProfile.targets.length > 1) {
       const updatedTargets = newProfile.targets.filter((_, i) => i !== index);
-      setNewProfile({ ...newProfile, targets: updatedTargets });
+      setNewProfile({
+        ...newProfile,
+        targets: updatedTargets
+      });
     }
   };
 
@@ -1130,7 +1061,8 @@ const SecurityDashboard = () => {
       category: newIOC.type,
       threatType: "User Defined",
       severity: newIOC.severity,
-      confidence: 75, // Default confidence for manual entries
+      confidence: 75,
+      // Default confidence for manual entries
       firstSeen: new Date().toISOString().split('T')[0],
       description: newIOC.description,
       tags: newIOC.tags
@@ -1150,10 +1082,9 @@ const SecurityDashboard = () => {
       description: '',
       tags: []
     });
-
     toast({
       title: "IOC Added",
-      description: `Indicator "${iocData.indicator}" has been added to threat intelligence database.`,
+      description: `Indicator "${iocData.indicator}" has been added to threat intelligence database.`
     });
   };
 
@@ -1180,14 +1111,14 @@ const SecurityDashboard = () => {
 
     toast({
       title: "Threat Hunt Initiated",
-      description: `Searching for: "${threatHuntingQuery}". Results will appear in the timeline.`,
+      description: `Searching for: "${threatHuntingQuery}". Results will appear in the timeline.`
     });
 
     // Simulate hunt results (backend would return actual findings)
     setTimeout(() => {
       toast({
         title: "Hunt Complete",
-        description: "Found 3 potential matches. Check the threat timeline for details.",
+        description: "Found 3 potential matches. Check the threat timeline for details."
       });
     }, 2000);
   };
@@ -1199,9 +1130,7 @@ const SecurityDashboard = () => {
     if (selectedThreatCategory === 'all') {
       return threatAnalysisData.activeThreatCampaigns;
     }
-    return threatAnalysisData.activeThreatCampaigns.filter(
-      threat => threat.category.toLowerCase().includes(selectedThreatCategory.toLowerCase())
-    );
+    return threatAnalysisData.activeThreatCampaigns.filter(threat => threat.category.toLowerCase().includes(selectedThreatCategory.toLowerCase()));
   };
 
   /**
@@ -1213,20 +1142,30 @@ const SecurityDashboard = () => {
     const high = campaigns.filter(t => t.severity === 'high').length;
     const active = campaigns.filter(t => t.status === 'active').length;
     const iocCount = threatAnalysisData.threatIntelligence.length;
-    
-    return { critical, high, active, iocCount, total: campaigns.length };
+    return {
+      critical,
+      high,
+      active,
+      iocCount,
+      total: campaigns.length
+    };
   };
 
   /**
    * Get risk level color for UI components
    */
-  const getRiskColor = (severity) => {
+  const getRiskColor = severity => {
     switch (severity) {
-      case 'critical': return 'text-primary bg-destructive/10';
-      case 'high': return 'text-accent bg-accent/10';
-      case 'medium': return 'text-muted-foreground bg-muted/20';
-      case 'low': return 'text-muted-foreground bg-muted/10';
-      default: return 'text-muted-foreground bg-muted/10';
+      case 'critical':
+        return 'text-primary bg-destructive/10';
+      case 'high':
+        return 'text-accent bg-accent/10';
+      case 'medium':
+        return 'text-muted-foreground bg-muted/20';
+      case 'low':
+        return 'text-muted-foreground bg-muted/10';
+      default:
+        return 'text-muted-foreground bg-muted/10';
     }
   };
 
@@ -1268,10 +1207,8 @@ const SecurityDashboard = () => {
       });
       return;
     }
-
     setZapScanRunning(true);
     setZapScanProgress(0);
-
     try {
       // Backend API call to start ZAP scan via terminal wrapper
       // POST /api/security/zap/scan
@@ -1311,30 +1248,27 @@ const SecurityDashboard = () => {
           if (prev >= 100) {
             clearInterval(progressInterval);
             setZapScanRunning(false);
-            
+
             // Show completion notification
             toast({
               title: "ZAP Scan Complete",
-              description: `Security scan completed for ${zapScanConfig.target}. Report generated successfully.`,
+              description: `Security scan completed for ${zapScanConfig.target}. Report generated successfully.`
             });
-            
+
             // Backend should return scan results and report download link
             return 100;
           }
           return prev + Math.random() * 10;
         });
       }, 1000);
-
       toast({
         title: "ZAP Scan Started",
-        description: `OWASP ZAP scan initiated for ${zapScanConfig.target} via terminal wrapper.`,
+        description: `OWASP ZAP scan initiated for ${zapScanConfig.target} via terminal wrapper.`
       });
-
     } catch (error) {
       console.error('ZAP scan failed:', error);
       setZapScanRunning(false);
       setZapScanProgress(0);
-      
       toast({
         title: "Scan Failed",
         description: "Failed to start ZAP scan. Check backend terminal wrapper configuration.",
@@ -1351,10 +1285,9 @@ const SecurityDashboard = () => {
     // Backend should execute: `zap-cli shutdown` or kill ZAP process
     setZapScanRunning(false);
     setZapScanProgress(0);
-    
     toast({
       title: "Scan Stopped",
-      description: "ZAP scan has been terminated.",
+      description: "ZAP scan has been terminated."
     });
   };
 
@@ -1364,20 +1297,24 @@ const SecurityDashboard = () => {
   const handleExcludeUrlChange = (index: number, value: string) => {
     const updatedUrls = [...zapScanConfig.excludeUrls];
     updatedUrls[index] = value;
-    setZapScanConfig({ ...zapScanConfig, excludeUrls: updatedUrls });
-  };
-
-  const addExcludeUrl = () => {
-    setZapScanConfig({ 
-      ...zapScanConfig, 
-      excludeUrls: [...zapScanConfig.excludeUrls, ''] 
+    setZapScanConfig({
+      ...zapScanConfig,
+      excludeUrls: updatedUrls
     });
   };
-
+  const addExcludeUrl = () => {
+    setZapScanConfig({
+      ...zapScanConfig,
+      excludeUrls: [...zapScanConfig.excludeUrls, '']
+    });
+  };
   const removeExcludeUrl = (index: number) => {
     if (zapScanConfig.excludeUrls.length > 1) {
       const updatedUrls = zapScanConfig.excludeUrls.filter((_, i) => i !== index);
-      setZapScanConfig({ ...zapScanConfig, excludeUrls: updatedUrls });
+      setZapScanConfig({
+        ...zapScanConfig,
+        excludeUrls: updatedUrls
+      });
     }
   };
 
@@ -1395,12 +1332,31 @@ const SecurityDashboard = () => {
 
   // Real-time service status state
   const [serviceStatus, setServiceStatus] = useState({
-    wazuh: { online: false, agents: 0, lastCheck: null, error: null },
-    gvm: { online: false, scans: 0, lastCheck: null, error: null },
-    zap: { online: false, scans: 0, lastCheck: null, error: null },
-    spiderfoot: { online: false, sources: 0, lastCheck: null, error: null }
+    wazuh: {
+      online: false,
+      agents: 0,
+      lastCheck: null,
+      error: null
+    },
+    gvm: {
+      online: false,
+      scans: 0,
+      lastCheck: null,
+      error: null
+    },
+    zap: {
+      online: false,
+      scans: 0,
+      lastCheck: null,
+      error: null
+    },
+    spiderfoot: {
+      online: false,
+      sources: 0,
+      lastCheck: null,
+      error: null
+    }
   });
-
   const [isCheckingServices, setIsCheckingServices] = useState(true);
 
   /**
@@ -1418,16 +1374,15 @@ const SecurityDashboard = () => {
         },
         signal: AbortSignal.timeout(5000) // 5 second timeout
       });
-
       if (response.ok) {
         // If authentication succeeds, get agent count
         const agentsResponse = await fetch('http://localhost:55000/agents', {
-          headers: { 'Authorization': 'Bearer ' }
+          headers: {
+            'Authorization': 'Bearer '
+          }
         });
-        
         const agentsData = agentsResponse.ok ? await agentsResponse.json() : null;
         const activeAgents = agentsData?.data?.affected_items?.filter(agent => agent.status === 'active')?.length || 0;
-
         setServiceStatus(prev => ({
           ...prev,
           wazuh: {
@@ -1469,13 +1424,13 @@ const SecurityDashboard = () => {
         body: '<authenticate><credentials><username></username><password></password></credentials></authenticate>',
         signal: AbortSignal.timeout(5000)
       });
-
       if (response.ok) {
         setServiceStatus(prev => ({
           ...prev,
           gvm: {
             online: true,
-            scans: prev.gvm.scans, // Keep existing scan count
+            scans: prev.gvm.scans,
+            // Keep existing scan count
             lastCheck: new Date().toISOString(),
             error: null
           }
@@ -1506,13 +1461,13 @@ const SecurityDashboard = () => {
       const response = await fetch('http://localhost:8080/JSON/core/view/version/?apikey=', {
         signal: AbortSignal.timeout(5000)
       });
-
       if (response.ok) {
         setServiceStatus(prev => ({
           ...prev,
           zap: {
             online: true,
-            scans: prev.zap.scans, // Keep existing scan count
+            scans: prev.zap.scans,
+            // Keep existing scan count
             lastCheck: new Date().toISOString(),
             error: null
           }
@@ -1543,13 +1498,13 @@ const SecurityDashboard = () => {
       const response = await fetch('http://localhost:5001/api?func=ping&apikey=', {
         signal: AbortSignal.timeout(5000)
       });
-
       if (response.ok) {
         setServiceStatus(prev => ({
           ...prev,
           spiderfoot: {
             online: true,
-            sources: 156, // Default source count when online
+            sources: 156,
+            // Default source count when online
             lastCheck: new Date().toISOString(),
             error: null
           }
@@ -1577,15 +1532,9 @@ const SecurityDashboard = () => {
    */
   const performHealthCheck = async () => {
     setIsCheckingServices(true);
-    
+
     // Run all service checks in parallel for better performance
-    await Promise.allSettled([
-      checkWazuhStatus(),
-      checkGVMStatus(), 
-      checkZAPStatus(),
-      checkSpiderfootStatus()
-    ]);
-    
+    await Promise.allSettled([checkWazuhStatus(), checkGVMStatus(), checkZAPStatus(), checkSpiderfootStatus()]);
     setIsCheckingServices(false);
   };
 
@@ -1595,10 +1544,10 @@ const SecurityDashboard = () => {
   React.useEffect(() => {
     // Initial health check
     performHealthCheck();
-    
+
     // Set up periodic health checks
     const healthCheckInterval = setInterval(performHealthCheck, 30000); // 30 seconds
-    
+
     return () => clearInterval(healthCheckInterval);
   }, []);
 
@@ -1607,52 +1556,48 @@ const SecurityDashboard = () => {
    * This replaces the static tools array with dynamic data
    */
   const getDynamicToolsData = () => {
-    return [
-      {
-        name: "Wazuh SIEM",
-        description: "Security Information and Event Management",
-        status: serviceStatus.wazuh.online ? "active" : "offline",
-        agents: serviceStatus.wazuh.agents,
-        vulnerabilities: serviceStatus.wazuh.agents > 0 ? 15 : 0, // Sample vulnerability count
-        icon: Shield,
-        color: serviceStatus.wazuh.online ? "green-500" : "red-500",
-        lastCheck: serviceStatus.wazuh.lastCheck,
-        error: serviceStatus.wazuh.error
-      },
-      {
-        name: "OpenVAS Scanner", 
-        description: "Vulnerability Assessment and Management",
-        status: serviceStatus.gvm.online ? "active" : "offline",
-        vulnerabilities: serviceStatus.gvm.online ? 42 : 0,
-        scans: serviceStatus.gvm.scans,
-        icon: Eye,
-        color: serviceStatus.gvm.online ? "blue-500" : "red-500",
-        lastCheck: serviceStatus.gvm.lastCheck,
-        error: serviceStatus.gvm.error
-      },
-      {
-        name: "OWASP ZAP",
-        description: "Web Application Security Testing", 
-        status: serviceStatus.zap.online ? "active" : "offline",
-        scans: serviceStatus.zap.scans,
-        findings: serviceStatus.zap.online ? 12 : 0,
-        icon: Zap,
-        color: serviceStatus.zap.online ? "yellow-500" : "red-500",
-        lastCheck: serviceStatus.zap.lastCheck,
-        error: serviceStatus.zap.error
-      },
-      {
-        name: "Spiderfoot OSINT",
-        description: "Open Source Intelligence Gathering",
-        status: serviceStatus.spiderfoot.online ? "monitoring" : "offline", 
-        sources: serviceStatus.spiderfoot.sources,
-        entities: serviceStatus.spiderfoot.online ? 89 : 0,
-        icon: Search,
-        color: serviceStatus.spiderfoot.online ? "purple-500" : "red-500",
-        lastCheck: serviceStatus.spiderfoot.lastCheck,
-        error: serviceStatus.spiderfoot.error
-      }
-    ];
+    return [{
+      name: "Wazuh SIEM",
+      description: "Security Information and Event Management",
+      status: serviceStatus.wazuh.online ? "active" : "offline",
+      agents: serviceStatus.wazuh.agents,
+      vulnerabilities: serviceStatus.wazuh.agents > 0 ? 15 : 0,
+      // Sample vulnerability count
+      icon: Shield,
+      color: serviceStatus.wazuh.online ? "green-500" : "red-500",
+      lastCheck: serviceStatus.wazuh.lastCheck,
+      error: serviceStatus.wazuh.error
+    }, {
+      name: "OpenVAS Scanner",
+      description: "Vulnerability Assessment and Management",
+      status: serviceStatus.gvm.online ? "active" : "offline",
+      vulnerabilities: serviceStatus.gvm.online ? 42 : 0,
+      scans: serviceStatus.gvm.scans,
+      icon: Eye,
+      color: serviceStatus.gvm.online ? "blue-500" : "red-500",
+      lastCheck: serviceStatus.gvm.lastCheck,
+      error: serviceStatus.gvm.error
+    }, {
+      name: "OWASP ZAP",
+      description: "Web Application Security Testing",
+      status: serviceStatus.zap.online ? "active" : "offline",
+      scans: serviceStatus.zap.scans,
+      findings: serviceStatus.zap.online ? 12 : 0,
+      icon: Zap,
+      color: serviceStatus.zap.online ? "yellow-500" : "red-500",
+      lastCheck: serviceStatus.zap.lastCheck,
+      error: serviceStatus.zap.error
+    }, {
+      name: "Spiderfoot OSINT",
+      description: "Open Source Intelligence Gathering",
+      status: serviceStatus.spiderfoot.online ? "monitoring" : "offline",
+      sources: serviceStatus.spiderfoot.sources,
+      entities: serviceStatus.spiderfoot.online ? 89 : 0,
+      icon: Search,
+      color: serviceStatus.spiderfoot.online ? "purple-500" : "red-500",
+      lastCheck: serviceStatus.spiderfoot.lastCheck,
+      error: serviceStatus.spiderfoot.error
+    }];
   };
 
   /**
@@ -1661,7 +1606,7 @@ const SecurityDashboard = () => {
   const handleRefreshServices = () => {
     toast({
       title: "Refreshing Services",
-      description: "Checking all security service connections...",
+      description: "Checking all security service connections..."
     });
     performHealthCheck();
   };
@@ -1678,58 +1623,52 @@ const SecurityDashboard = () => {
    */
   const getDynamicAlertFeed = () => {
     const dynamicAlerts = [];
-    
+
     // Only show real alerts if services are connected
     if (serviceStatus.wazuh.online) {
-      dynamicAlerts.push(
-        {
-          type: "critical",
-          message: "Suspicious network activity detected on agent-001",
-          time: "2m ago",
-          source: "Wazuh SIEM",
-          severity: "high",
-          connected: true
-        },
-        {
-          type: "warning", 
-          message: "Failed login attempts exceed threshold",
-          time: "8m ago",
-          source: "Wazuh SIEM",
-          severity: "medium",
-          connected: true
-        }
-      );
+      dynamicAlerts.push({
+        type: "critical",
+        message: "Suspicious network activity detected on agent-001",
+        time: "2m ago",
+        source: "Wazuh SIEM",
+        severity: "high",
+        connected: true
+      }, {
+        type: "warning",
+        message: "Failed login attempts exceed threshold",
+        time: "8m ago",
+        source: "Wazuh SIEM",
+        severity: "medium",
+        connected: true
+      });
     }
-
     if (serviceStatus.gvm.online) {
       dynamicAlerts.push({
         type: "warning",
         message: "High-risk vulnerability found in web server",
-        time: "5m ago", 
+        time: "5m ago",
         source: "OpenVAS",
         severity: "high",
         connected: true
       });
     }
-
     if (serviceStatus.zap.online) {
       dynamicAlerts.push({
         type: "info",
         message: "Web application scan completed successfully",
         time: "10m ago",
-        source: "OWASP ZAP", 
+        source: "OWASP ZAP",
         severity: "info",
         connected: true
       });
     }
-
     if (serviceStatus.spiderfoot.online) {
       dynamicAlerts.push({
         type: "warning",
         message: "New threat intelligence indicators discovered",
         time: "15m ago",
         source: "Spiderfoot OSINT",
-        severity: "medium", 
+        severity: "medium",
         connected: true
       });
     }
@@ -1746,10 +1685,9 @@ const SecurityDashboard = () => {
         error: serviceStatus.wazuh.error
       });
     }
-
     if (!serviceStatus.gvm.online) {
       dynamicAlerts.push({
-        type: "disconnected", 
+        type: "disconnected",
         message: "Connect feed to receive vulnerability alerts",
         time: serviceStatus.gvm.lastCheck ? `Last check: ${new Date(serviceStatus.gvm.lastCheck).toLocaleTimeString()}` : "Never connected",
         source: "OpenVAS",
@@ -1758,11 +1696,10 @@ const SecurityDashboard = () => {
         error: serviceStatus.gvm.error
       });
     }
-
     if (!serviceStatus.zap.online) {
       dynamicAlerts.push({
         type: "disconnected",
-        message: "Connect feed to receive web security alerts", 
+        message: "Connect feed to receive web security alerts",
         time: serviceStatus.zap.lastCheck ? `Last check: ${new Date(serviceStatus.zap.lastCheck).toLocaleTimeString()}` : "Never connected",
         source: "OWASP ZAP",
         severity: "offline",
@@ -1770,12 +1707,11 @@ const SecurityDashboard = () => {
         error: serviceStatus.zap.error
       });
     }
-
     if (!serviceStatus.spiderfoot.online) {
       dynamicAlerts.push({
         type: "disconnected",
         message: "Connect feed to receive OSINT alerts",
-        time: serviceStatus.spiderfoot.lastCheck ? `Last check: ${new Date(serviceStatus.spiderfoot.lastCheck).toLocaleTimeString()}` : "Never connected", 
+        time: serviceStatus.spiderfoot.lastCheck ? `Last check: ${new Date(serviceStatus.spiderfoot.lastCheck).toLocaleTimeString()}` : "Never connected",
         source: "Spiderfoot OSINT",
         severity: "offline",
         connected: false,
@@ -1787,8 +1723,14 @@ const SecurityDashboard = () => {
     return dynamicAlerts.sort((a, b) => {
       if (a.connected && !b.connected) return -1;
       if (!a.connected && b.connected) return 1;
-      
-      const severityOrder = { critical: 0, high: 1, warning: 2, medium: 3, info: 4, offline: 5 };
+      const severityOrder = {
+        critical: 0,
+        high: 1,
+        warning: 2,
+        medium: 3,
+        info: 4,
+        offline: 5
+      };
       return severityOrder[a.severity] - severityOrder[b.severity];
     });
   };
@@ -1815,13 +1757,14 @@ const SecurityDashboard = () => {
   const testServiceConnection = async (serviceKey: string, serviceEndpoint: string) => {
     if (connectionTesting[serviceKey]) return; // Prevent multiple simultaneous tests
 
-    setConnectionTesting(prev => ({ ...prev, [serviceKey]: true }));
-
+    setConnectionTesting(prev => ({
+      ...prev,
+      [serviceKey]: true
+    }));
     try {
       // Backend should perform actual connection test
       // This would replace the hardcoded localhost calls with proper API testing
       let testResult = false;
-      
       switch (serviceKey) {
         case 'wazuh':
           testResult = await testWazuhConnection(serviceEndpoint);
@@ -1836,7 +1779,6 @@ const SecurityDashboard = () => {
           testResult = await testSpiderfootConnection(serviceEndpoint);
           break;
       }
-
       toast({
         title: testResult ? "Connection Successful" : "Connection Failed",
         description: `${serviceKey.toUpperCase()} service ${testResult ? 'is responding' : 'is not accessible'}`,
@@ -1853,7 +1795,6 @@ const SecurityDashboard = () => {
           error: testResult ? null : "Connection test failed"
         }
       }));
-
     } catch (error) {
       console.error(`Connection test failed for ${serviceKey}:`, error);
       toast({
@@ -1862,7 +1803,10 @@ const SecurityDashboard = () => {
         variant: "destructive"
       });
     } finally {
-      setConnectionTesting(prev => ({ ...prev, [serviceKey]: false }));
+      setConnectionTesting(prev => ({
+        ...prev,
+        [serviceKey]: false
+      }));
     }
   };
 
@@ -1874,7 +1818,9 @@ const SecurityDashboard = () => {
     try {
       const response = await fetch(`http://${endpoint}/security/user/authenticate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         signal: AbortSignal.timeout(5000)
       });
       return response.ok;
@@ -1882,12 +1828,13 @@ const SecurityDashboard = () => {
       return false;
     }
   };
-
   const testGVMConnection = async (endpoint: string): Promise<boolean> => {
     try {
       const response = await fetch(`http://${endpoint}/gmp`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/xml' },
+        headers: {
+          'Content-Type': 'application/xml'
+        },
         signal: AbortSignal.timeout(5000)
       });
       return response.ok;
@@ -1895,7 +1842,6 @@ const SecurityDashboard = () => {
       return false;
     }
   };
-
   const testZAPConnection = async (endpoint: string): Promise<boolean> => {
     try {
       const response = await fetch(`http://${endpoint}/JSON/core/view/version/?apikey=`, {
@@ -1906,7 +1852,6 @@ const SecurityDashboard = () => {
       return false;
     }
   };
-
   const testSpiderfootConnection = async (endpoint: string): Promise<boolean> => {
     try {
       const response = await fetch(`http://${endpoint}/api?func=ping&apikey=`, {
@@ -1944,9 +1889,10 @@ const SecurityDashboard = () => {
    */
   const removeAgent = async (agentId: string) => {
     if (agentActionLoading[agentId]) return;
-
-    setAgentActionLoading(prev => ({ ...prev, [agentId]: true }));
-
+    setAgentActionLoading(prev => ({
+      ...prev,
+      [agentId]: true
+    }));
     try {
       // Backend API call to remove agent
       // const response = await fetch(`/api/agents/${agentId}`, {
@@ -1955,12 +1901,11 @@ const SecurityDashboard = () => {
 
       toast({
         title: "Agent Removed",
-        description: `Agent ${agentId} has been removed from management.`,
+        description: `Agent ${agentId} has been removed from management.`
       });
 
       // Remove from local state (in production, this would be handled by backend)
       // This is just for UI demonstration
-      
     } catch (error) {
       toast({
         title: "Removal Failed",
@@ -1968,7 +1913,10 @@ const SecurityDashboard = () => {
         variant: "destructive"
       });
     } finally {
-      setAgentActionLoading(prev => ({ ...prev, [agentId]: false }));
+      setAgentActionLoading(prev => ({
+        ...prev,
+        [agentId]: false
+      }));
     }
   };
 
@@ -1976,11 +1924,7 @@ const SecurityDashboard = () => {
    * Toggle agent selection for bulk operations
    */
   const toggleAgentSelection = (agentId: string) => {
-    setSelectedAgents(prev => 
-      prev.includes(agentId) 
-        ? prev.filter(id => id !== agentId)
-        : [...prev, agentId]
-    );
+    setSelectedAgents(prev => prev.includes(agentId) ? prev.filter(id => id !== agentId) : [...prev, agentId]);
   };
 
   /**
@@ -1996,7 +1940,6 @@ const SecurityDashboard = () => {
       });
       return;
     }
-
     try {
       // Backend API call for bulk operations
       // const response = await fetch('/api/agents/bulk-action', {
@@ -2007,11 +1950,9 @@ const SecurityDashboard = () => {
 
       toast({
         title: "Bulk Operation Initiated",
-        description: `${action} operation started for ${selectedAgents.length} agents.`,
+        description: `${action} operation started for ${selectedAgents.length} agents.`
       });
-
       setSelectedAgents([]); // Clear selection
-      
     } catch (error) {
       toast({
         title: "Bulk Operation Failed",
@@ -2025,44 +1966,39 @@ const SecurityDashboard = () => {
    * Get dynamic API connections with enhanced status
    */
   const getDynamicApiConnections = () => {
-    return [
-      {
-        service: "Wazuh Manager",
-        endpoint: "localhost:55000",
-        status: serviceStatus.wazuh.online ? "connected" : "disconnected",
-        description: "SIEM agent management and log analysis",
-        lastCheck: serviceStatus.wazuh.lastCheck,
-        error: serviceStatus.wazuh.error,
-        key: "wazuh"
-      },
-      {
-        service: "OpenVAS Scanner",
-        endpoint: "localhost:9392",
-        status: serviceStatus.gvm.online ? "connected" : "disconnected",
-        description: "Vulnerability assessment and network scanning",
-        lastCheck: serviceStatus.gvm.lastCheck,
-        error: serviceStatus.gvm.error,
-        key: "gvm"
-      },
-      {
-        service: "OWASP ZAP",
-        endpoint: "localhost:8080",
-        status: serviceStatus.zap.online ? "connected" : "disconnected",
-        description: "Web application security testing",
-        lastCheck: serviceStatus.zap.lastCheck,
-        error: serviceStatus.zap.error,
-        key: "zap"
-      },
-      {
-        service: "Spiderfoot OSINT",
-        endpoint: "localhost:5001",
-        status: serviceStatus.spiderfoot.online ? "connected" : "disconnected",
-        description: "Open source intelligence gathering",
-        lastCheck: serviceStatus.spiderfoot.lastCheck,
-        error: serviceStatus.spiderfoot.error,
-        key: "spiderfoot"
-      }
-    ];
+    return [{
+      service: "Wazuh Manager",
+      endpoint: "localhost:55000",
+      status: serviceStatus.wazuh.online ? "connected" : "disconnected",
+      description: "SIEM agent management and log analysis",
+      lastCheck: serviceStatus.wazuh.lastCheck,
+      error: serviceStatus.wazuh.error,
+      key: "wazuh"
+    }, {
+      service: "OpenVAS Scanner",
+      endpoint: "localhost:9392",
+      status: serviceStatus.gvm.online ? "connected" : "disconnected",
+      description: "Vulnerability assessment and network scanning",
+      lastCheck: serviceStatus.gvm.lastCheck,
+      error: serviceStatus.gvm.error,
+      key: "gvm"
+    }, {
+      service: "OWASP ZAP",
+      endpoint: "localhost:8080",
+      status: serviceStatus.zap.online ? "connected" : "disconnected",
+      description: "Web application security testing",
+      lastCheck: serviceStatus.zap.lastCheck,
+      error: serviceStatus.zap.error,
+      key: "zap"
+    }, {
+      service: "Spiderfoot OSINT",
+      endpoint: "localhost:5001",
+      status: serviceStatus.spiderfoot.online ? "connected" : "disconnected",
+      description: "Open source intelligence gathering",
+      lastCheck: serviceStatus.spiderfoot.lastCheck,
+      error: serviceStatus.spiderfoot.error,
+      key: "spiderfoot"
+    }];
   };
 
   /**
@@ -2073,13 +2009,12 @@ const SecurityDashboard = () => {
     const offlineAgents = agents.filter(a => a.status === 'disconnected').length;
     const pendingAgents = agents.filter(a => a.status === 'never_connected').length;
     const totalAgents = agents.length;
-
     return {
       active: activeAgents,
       offline: offlineAgents,
       pending: pendingAgents,
       total: totalAgents,
-      healthScore: totalAgents > 0 ? Math.round((activeAgents / totalAgents) * 100) : 0
+      healthScore: totalAgents > 0 ? Math.round(activeAgents / totalAgents * 100) : 0
     };
   };
 
@@ -2087,69 +2022,62 @@ const SecurityDashboard = () => {
    * Mock CVE vulnerability data
    * In production, this would come from OpenVAS/GVM API and CVE databases
    */
-  const cveVulnerabilities = [
-    {
-      id: "CVE-2023-44487",
-      title: "HTTP/2 Rapid Reset Attack",
-      severity: "HIGH",
-      score: 7.5,
-      description: "The HTTP/2 protocol allows a denial of service (server resource consumption) because request cancellation can reset many streams quickly.",
-      affected: ["nginx", "apache", "nodejs"],
-      hosts: ["192.168.1.10", "192.168.1.11"],
-      status: "open",
-      published: "2023-10-10",
-      solution: "Update to patched versions: nginx 1.25.2+, Apache 2.4.58+"
-    },
-    {
-      id: "CVE-2023-4911",
-      title: "Looney Tunables - glibc Buffer Overflow",
-      severity: "CRITICAL",
-      score: 9.8,
-      description: "A buffer overflow was discovered in the GNU C Library's dynamic loader ld.so while processing the GLIBC_TUNABLES environment variable.",
-      affected: ["glibc"],
-      hosts: ["192.168.1.10", "192.168.1.12"],
-      status: "open",
-      published: "2023-10-03",
-      solution: "Update glibc to version 2.39 or apply security patches"
-    },
-    {
-      id: "CVE-2023-38545",
-      title: "curl SOCKS5 heap buffer overflow",
-      severity: "HIGH",
-      score: 8.8,
-      description: "This flaw makes curl overflow a heap based buffer in the SOCKS5 proxy handshake.",
-      affected: ["curl", "libcurl"],
-      hosts: ["192.168.1.11"],
-      status: "patched",
-      published: "2023-10-11",
-      solution: "Update curl to version 8.4.0 or later"
-    },
-    {
-      id: "CVE-2023-22515",
-      title: "Confluence Data Center Privilege Escalation",
-      severity: "CRITICAL",
-      score: 10.0,
-      description: "Broken access control vulnerability in Confluence Data Center and Server allows an unauthenticated attacker to reset Confluence.",
-      affected: ["atlassian-confluence"],
-      hosts: ["192.168.1.15"],
-      status: "open",
-      published: "2023-10-04",
-      solution: "Upgrade to fixed versions: 8.3.4, 8.4.4, 8.5.3, or later"
-    },
-    {
-      id: "CVE-2023-34362",
-      title: "MOVEit Transfer SQL Injection",
-      severity: "CRITICAL",
-      score: 9.8,
-      description: "In Progress MOVEit Transfer before 2021.0.6, 2021.1.4, 2022.0.4, 2022.1.5, and 2023.0.1, a SQL injection vulnerability has been found.",
-      affected: ["moveit-transfer"],
-      hosts: ["192.168.1.20"],
-      status: "mitigated",
-      published: "2023-06-02",
-      solution: "Upgrade MOVEit Transfer to the latest patched version"
-    }
-  ];
-
+  const cveVulnerabilities = [{
+    id: "CVE-2023-44487",
+    title: "HTTP/2 Rapid Reset Attack",
+    severity: "HIGH",
+    score: 7.5,
+    description: "The HTTP/2 protocol allows a denial of service (server resource consumption) because request cancellation can reset many streams quickly.",
+    affected: ["nginx", "apache", "nodejs"],
+    hosts: ["192.168.1.10", "192.168.1.11"],
+    status: "open",
+    published: "2023-10-10",
+    solution: "Update to patched versions: nginx 1.25.2+, Apache 2.4.58+"
+  }, {
+    id: "CVE-2023-4911",
+    title: "Looney Tunables - glibc Buffer Overflow",
+    severity: "CRITICAL",
+    score: 9.8,
+    description: "A buffer overflow was discovered in the GNU C Library's dynamic loader ld.so while processing the GLIBC_TUNABLES environment variable.",
+    affected: ["glibc"],
+    hosts: ["192.168.1.10", "192.168.1.12"],
+    status: "open",
+    published: "2023-10-03",
+    solution: "Update glibc to version 2.39 or apply security patches"
+  }, {
+    id: "CVE-2023-38545",
+    title: "curl SOCKS5 heap buffer overflow",
+    severity: "HIGH",
+    score: 8.8,
+    description: "This flaw makes curl overflow a heap based buffer in the SOCKS5 proxy handshake.",
+    affected: ["curl", "libcurl"],
+    hosts: ["192.168.1.11"],
+    status: "patched",
+    published: "2023-10-11",
+    solution: "Update curl to version 8.4.0 or later"
+  }, {
+    id: "CVE-2023-22515",
+    title: "Confluence Data Center Privilege Escalation",
+    severity: "CRITICAL",
+    score: 10.0,
+    description: "Broken access control vulnerability in Confluence Data Center and Server allows an unauthenticated attacker to reset Confluence.",
+    affected: ["atlassian-confluence"],
+    hosts: ["192.168.1.15"],
+    status: "open",
+    published: "2023-10-04",
+    solution: "Upgrade to fixed versions: 8.3.4, 8.4.4, 8.5.3, or later"
+  }, {
+    id: "CVE-2023-34362",
+    title: "MOVEit Transfer SQL Injection",
+    severity: "CRITICAL",
+    score: 9.8,
+    description: "In Progress MOVEit Transfer before 2021.0.6, 2021.1.4, 2022.0.4, 2022.1.5, and 2023.0.1, a SQL injection vulnerability has been found.",
+    affected: ["moveit-transfer"],
+    hosts: ["192.168.1.20"],
+    status: "mitigated",
+    published: "2023-06-02",
+    solution: "Upgrade MOVEit Transfer to the latest patched version"
+  }];
 
   /**
    * Gets vulnerability statistics
@@ -2161,111 +2089,110 @@ const SecurityDashboard = () => {
     const low = cveVulnerabilities.filter(v => v.severity === 'LOW').length;
     const open = cveVulnerabilities.filter(v => v.status === 'open').length;
     const patched = cveVulnerabilities.filter(v => v.status === 'patched').length;
-    
-    return { critical, high, medium, low, open, patched, total: cveVulnerabilities.length };
+    return {
+      critical,
+      high,
+      medium,
+      low,
+      open,
+      patched,
+      total: cveVulnerabilities.length
+    };
   };
 
   /**
    * Mock scan results data
    * In production, this would come from OpenVAS/GVM scan results API
    */
-  const scanResults = [
-    {
-      id: "scan_001",
-      name: "Network Infrastructure Scan",
-      type: "network",
-      target: "192.168.1.0/24",
-      status: "completed",
-      startTime: "2024-01-20 09:00:00",
-      endTime: "2024-01-20 11:30:00",
-      duration: "2h 30m",
-      vulnerabilities: {
-        critical: 2,
-        high: 5,
-        medium: 12,
-        low: 8,
-        info: 15
-      },
-      hostsCovered: 24,
-      ports: 1024,
-      progress: 100
+  const scanResults = [{
+    id: "scan_001",
+    name: "Network Infrastructure Scan",
+    type: "network",
+    target: "192.168.1.0/24",
+    status: "completed",
+    startTime: "2024-01-20 09:00:00",
+    endTime: "2024-01-20 11:30:00",
+    duration: "2h 30m",
+    vulnerabilities: {
+      critical: 2,
+      high: 5,
+      medium: 12,
+      low: 8,
+      info: 15
     },
-    {
-      id: "scan_002", 
-      name: "Web Application Security Test",
-      type: "web",
-      target: "https://webapp.company.com",
-      status: "completed",
-      startTime: "2024-01-20 14:00:00",
-      endTime: "2024-01-20 15:45:00",
-      duration: "1h 45m",
-      vulnerabilities: {
-        critical: 1,
-        high: 3,
-        medium: 7,
-        low: 4,
-        info: 11
-      },
-      hostsCovered: 1,
-      ports: 443,
-      progress: 100
+    hostsCovered: 24,
+    ports: 1024,
+    progress: 100
+  }, {
+    id: "scan_002",
+    name: "Web Application Security Test",
+    type: "web",
+    target: "https://webapp.company.com",
+    status: "completed",
+    startTime: "2024-01-20 14:00:00",
+    endTime: "2024-01-20 15:45:00",
+    duration: "1h 45m",
+    vulnerabilities: {
+      critical: 1,
+      high: 3,
+      medium: 7,
+      low: 4,
+      info: 11
     },
-    {
-      id: "scan_003",
-      name: "Database Server Assessment",
-      type: "database",
-      target: "192.168.1.11:3306,5432",
-      status: "running",
-      startTime: "2024-01-20 16:00:00",
-      endTime: null,
-      duration: "45m (ongoing)",
-      vulnerabilities: {
-        critical: 0,
-        high: 2,
-        medium: 5,
-        low: 3,
-        info: 8
-      },
-      hostsCovered: 2,
-      ports: 2,
-      progress: 67
+    hostsCovered: 1,
+    ports: 443,
+    progress: 100
+  }, {
+    id: "scan_003",
+    name: "Database Server Assessment",
+    type: "database",
+    target: "192.168.1.11:3306,5432",
+    status: "running",
+    startTime: "2024-01-20 16:00:00",
+    endTime: null,
+    duration: "45m (ongoing)",
+    vulnerabilities: {
+      critical: 0,
+      high: 2,
+      medium: 5,
+      low: 3,
+      info: 8
     },
-    {
-      id: "scan_004",
-      name: "Full Network Compliance Scan",
-      type: "compliance",
-      target: "All Network Assets",
-      status: "scheduled",
-      startTime: "2024-01-21 02:00:00",
-      endTime: null,
-      duration: "Estimated 4h",
-      vulnerabilities: {
-        critical: 0,
-        high: 0,
-        medium: 0,
-        low: 0,
-        info: 0
-      },
-      hostsCovered: 45,
-      ports: 65535,
-      progress: 0
-    }
-  ];
+    hostsCovered: 2,
+    ports: 2,
+    progress: 67
+  }, {
+    id: "scan_004",
+    name: "Full Network Compliance Scan",
+    type: "compliance",
+    target: "All Network Assets",
+    status: "scheduled",
+    startTime: "2024-01-21 02:00:00",
+    endTime: null,
+    duration: "Estimated 4h",
+    vulnerabilities: {
+      critical: 0,
+      high: 0,
+      medium: 0,
+      low: 0,
+      info: 0
+    },
+    hostsCovered: 45,
+    ports: 65535,
+    progress: 0
+  }];
 
   /**
    * Filter scan results based on selected criteria
    */
   const getFilteredScans = () => {
     let filtered = scanResults;
-    
     if (selectedScanType !== 'all') {
       filtered = filtered.filter(scan => scan.type === selectedScanType);
     }
-    
     if (resultFilter !== 'all') {
       filtered = filtered.filter(scan => scan.status === resultFilter);
     }
-    
     return filtered;
   };
 
@@ -2276,232 +2203,101 @@ const SecurityDashboard = () => {
     const completed = scanResults.filter(s => s.status === 'completed').length;
     const running = scanResults.filter(s => s.status === 'running').length;
     const scheduled = scanResults.filter(s => s.status === 'scheduled').length;
-    const totalVulns = scanResults.reduce((acc, scan) => 
-      acc + scan.vulnerabilities.critical + scan.vulnerabilities.high + 
-      scan.vulnerabilities.medium + scan.vulnerabilities.low, 0
-    );
-    
-    return { completed, running, scheduled, totalVulns, total: scanResults.length };
+    const totalVulns = scanResults.reduce((acc, scan) => acc + scan.vulnerabilities.critical + scan.vulnerabilities.high + scan.vulnerabilities.medium + scan.vulnerabilities.low, 0);
+    return {
+      completed,
+      running,
+      scheduled,
+      totalVulns,
+      total: scanResults.length
+    };
   };
 
   /**
    * OWASP Top 10 2021 Security Testing Categories
    * Research-based test definitions with educational payloads
    */
-  const owaspTop10Tests = [
-    {
-      id: 'A01',
-      category: 'Broken Access Control',
-      description: 'Testing for unauthorized access to resources and functions',
-      risk: 'CRITICAL',
-      tests: [
-        'Horizontal privilege escalation',
-        'Vertical privilege escalation', 
-        'Directory traversal',
-        'Force browsing',
-        'Missing function-level access control'
-      ],
-      payloads: [
-        '../../../etc/passwd',
-        '../../../../windows/system32/drivers/etc/hosts',
-        '/admin/users',
-        '/api/admin/delete_user',
-        'POST /api/users/1 with different user context'
-      ],
-      enabled: true
-    },
-    {
-      id: 'A02',
-      category: 'Cryptographic Failures',
-      description: 'Testing for weak cryptographic implementations',
-      risk: 'HIGH',
-      tests: [
-        'Weak encryption algorithms',
-        'Insufficient key lengths',
-        'Clear-text data transmission',
-        'Weak random number generation',
-        'Certificate validation issues'
-      ],
-      payloads: [
-        'SSL/TLS cipher suite analysis',
-        'HTTP vs HTTPS transmission check',
-        'Weak password hashing detection',
-        'Certificate chain validation',
-        'Random number predictability tests'
-      ],
-      enabled: true
-    },
-    {
-      id: 'A03',
-      category: 'Injection',
-      description: 'Testing for SQL, NoSQL, OS, and LDAP injection vulnerabilities',
-      risk: 'CRITICAL',
-      tests: [
-        'SQL injection',
-        'NoSQL injection',
-        'OS command injection',
-        'LDAP injection',
-        'XPath injection'
-      ],
-      payloads: [
-        "' OR '1'='1' --",
-        "'; DROP TABLE users; --",
-        '{"$gt": ""}',
-        '; ls -la',
-        '& ping 127.0.0.1',
-        "')(|(cn=*))",
-        "' or position()=1 or '"
-      ],
-      enabled: true
-    },
-    {
-      id: 'A04',
-      category: 'Insecure Design',
-      description: 'Testing for design flaws and missing security controls',
-      risk: 'MEDIUM',
-      tests: [
-        'Business logic flaws',
-        'Missing security controls',
-        'Insufficient threat modeling',
-        'Inadequate security architecture',
-        'Missing secure design patterns'
-      ],
-      payloads: [
-        'Business logic bypass attempts',
-        'Race condition tests',
-        'State manipulation tests',
-        'Workflow bypass attempts',
-        'Security control enumeration'
-      ],
-      enabled: true
-    },
-    {
-      id: 'A05',
-      category: 'Security Misconfiguration',
-      description: 'Testing for insecure default configurations',
-      risk: 'MEDIUM',
-      tests: [
-        'Default credentials',
-        'Directory listing',
-        'Unnecessary services',
-        'Error message disclosure',
-        'Missing security headers'
-      ],
-      payloads: [
-        'admin/admin login attempts',
-        '/server-status access test',
-        'HTTP OPTIONS method check',
-        'Forced SQL errors for info disclosure',
-        'Missing HSTS/CSP header detection'
-      ],
-      enabled: true
-    },
-    {
-      id: 'A06',
-      category: 'Vulnerable Components',
-      description: 'Testing for known vulnerable components and libraries',
-      risk: 'HIGH',
-      tests: [
-        'Outdated framework versions',
-        'Vulnerable JavaScript libraries',
-        'Known CVE exploitation',
-        'Component enumeration',
-        'License compliance checks'
-      ],
-      payloads: [
-        'Framework version fingerprinting',
-        'jQuery version detection',
-        'WordPress plugin enumeration',
-        'Known exploit payload testing',
-        'Dependency vulnerability scanning'
-      ],
-      enabled: true
-    },
-    {
-      id: 'A07',
-      category: 'Authentication Failures',
-      description: 'Testing for weak authentication and session management',
-      risk: 'HIGH',
-      tests: [
-        'Weak password policies',
-        'Brute force attacks',
-        'Session fixation',
-        'Session hijacking',
-        'Multi-factor authentication bypass'
-      ],
-      payloads: [
-        'Common password dictionary',
-        'Session token predictability tests',
-        'Cookie security analysis',
-        'Password reset token enumeration',
-        'Account lockout policy testing'
-      ],
-      enabled: true
-    },
-    {
-      id: 'A08',
-      category: 'Software Integrity Failures',
-      description: 'Testing for untrusted software updates and CI/CD security',
-      risk: 'MEDIUM',
-      tests: [
-        'Unsigned software updates',
-        'Insecure deserialization',
-        'Supply chain attacks',
-        'Code integrity verification',
-        'Auto-update mechanism security'
-      ],
-      payloads: [
-        'Malicious serialized objects',
-        'Update mechanism manipulation',
-        'Package repository poisoning tests',
-        'Code signing verification',
-        'Dependency confusion attacks'
-      ],
-      enabled: true
-    },
-    {
-      id: 'A09',
-      category: 'Logging & Monitoring Failures',
-      description: 'Testing for inadequate logging and monitoring',
-      risk: 'LOW',
-      tests: [
-        'Missing audit logs',
-        'Insufficient log data',
-        'Log injection attacks',
-        'Real-time monitoring gaps',
-        'Alert mechanism testing'
-      ],
-      payloads: [
-        'Log injection payloads',
-        'Event correlation tests',
-        'Log tampering attempts',
-        'Monitoring bypass techniques',
-        'Alert evasion methods'
-      ],
-      enabled: true
-    },
-    {
-      id: 'A10',
-      category: 'Server-Side Request Forgery',
-      description: 'Testing for SSRF vulnerabilities',
-      risk: 'MEDIUM',
-      tests: [
-        'Internal network scanning',
-        'Cloud metadata access',
-        'File system access',
-        'Service enumeration',
-        'Port scanning via SSRF'
-      ],
-      payloads: [
-        'http://127.0.0.1/admin',
-        'http://169.254.169.254/latest/meta-data/',
-        'file:///etc/passwd',
-        'http://localhost:22',
-        'gopher://127.0.0.1:3306/'
-      ],
-      enabled: true
-    }
-  ];
+  const owaspTop10Tests = [{
+    id: 'A01',
+    category: 'Broken Access Control',
+    description: 'Testing for unauthorized access to resources and functions',
+    risk: 'CRITICAL',
+    tests: ['Horizontal privilege escalation', 'Vertical privilege escalation', 'Directory traversal', 'Force browsing', 'Missing function-level access control'],
+    payloads: ['../../../etc/passwd', '../../../../windows/system32/drivers/etc/hosts', '/admin/users', '/api/admin/delete_user', 'POST /api/users/1 with different user context'],
+    enabled: true
+  }, {
+    id: 'A02',
+    category: 'Cryptographic Failures',
+    description: 'Testing for weak cryptographic implementations',
+    risk: 'HIGH',
+    tests: ['Weak encryption algorithms', 'Insufficient key lengths', 'Clear-text data transmission', 'Weak random number generation', 'Certificate validation issues'],
+    payloads: ['SSL/TLS cipher suite analysis', 'HTTP vs HTTPS transmission check', 'Weak password hashing detection', 'Certificate chain validation', 'Random number predictability tests'],
+    enabled: true
+  }, {
+    id: 'A03',
+    category: 'Injection',
+    description: 'Testing for SQL, NoSQL, OS, and LDAP injection vulnerabilities',
+    risk: 'CRITICAL',
+    tests: ['SQL injection', 'NoSQL injection', 'OS command injection', 'LDAP injection', 'XPath injection'],
+    payloads: ["' OR '1'='1' --", "'; DROP TABLE users; --", '{"$gt": ""}', '; ls -la', '& ping 127.0.0.1', "')(|(cn=*))", "' or position()=1 or '"],
+    enabled: true
+  }, {
+    id: 'A04',
+    category: 'Insecure Design',
+    description: 'Testing for design flaws and missing security controls',
+    risk: 'MEDIUM',
+    tests: ['Business logic flaws', 'Missing security controls', 'Insufficient threat modeling', 'Inadequate security architecture', 'Missing secure design patterns'],
+    payloads: ['Business logic bypass attempts', 'Race condition tests', 'State manipulation tests', 'Workflow bypass attempts', 'Security control enumeration'],
+    enabled: true
+  }, {
+    id: 'A05',
+    category: 'Security Misconfiguration',
+    description: 'Testing for insecure default configurations',
+    risk: 'MEDIUM',
+    tests: ['Default credentials', 'Directory listing', 'Unnecessary services', 'Error message disclosure', 'Missing security headers'],
+    payloads: ['admin/admin login attempts', '/server-status access test', 'HTTP OPTIONS method check', 'Forced SQL errors for info disclosure', 'Missing HSTS/CSP header detection'],
+    enabled: true
+  }, {
+    id: 'A06',
+    category: 'Vulnerable Components',
+    description: 'Testing for known vulnerable components and libraries',
+    risk: 'HIGH',
+    tests: ['Outdated framework versions', 'Vulnerable JavaScript libraries', 'Known CVE exploitation', 'Component enumeration', 'License compliance checks'],
+    payloads: ['Framework version fingerprinting', 'jQuery version detection', 'WordPress plugin enumeration', 'Known exploit payload testing', 'Dependency vulnerability scanning'],
+    enabled: true
+  }, {
+    id: 'A07',
+    category: 'Authentication Failures',
+    description: 'Testing for weak authentication and session management',
+    risk: 'HIGH',
+    tests: ['Weak password policies', 'Brute force attacks', 'Session fixation', 'Session hijacking', 'Multi-factor authentication bypass'],
+    payloads: ['Common password dictionary', 'Session token predictability tests', 'Cookie security analysis', 'Password reset token enumeration', 'Account lockout policy testing'],
+    enabled: true
+  }, {
+    id: 'A08',
+    category: 'Software Integrity Failures',
+    description: 'Testing for untrusted software updates and CI/CD security',
+    risk: 'MEDIUM',
+    tests: ['Unsigned software updates', 'Insecure deserialization', 'Supply chain attacks', 'Code integrity verification', 'Auto-update mechanism security'],
+    payloads: ['Malicious serialized objects', 'Update mechanism manipulation', 'Package repository poisoning tests', 'Code signing verification', 'Dependency confusion attacks'],
+    enabled: true
+  }, {
+    id: 'A09',
+    category: 'Logging & Monitoring Failures',
+    description: 'Testing for inadequate logging and monitoring',
+    risk: 'LOW',
+    tests: ['Missing audit logs', 'Insufficient log data', 'Log injection attacks', 'Real-time monitoring gaps', 'Alert mechanism testing'],
+    payloads: ['Log injection payloads', 'Event correlation tests', 'Log tampering attempts', 'Monitoring bypass techniques', 'Alert evasion methods'],
+    enabled: true
+  }, {
+    id: 'A10',
+    category: 'Server-Side Request Forgery',
+    description: 'Testing for SSRF vulnerabilities',
+    risk: 'MEDIUM',
+    tests: ['Internal network scanning', 'Cloud metadata access', 'File system access', 'Service enumeration', 'Port scanning via SSRF'],
+    payloads: ['http://127.0.0.1/admin', 'http://169.254.169.254/latest/meta-data/', 'file:///etc/passwd', 'http://localhost:22', 'gopher://127.0.0.1:3306/'],
+    enabled: true
+  }];
 
   /**
    * Handle OWASP Top 10 scan launch
@@ -2511,20 +2307,18 @@ const SecurityDashboard = () => {
       toast({
         title: "Invalid Target",
         description: "Please enter a valid HTTP/HTTPS URL for scanning",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     if (selectedOwaspTests.length === 0) {
       toast({
         title: "No Tests Selected",
         description: "Please select at least one OWASP Top 10 category to test",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     setOwaspScanning(true);
     setScanProgress(0);
 
@@ -2536,7 +2330,7 @@ const SecurityDashboard = () => {
           setOwaspScanning(false);
           toast({
             title: "OWASP Scan Complete",
-            description: `Completed testing ${selectedOwaspTests.length} categories against ${owaspTarget}`,
+            description: `Completed testing ${selectedOwaspTests.length} categories against ${owaspTarget}`
           });
           return 100;
         }
@@ -2549,11 +2343,7 @@ const SecurityDashboard = () => {
    * Toggle OWASP test selection
    */
   const toggleOwaspTest = (testId: string) => {
-    setSelectedOwaspTests(prev => 
-      prev.includes(testId) 
-        ? prev.filter(id => id !== testId)
-        : [...prev, testId]
-    );
+    setSelectedOwaspTests(prev => prev.includes(testId) ? prev.filter(id => id !== testId) : [...prev, testId]);
   };
 
   /**
@@ -2564,8 +2354,13 @@ const SecurityDashboard = () => {
     const high = owaspTop10Tests.filter(t => t.risk === 'HIGH' && selectedOwaspTests.includes(t.id)).length;
     const medium = owaspTop10Tests.filter(t => t.risk === 'MEDIUM' && selectedOwaspTests.includes(t.id)).length;
     const low = owaspTop10Tests.filter(t => t.risk === 'LOW' && selectedOwaspTests.includes(t.id)).length;
-    
-    return { critical, high, medium, low, total: selectedOwaspTests.length };
+    return {
+      critical,
+      high,
+      medium,
+      low,
+      total: selectedOwaspTests.length
+    };
   };
 
   /**
@@ -2573,522 +2368,459 @@ const SecurityDashboard = () => {
    * Based on 200+ available Spiderfoot modules for intelligence gathering
    */
   const spiderfootModules = [
-    // Core Network & Infrastructure
-    {
-      id: 'sfp_dnsresolve',
-      name: 'DNS Resolution',
-      category: 'Network',
-      description: 'Resolve DNS records for domains and subdomains',
-      risk: 'LOW',
-      enabled: true
-    },
-    {
-      id: 'sfp_whois',
-      name: 'WHOIS Lookup',
-      category: 'Network', 
-      description: 'WHOIS registration data for domains and IP addresses',
-      risk: 'LOW',
-      enabled: true
-    },
-    {
-      id: 'sfp_shodan',
-      name: 'Shodan Search',
-      category: 'Network',
-      description: 'Search Shodan for exposed services and vulnerabilities',
-      risk: 'MEDIUM',
-      enabled: true
-    },
-    {
-      id: 'sfp_censys',
-      name: 'Censys Search',
-      category: 'Network',
-      description: 'Certificate and host discovery via Censys',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_portscan',
-      name: 'Port Scanner',
-      category: 'Network',
-      description: 'TCP port scanning and service detection',
-      risk: 'HIGH',
-      enabled: false
-    },
-    {
-      id: 'sfp_ipneighbors',
-      name: 'IP Neighbors',
-      category: 'Network',
-      description: 'Find neighboring IP addresses and subnets',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_bgp',
-      name: 'BGP AS Lookup',
-      category: 'Network',
-      description: 'BGP autonomous system information',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_geoip',
-      name: 'GeoIP Location',
-      category: 'Network',
-      description: 'Geographic location of IP addresses',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_greynoise',
-      name: 'GreyNoise',
-      category: 'Network',
-      description: 'Check IPs against GreyNoise intelligence',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_internetdb',
-      name: 'InternetDB',
-      category: 'Network',
-      description: 'Shodan InternetDB for quick IP lookups',
-      risk: 'LOW',
-      enabled: false
-    },
-    
-    // Threat Intelligence
-    {
-      id: 'sfp_virustotal',
-      name: 'VirusTotal',
-      category: 'Threat Intel',
-      description: 'Check domains/IPs against VirusTotal database',
-      risk: 'MEDIUM',
-      enabled: true
-    },
-    {
-      id: 'sfp_threatcrowd',
-      name: 'ThreatCrowd',
-      category: 'Threat Intel',
-      description: 'Open source threat intelligence data',
-      risk: 'MEDIUM',
-      enabled: true
-    },
-    {
-      id: 'sfp_malwaredomains',
-      name: 'Malware Domains',
-      category: 'Threat Intel',
-      description: 'Check against known malware domain lists',
-      risk: 'HIGH',
-      enabled: false
-    },
-    {
-      id: 'sfp_alienvault',
-      name: 'AlienVault OTX',
-      category: 'Threat Intel',
-      description: 'AlienVault Open Threat Exchange intelligence',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_threatminer',
-      name: 'ThreatMiner',
-      category: 'Threat Intel',
-      description: 'Threat intelligence and data mining platform',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_maltiverse',
-      name: 'Maltiverse',
-      category: 'Threat Intel',
-      description: 'IOC and threat intelligence lookup service',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_threatfox',
-      name: 'ThreatFox',
-      category: 'Threat Intel',
-      description: 'Abuse.ch ThreatFox IOC database',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_urlvoid',
-      name: 'URLVoid',
-      category: 'Threat Intel',
-      description: 'URL reputation and safety checking',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_abuseipdb',
-      name: 'AbuseIPDB',
-      category: 'Threat Intel',
-      description: 'IP address abuse and reputation database',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_spamhaus',
-      name: 'Spamhaus',
-      category: 'Threat Intel',
-      description: 'Spamhaus blocklist and reputation data',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_emergingthreats',
-      name: 'Emerging Threats',
-      category: 'Threat Intel',
-      description: 'Emerging Threats Intelligence feeds',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    
-    // Search Engines & Web
-    {
-      id: 'sfp_google',
-      name: 'Google Search',
-      category: 'Search Engines',
-      description: 'Google dorking and search results analysis',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_bing',
-      name: 'Bing Search', 
-      category: 'Search Engines',
-      description: 'Bing search engine reconnaissance',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_duckduckgo',
-      name: 'DuckDuckGo Search',
-      category: 'Search Engines',
-      description: 'Privacy-focused search engine queries',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_yandex',
-      name: 'Yandex Search',
-      category: 'Search Engines',
-      description: 'Yandex search engine reconnaissance',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_baidu',
-      name: 'Baidu Search',
-      category: 'Search Engines',
-      description: 'Chinese Baidu search engine queries',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_pgp',
-      name: 'PGP Key Servers',
-      category: 'Search Engines',
-      description: 'Search PGP key servers for email addresses',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_pastebins',
-      name: 'Pastebin Search',
-      category: 'Search Engines',
-      description: 'Search pastebin sites for leaked data',
-      risk: 'HIGH',
-      enabled: false
-    },
-    {
-      id: 'sfp_github',
-      name: 'GitHub Search',
-      category: 'Search Engines',
-      description: 'GitHub code and repository search',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_wayback',
-      name: 'Wayback Machine',
-      category: 'Search Engines',
-      description: 'Internet Archive Wayback Machine lookups',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_commoncrawl',
-      name: 'Common Crawl',
-      category: 'Search Engines',
-      description: 'Common Crawl web archive search',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_securitytrails',
-      name: 'SecurityTrails',
-      category: 'Search Engines',
-      description: 'DNS and domain intelligence platform',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    
-    // Social Media & People
-    {
-      id: 'sfp_haveibeenpwned',
-      name: 'HaveIBeenPwned',
-      category: 'People',
-      description: 'Check emails against breach databases',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_hunter_io',
-      name: 'Hunter.io',
-      category: 'People',
-      description: 'Find email addresses associated with domains',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_linkedin',
-      name: 'LinkedIn',
-      category: 'People',
-      description: 'LinkedIn profile and company information',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_twitter',
-      name: 'Twitter/X Search',
-      category: 'People',
-      description: 'Twitter/X profile and tweet analysis',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_instagram',
-      name: 'Instagram',
-      category: 'People',
-      description: 'Instagram profile and post discovery',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_facebook',
-      name: 'Facebook',
-      category: 'People',
-      description: 'Facebook profile and page information',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_skype',
-      name: 'Skype Resolver',
-      category: 'People',
-      description: 'Skype username and profile resolution',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_telegram',
-      name: 'Telegram',
-      category: 'People',
-      description: 'Telegram username and channel search',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_reddit',
-      name: 'Reddit',
-      category: 'People',
-      description: 'Reddit user and post investigation',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_youtube',
-      name: 'YouTube',
-      category: 'People',
-      description: 'YouTube channel and video analysis',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_gravatar',
-      name: 'Gravatar',
-      category: 'People',
-      description: 'Gravatar profile and image lookup',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_fullcontact',
-      name: 'FullContact',
-      category: 'People',
-      description: 'Person and company profile enrichment',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_pipl',
-      name: 'Pipl Search',
-      category: 'People',
-      description: 'Deep people search and identity resolution',
-      risk: 'HIGH',
-      enabled: false
-    },
-    {
-      id: 'sfp_phonebook',
-      name: 'Phonebook.cz',
-      category: 'People',
-      description: 'Subdomain and email enumeration service',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    
-    // Certificate & SSL
-    {
-      id: 'sfp_sslcert',
-      name: 'SSL Certificate',
-      category: 'Certificates',
-      description: 'SSL certificate analysis and validation',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_crt_sh',
-      name: 'Certificate Transparency',
-      category: 'Certificates',
-      description: 'Certificate transparency log searches',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_sslmate',
-      name: 'SSLMate Certspotter',
-      category: 'Certificates',
-      description: 'Certificate monitoring and discovery',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_sslshopper',
-      name: 'SSL Shopper',
-      category: 'Certificates',
-      description: 'SSL certificate checker and validator',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_entrust',
-      name: 'Entrust Certificate Search',
-      category: 'Certificates',
-      description: 'Entrust certificate authority lookups',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_google_ct',
-      name: 'Google Certificate Transparency',
-      category: 'Certificates',
-      description: 'Google certificate transparency logs',
-      risk: 'LOW',
-      enabled: false
-    },
-    {
-      id: 'sfp_facebook_ct',
-      name: 'Facebook Certificate Transparency',
-      category: 'Certificates',
-      description: 'Facebook certificate transparency monitoring',
-      risk: 'LOW',
-      enabled: false
-    },
-    
-    // Subdomain Discovery
-    {
-      id: 'sfp_subdomain_takeover',
-      name: 'Subdomain Takeover',
-      category: 'Subdomains',
-      description: 'Detect potential subdomain takeover vulnerabilities',
-      risk: 'HIGH',
-      enabled: false
-    },
-    {
-      id: 'sfp_dnsbrute',
-      name: 'DNS Brute Force',
-      category: 'Subdomains',
-      description: 'Brute force subdomain discovery',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_subdomain_enum',
-      name: 'Subdomain Enumeration',
-      category: 'Subdomains',
-      description: 'Comprehensive subdomain enumeration techniques',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_dnsdb',
-      name: 'Farsight DNSDB',
-      category: 'Subdomains',
-      description: 'Passive DNS database for subdomain discovery',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_sublist3r',
-      name: 'Sublist3r Engine',
-      category: 'Subdomains',
-      description: 'Multi-source subdomain enumeration',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_amass',
-      name: 'OWASP Amass',
-      category: 'Subdomains',
-      description: 'In-depth attack surface mapping',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_subfinder',
-      name: 'Subfinder',
-      category: 'Subdomains',
-      description: 'Fast subdomain discovery tool integration',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_assetfinder',
-      name: 'Assetfinder',
-      category: 'Subdomains',
-      description: 'Find domains and subdomains related to target',
-      risk: 'MEDIUM',
-      enabled: false
-    },
-    {
-      id: 'sfp_cname_takeover',
-      name: 'CNAME Takeover',
-      category: 'Subdomains',
-      description: 'CNAME record takeover vulnerability detection',
-      risk: 'HIGH',
-      enabled: false
-    },
-    {
-      id: 'sfp_chaos',
-      name: 'ProjectDiscovery Chaos',
-      category: 'Subdomains',
-      description: 'Chaos dataset for subdomain reconnaissance',
-      risk: 'MEDIUM',
-      enabled: false
-    }
-  ];
+  // Core Network & Infrastructure
+  {
+    id: 'sfp_dnsresolve',
+    name: 'DNS Resolution',
+    category: 'Network',
+    description: 'Resolve DNS records for domains and subdomains',
+    risk: 'LOW',
+    enabled: true
+  }, {
+    id: 'sfp_whois',
+    name: 'WHOIS Lookup',
+    category: 'Network',
+    description: 'WHOIS registration data for domains and IP addresses',
+    risk: 'LOW',
+    enabled: true
+  }, {
+    id: 'sfp_shodan',
+    name: 'Shodan Search',
+    category: 'Network',
+    description: 'Search Shodan for exposed services and vulnerabilities',
+    risk: 'MEDIUM',
+    enabled: true
+  }, {
+    id: 'sfp_censys',
+    name: 'Censys Search',
+    category: 'Network',
+    description: 'Certificate and host discovery via Censys',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_portscan',
+    name: 'Port Scanner',
+    category: 'Network',
+    description: 'TCP port scanning and service detection',
+    risk: 'HIGH',
+    enabled: false
+  }, {
+    id: 'sfp_ipneighbors',
+    name: 'IP Neighbors',
+    category: 'Network',
+    description: 'Find neighboring IP addresses and subnets',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_bgp',
+    name: 'BGP AS Lookup',
+    category: 'Network',
+    description: 'BGP autonomous system information',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_geoip',
+    name: 'GeoIP Location',
+    category: 'Network',
+    description: 'Geographic location of IP addresses',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_greynoise',
+    name: 'GreyNoise',
+    category: 'Network',
+    description: 'Check IPs against GreyNoise intelligence',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_internetdb',
+    name: 'InternetDB',
+    category: 'Network',
+    description: 'Shodan InternetDB for quick IP lookups',
+    risk: 'LOW',
+    enabled: false
+  },
+  // Threat Intelligence
+  {
+    id: 'sfp_virustotal',
+    name: 'VirusTotal',
+    category: 'Threat Intel',
+    description: 'Check domains/IPs against VirusTotal database',
+    risk: 'MEDIUM',
+    enabled: true
+  }, {
+    id: 'sfp_threatcrowd',
+    name: 'ThreatCrowd',
+    category: 'Threat Intel',
+    description: 'Open source threat intelligence data',
+    risk: 'MEDIUM',
+    enabled: true
+  }, {
+    id: 'sfp_malwaredomains',
+    name: 'Malware Domains',
+    category: 'Threat Intel',
+    description: 'Check against known malware domain lists',
+    risk: 'HIGH',
+    enabled: false
+  }, {
+    id: 'sfp_alienvault',
+    name: 'AlienVault OTX',
+    category: 'Threat Intel',
+    description: 'AlienVault Open Threat Exchange intelligence',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_threatminer',
+    name: 'ThreatMiner',
+    category: 'Threat Intel',
+    description: 'Threat intelligence and data mining platform',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_maltiverse',
+    name: 'Maltiverse',
+    category: 'Threat Intel',
+    description: 'IOC and threat intelligence lookup service',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_threatfox',
+    name: 'ThreatFox',
+    category: 'Threat Intel',
+    description: 'Abuse.ch ThreatFox IOC database',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_urlvoid',
+    name: 'URLVoid',
+    category: 'Threat Intel',
+    description: 'URL reputation and safety checking',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_abuseipdb',
+    name: 'AbuseIPDB',
+    category: 'Threat Intel',
+    description: 'IP address abuse and reputation database',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_spamhaus',
+    name: 'Spamhaus',
+    category: 'Threat Intel',
+    description: 'Spamhaus blocklist and reputation data',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_emergingthreats',
+    name: 'Emerging Threats',
+    category: 'Threat Intel',
+    description: 'Emerging Threats Intelligence feeds',
+    risk: 'MEDIUM',
+    enabled: false
+  },
+  // Search Engines & Web
+  {
+    id: 'sfp_google',
+    name: 'Google Search',
+    category: 'Search Engines',
+    description: 'Google dorking and search results analysis',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_bing',
+    name: 'Bing Search',
+    category: 'Search Engines',
+    description: 'Bing search engine reconnaissance',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_duckduckgo',
+    name: 'DuckDuckGo Search',
+    category: 'Search Engines',
+    description: 'Privacy-focused search engine queries',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_yandex',
+    name: 'Yandex Search',
+    category: 'Search Engines',
+    description: 'Yandex search engine reconnaissance',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_baidu',
+    name: 'Baidu Search',
+    category: 'Search Engines',
+    description: 'Chinese Baidu search engine queries',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_pgp',
+    name: 'PGP Key Servers',
+    category: 'Search Engines',
+    description: 'Search PGP key servers for email addresses',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_pastebins',
+    name: 'Pastebin Search',
+    category: 'Search Engines',
+    description: 'Search pastebin sites for leaked data',
+    risk: 'HIGH',
+    enabled: false
+  }, {
+    id: 'sfp_github',
+    name: 'GitHub Search',
+    category: 'Search Engines',
+    description: 'GitHub code and repository search',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_wayback',
+    name: 'Wayback Machine',
+    category: 'Search Engines',
+    description: 'Internet Archive Wayback Machine lookups',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_commoncrawl',
+    name: 'Common Crawl',
+    category: 'Search Engines',
+    description: 'Common Crawl web archive search',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_securitytrails',
+    name: 'SecurityTrails',
+    category: 'Search Engines',
+    description: 'DNS and domain intelligence platform',
+    risk: 'MEDIUM',
+    enabled: false
+  },
+  // Social Media & People
+  {
+    id: 'sfp_haveibeenpwned',
+    name: 'HaveIBeenPwned',
+    category: 'People',
+    description: 'Check emails against breach databases',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_hunter_io',
+    name: 'Hunter.io',
+    category: 'People',
+    description: 'Find email addresses associated with domains',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_linkedin',
+    name: 'LinkedIn',
+    category: 'People',
+    description: 'LinkedIn profile and company information',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_twitter',
+    name: 'Twitter/X Search',
+    category: 'People',
+    description: 'Twitter/X profile and tweet analysis',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_instagram',
+    name: 'Instagram',
+    category: 'People',
+    description: 'Instagram profile and post discovery',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_facebook',
+    name: 'Facebook',
+    category: 'People',
+    description: 'Facebook profile and page information',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_skype',
+    name: 'Skype Resolver',
+    category: 'People',
+    description: 'Skype username and profile resolution',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_telegram',
+    name: 'Telegram',
+    category: 'People',
+    description: 'Telegram username and channel search',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_reddit',
+    name: 'Reddit',
+    category: 'People',
+    description: 'Reddit user and post investigation',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_youtube',
+    name: 'YouTube',
+    category: 'People',
+    description: 'YouTube channel and video analysis',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_gravatar',
+    name: 'Gravatar',
+    category: 'People',
+    description: 'Gravatar profile and image lookup',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_fullcontact',
+    name: 'FullContact',
+    category: 'People',
+    description: 'Person and company profile enrichment',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_pipl',
+    name: 'Pipl Search',
+    category: 'People',
+    description: 'Deep people search and identity resolution',
+    risk: 'HIGH',
+    enabled: false
+  }, {
+    id: 'sfp_phonebook',
+    name: 'Phonebook.cz',
+    category: 'People',
+    description: 'Subdomain and email enumeration service',
+    risk: 'MEDIUM',
+    enabled: false
+  },
+  // Certificate & SSL
+  {
+    id: 'sfp_sslcert',
+    name: 'SSL Certificate',
+    category: 'Certificates',
+    description: 'SSL certificate analysis and validation',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_crt_sh',
+    name: 'Certificate Transparency',
+    category: 'Certificates',
+    description: 'Certificate transparency log searches',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_sslmate',
+    name: 'SSLMate Certspotter',
+    category: 'Certificates',
+    description: 'Certificate monitoring and discovery',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_sslshopper',
+    name: 'SSL Shopper',
+    category: 'Certificates',
+    description: 'SSL certificate checker and validator',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_entrust',
+    name: 'Entrust Certificate Search',
+    category: 'Certificates',
+    description: 'Entrust certificate authority lookups',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_google_ct',
+    name: 'Google Certificate Transparency',
+    category: 'Certificates',
+    description: 'Google certificate transparency logs',
+    risk: 'LOW',
+    enabled: false
+  }, {
+    id: 'sfp_facebook_ct',
+    name: 'Facebook Certificate Transparency',
+    category: 'Certificates',
+    description: 'Facebook certificate transparency monitoring',
+    risk: 'LOW',
+    enabled: false
+  },
+  // Subdomain Discovery
+  {
+    id: 'sfp_subdomain_takeover',
+    name: 'Subdomain Takeover',
+    category: 'Subdomains',
+    description: 'Detect potential subdomain takeover vulnerabilities',
+    risk: 'HIGH',
+    enabled: false
+  }, {
+    id: 'sfp_dnsbrute',
+    name: 'DNS Brute Force',
+    category: 'Subdomains',
+    description: 'Brute force subdomain discovery',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_subdomain_enum',
+    name: 'Subdomain Enumeration',
+    category: 'Subdomains',
+    description: 'Comprehensive subdomain enumeration techniques',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_dnsdb',
+    name: 'Farsight DNSDB',
+    category: 'Subdomains',
+    description: 'Passive DNS database for subdomain discovery',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_sublist3r',
+    name: 'Sublist3r Engine',
+    category: 'Subdomains',
+    description: 'Multi-source subdomain enumeration',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_amass',
+    name: 'OWASP Amass',
+    category: 'Subdomains',
+    description: 'In-depth attack surface mapping',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_subfinder',
+    name: 'Subfinder',
+    category: 'Subdomains',
+    description: 'Fast subdomain discovery tool integration',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_assetfinder',
+    name: 'Assetfinder',
+    category: 'Subdomains',
+    description: 'Find domains and subdomains related to target',
+    risk: 'MEDIUM',
+    enabled: false
+  }, {
+    id: 'sfp_cname_takeover',
+    name: 'CNAME Takeover',
+    category: 'Subdomains',
+    description: 'CNAME record takeover vulnerability detection',
+    risk: 'HIGH',
+    enabled: false
+  }, {
+    id: 'sfp_chaos',
+    name: 'ProjectDiscovery Chaos',
+    category: 'Subdomains',
+    description: 'Chaos dataset for subdomain reconnaissance',
+    risk: 'MEDIUM',
+    enabled: false
+  }];
 
   /**
    * Handle Spiderfoot OSINT scan launch
@@ -3098,20 +2830,18 @@ const SecurityDashboard = () => {
       toast({
         title: "Target Required",
         description: "Please enter a target for OSINT reconnaissance",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     if (selectedSpiderfootModules.length === 0) {
       toast({
         title: "No Modules Selected",
         description: "Please select at least one OSINT module for scanning",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     setSpiderfootScanning(true);
     setScanProgress(0);
 
@@ -3123,7 +2853,7 @@ const SecurityDashboard = () => {
           setSpiderfootScanning(false);
           toast({
             title: "OSINT Scan Complete",
-            description: `Gathered intelligence on ${spiderfootTarget} using ${selectedSpiderfootModules.length} modules`,
+            description: `Gathered intelligence on ${spiderfootTarget} using ${selectedSpiderfootModules.length} modules`
           });
           return 100;
         }
@@ -3136,11 +2866,7 @@ const SecurityDashboard = () => {
    * Toggle Spiderfoot module selection
    */
   const toggleSpiderfootModule = (moduleId: string) => {
-    setSelectedSpiderfootModules(prev => 
-      prev.includes(moduleId) 
-        ? prev.filter(id => id !== moduleId)
-        : [...prev, moduleId]
-    );
+    setSelectedSpiderfootModules(prev => prev.includes(moduleId) ? prev.filter(id => id !== moduleId) : [...prev, moduleId]);
   };
 
   /**
@@ -3150,8 +2876,12 @@ const SecurityDashboard = () => {
     const high = spiderfootModules.filter(m => m.risk === 'HIGH' && selectedSpiderfootModules.includes(m.id)).length;
     const medium = spiderfootModules.filter(m => m.risk === 'MEDIUM' && selectedSpiderfootModules.includes(m.id)).length;
     const low = spiderfootModules.filter(m => m.risk === 'LOW' && selectedSpiderfootModules.includes(m.id)).length;
-    
-    return { high, medium, low, total: selectedSpiderfootModules.length };
+    return {
+      high,
+      medium,
+      low,
+      total: selectedSpiderfootModules.length
+    };
   };
 
   /**
@@ -3159,13 +2889,20 @@ const SecurityDashboard = () => {
    */
   const getTargetTypeIcon = (type: string) => {
     switch (type) {
-      case 'domain': return Globe;
-      case 'ip': return Server;
-      case 'email': return Mail;
-      case 'phone': return Phone;
-      case 'name': return User;
-      case 'company': return Building;
-      default: return Target;
+      case 'domain':
+        return Globe;
+      case 'ip':
+        return Server;
+      case 'email':
+        return Mail;
+      case 'phone':
+        return Phone;
+      case 'name':
+        return User;
+      case 'company':
+        return Building;
+      default:
+        return Target;
     }
   };
   // REMOVED: Static tools array replaced with getDynamicToolsData() function
@@ -3174,8 +2911,7 @@ const SecurityDashboard = () => {
   // REMOVED: Static recentAlerts array replaced with getDynamicAlertFeed() function
   // Alert data is now generated dynamically based on real service connections
 
-  return (
-    <div className="min-h-screen gradient-bg text-foreground">
+  return <div className="min-h-screen gradient-bg text-foreground">
       {/* Header with IppsY Toggle */}
       <header className="sticky top-0 z-40 border-b border-border/30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-14 items-center justify-between px-6">
@@ -3186,82 +2922,49 @@ const SecurityDashboard = () => {
           
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-6">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => requestAnimationFrame(() => document.getElementById('agentic-pentest')?.scrollIntoView({ behavior: 'smooth' }))}
-              className="hover:text-primary transition-colors"
-            >
+            <Button variant="ghost" size="sm" onClick={() => requestAnimationFrame(() => document.getElementById('agentic-pentest')?.scrollIntoView({
+            behavior: 'smooth'
+          }))} className="hover:text-primary transition-colors">
               AI Pentest
             </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => requestAnimationFrame(() => document.getElementById('security-admin')?.scrollIntoView({ behavior: 'smooth' }))}
-              className="hover:text-primary transition-colors"
-            >
+            <Button variant="ghost" size="sm" onClick={() => requestAnimationFrame(() => document.getElementById('security-admin')?.scrollIntoView({
+            behavior: 'smooth'
+          }))} className="hover:text-primary transition-colors">
               Administration
             </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => requestAnimationFrame(() => document.getElementById('services-status')?.scrollIntoView({ behavior: 'smooth' }))}
-              className="hover:text-primary transition-colors"
-            >
+            <Button variant="ghost" size="sm" onClick={() => requestAnimationFrame(() => document.getElementById('services-status')?.scrollIntoView({
+            behavior: 'smooth'
+          }))} className="hover:text-primary transition-colors">
               Services
             </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => requestAnimationFrame(() => document.getElementById('alert-feed')?.scrollIntoView({ behavior: 'smooth' }))}
-              className="hover:text-primary transition-colors"
-            >
+            <Button variant="ghost" size="sm" onClick={() => requestAnimationFrame(() => document.getElementById('alert-feed')?.scrollIntoView({
+            behavior: 'smooth'
+          }))} className="hover:text-primary transition-colors">
               Alerts
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setIsSchedulerOpen(true)}
-              className="flex items-center gap-2 glow-hover transition-all duration-200"
-            >
+            <Button variant="outline" size="sm" onClick={() => setIsSchedulerOpen(true)} className="flex items-center gap-2 glow-hover transition-all duration-200">
               <Calendar className="h-4 w-4" />
               Scheduler
             </Button>
           </nav>
           
-          <Button
-            onClick={() => setIsReportingOpen(true)}
-            variant="outline"
-            className="flex items-center gap-2 glow-hover transition-all duration-200"
-          >
+          <Button onClick={() => setIsReportingOpen(true)} variant="outline" className="flex items-center gap-2 glow-hover transition-all duration-200">
             <Brain className="h-4 w-4" />
             AI Reports
           </Button>
           
-          <Button
-            onClick={() => setIsProductionConfigOpen(true)}
-            variant="outline"
-            className="flex items-center gap-2 glow-hover transition-all duration-200"
-          >
+          <Button onClick={() => setIsProductionConfigOpen(true)} variant="outline" className="flex items-center gap-2 glow-hover transition-all duration-200">
             <Settings className="h-4 w-4" />
             Production Config
           </Button>
           
-          <Button
-            onClick={() => setIsDocumentationOpen(true)}
-            variant="outline"
-            className="flex items-center gap-2 glow-hover transition-all duration-200"
-          >
+          <Button onClick={() => setIsDocumentationOpen(true)} variant="outline" className="flex items-center gap-2 glow-hover transition-all duration-200">
             <FileText className="h-4 w-4" />
             Documentation
           </Button>
           
           
-          <Button
-            onClick={() => setIsIppsYOpen(!isIppsYOpen)}
-            variant={isIppsYOpen ? "default" : "outline"}
-            className="flex items-center gap-2 glow-hover transition-all duration-200"
-          >
+          <Button onClick={() => setIsIppsYOpen(!isIppsYOpen)} variant={isIppsYOpen ? "default" : "outline"} className="flex items-center gap-2 glow-hover transition-all duration-200">
             <Bot className="h-4 w-4" />
             IppsY
             {isIppsYOpen && <X className="h-4 w-4" />}
@@ -3276,14 +2979,11 @@ const SecurityDashboard = () => {
         <div className={`flex-1 transition-all duration-300 ${isIppsYOpen ? 'mr-96' : ''}`}>
           {/* Hero Section */}
           <div className="relative overflow-hidden">
-        <div 
-          className="absolute inset-0 opacity-20"
-          style={{
+        <div className="absolute inset-0 opacity-20" style={{
             backgroundImage: `url(${heroImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
-          }}
-        />
+          }} />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
         
         <div className="relative container mx-auto px-6 py-16">
@@ -3329,7 +3029,9 @@ const SecurityDashboard = () => {
                         <div className="grid grid-cols-2 gap-4 mt-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-blue-400/60 animate-[pulse_3s_ease-in-out_infinite]" />
-                            <span>Autonomous Nmap → SQLMap → Nikto chains</span>
+                            <span>Autonomous Pentesting chains
+
+                              </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-slate-400/60 animate-[pulse_3.5s_ease-in-out_infinite]" />
@@ -3348,27 +3050,19 @@ const SecurityDashboard = () => {
                     </div>
                     
                     <div className="flex flex-col items-center gap-4">
-                      <Button 
-                        onClick={() => setIsAgenticPentestOpen(true)}
-                        size="lg"
-                        className="flex items-center gap-3"
-                      >
+                      <Button onClick={() => setIsAgenticPentestOpen(true)} size="lg" className="flex items-center gap-3">
                         <Settings className="h-5 w-5" />
                         Configure & Launch AI Pentest
                       </Button>
                       
-                      <Button 
-                        onClick={() => setIsOSINTAgentOpen(true)}
-                        size="lg"
-                        className="bg-gradient-to-r from-cyan-600/80 to-teal-600/80 hover:from-cyan-700/90 hover:to-teal-700/90 text-white px-8 py-4 text-lg font-medium shadow-lg hover:shadow-cyan-500/20 transition-all duration-500"
-                      >
+                      <Button onClick={() => setIsOSINTAgentOpen(true)} size="lg" className="bg-gradient-to-r from-cyan-600/80 to-teal-600/80 hover:from-cyan-700/90 hover:to-teal-700/90 text-white px-8 py-4 text-lg font-medium shadow-lg hover:shadow-cyan-500/20 transition-all duration-500">
                         <Eye className="h-6 w-6 mr-3" />
                         Launch Encrypted OSINT Agent
                         <Lock className="h-4 w-4 ml-2" />
                       </Button>
                       
                       <div className="text-center">
-                        <div className="text-xs text-muted-foreground">K8s Ready • WebSocket Updates • Comprehensive Logging</div>
+                        <div className="text-xs text-muted-foreground">WebScket Updates • Comprehensive Logging</div>
                       </div>
                     </div>
                   </div>
@@ -3407,11 +3101,7 @@ const SecurityDashboard = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <Dialog open={isWazuhManagementOpen} onOpenChange={setIsWazuhManagementOpen}>
                         <DialogTrigger asChild>
-                          <Button 
-                            className="glow-hover" 
-                            variant="default"
-                            size="sm"
-                          >
+                          <Button className="glow-hover" variant="default" size="sm">
                             Manage Wazuh SIEM
                           </Button>
                         </DialogTrigger>
@@ -3495,22 +3185,14 @@ const SecurityDashboard = () => {
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-popover border border-border z-50">
-                                  {agents.map((agent) => (
-                                    <SelectItem key={agent.id} value={agent.id}>
+                                  {agents.map(agent => <SelectItem key={agent.id} value={agent.id}>
                                       <div className="flex items-center gap-2">
-                                        <div className={`w-2 h-2 rounded-full ${
-                                          agent.status === 'active' 
-                                            ? 'bg-green-500' 
-                                            : agent.status === 'disconnected'
-                                            ? 'bg-red-500'
-                                            : 'bg-yellow-500'
-                                        }`} />
+                                        <div className={`w-2 h-2 rounded-full ${agent.status === 'active' ? 'bg-green-500' : agent.status === 'disconnected' ? 'bg-red-500' : 'bg-yellow-500'}`} />
                                         <span className="font-mono text-sm">{agent.id}</span>
                                         <span>{agent.name}</span>
                                         <span className="text-muted-foreground">({agent.ip})</span>
                                       </div>
-                                    </SelectItem>
-                                  ))}
+                                    </SelectItem>)}
                                 </SelectContent>
                               </Select>
                               
@@ -3553,7 +3235,10 @@ const SecurityDashboard = () => {
                                 <div className="grid grid-cols-2 gap-4">
                                   <div className="space-y-2">
                                     <Label htmlFor="log-level">Log Level</Label>
-                                    <Select value={agentConfig.logLevel} onValueChange={(value) => setAgentConfig({...agentConfig, logLevel: value})}>
+                                    <Select value={agentConfig.logLevel} onValueChange={value => setAgentConfig({
+                                        ...agentConfig,
+                                        logLevel: value
+                                      })}>
                                       <SelectTrigger className="glow-hover">
                                         <SelectValue />
                                       </SelectTrigger>
@@ -3568,7 +3253,10 @@ const SecurityDashboard = () => {
                                   
                                   <div className="space-y-2">
                                     <Label htmlFor="scan-frequency">Scan Frequency</Label>
-                                    <Select value={agentConfig.scanFrequency} onValueChange={(value) => setAgentConfig({...agentConfig, scanFrequency: value})}>
+                                    <Select value={agentConfig.scanFrequency} onValueChange={value => setAgentConfig({
+                                        ...agentConfig,
+                                        scanFrequency: value
+                                      })}>
                                       <SelectTrigger className="glow-hover">
                                         <SelectValue />
                                       </SelectTrigger>
@@ -3586,7 +3274,10 @@ const SecurityDashboard = () => {
 
                                 <div className="space-y-2">
                                   <Label htmlFor="alert-level">Minimum Alert Level</Label>
-                                  <Select value={agentConfig.alertLevel} onValueChange={(value) => setAgentConfig({...agentConfig, alertLevel: value})}>
+                                  <Select value={agentConfig.alertLevel} onValueChange={value => setAgentConfig({
+                                      ...agentConfig,
+                                      alertLevel: value
+                                    })}>
                                     <SelectTrigger className="glow-hover">
                                       <SelectValue />
                                     </SelectTrigger>
@@ -3609,10 +3300,10 @@ const SecurityDashboard = () => {
                                       <Label className="text-base">File Integrity Monitoring (Syscheck)</Label>
                                       <p className="text-sm text-muted-foreground">Monitor file system changes and integrity</p>
                                     </div>
-                                    <Switch 
-                                      checked={agentConfig.enableSyscheck} 
-                                      onCheckedChange={(checked) => setAgentConfig({...agentConfig, enableSyscheck: checked})}
-                                    />
+                                    <Switch checked={agentConfig.enableSyscheck} onCheckedChange={checked => setAgentConfig({
+                                        ...agentConfig,
+                                        enableSyscheck: checked
+                                      })} />
                                   </div>
 
                                   <div className="flex items-center justify-between">
@@ -3620,10 +3311,10 @@ const SecurityDashboard = () => {
                                       <Label className="text-base">Rootkit Detection (Rootcheck)</Label>
                                       <p className="text-sm text-muted-foreground">Detect rootkits and system anomalies</p>
                                     </div>
-                                    <Switch 
-                                      checked={agentConfig.enableRootcheck} 
-                                      onCheckedChange={(checked) => setAgentConfig({...agentConfig, enableRootcheck: checked})}
-                                    />
+                                    <Switch checked={agentConfig.enableRootcheck} onCheckedChange={checked => setAgentConfig({
+                                        ...agentConfig,
+                                        enableRootcheck: checked
+                                      })} />
                                   </div>
 
                                   <div className="flex items-center justify-between">
@@ -3631,10 +3322,10 @@ const SecurityDashboard = () => {
                                       <Label className="text-base">OpenSCAP Integration</Label>
                                       <p className="text-sm text-muted-foreground">Security compliance and vulnerability assessment</p>
                                     </div>
-                                    <Switch 
-                                      checked={agentConfig.enableOpenscap} 
-                                      onCheckedChange={(checked) => setAgentConfig({...agentConfig, enableOpenscap: checked})}
-                                    />
+                                    <Switch checked={agentConfig.enableOpenscap} onCheckedChange={checked => setAgentConfig({
+                                        ...agentConfig,
+                                        enableOpenscap: checked
+                                      })} />
                                   </div>
 
                                   <div className="flex items-center justify-between">
@@ -3642,10 +3333,10 @@ const SecurityDashboard = () => {
                                       <Label className="text-base">Security Configuration Assessment (SCA)</Label>
                                       <p className="text-sm text-muted-foreground">Automated security policy compliance checks</p>
                                     </div>
-                                    <Switch 
-                                      checked={agentConfig.enableSca} 
-                                      onCheckedChange={(checked) => setAgentConfig({...agentConfig, enableSca: checked})}
-                                    />
+                                    <Switch checked={agentConfig.enableSca} onCheckedChange={checked => setAgentConfig({
+                                        ...agentConfig,
+                                        enableSca: checked
+                                      })} />
                                   </div>
                                 </div>
                               </TabsContent>
@@ -3653,19 +3344,16 @@ const SecurityDashboard = () => {
                               <TabsContent value="custom" className="space-y-4">
                                 <div className="space-y-2">
                                   <Label htmlFor="custom-rules">Custom Detection Rules</Label>
-                                  <Textarea
-                                    id="custom-rules"
-                                    placeholder={`<!-- Add custom local rules for this agent -->
+                                  <Textarea id="custom-rules" placeholder={`<!-- Add custom local rules for this agent -->
 <group name="local">
   <rule id="100001" level="7">
     <match>custom_pattern</match>
     <description>Custom rule for agent ${selectedAgent}</description>
   </rule>
-</group>`}
-                                    value={agentConfig.customRules}
-                                    onChange={(e) => setAgentConfig({...agentConfig, customRules: e.target.value})}
-                                    className="glow-hover font-mono text-sm min-h-[200px]"
-                                  />
+</group>`} value={agentConfig.customRules} onChange={e => setAgentConfig({
+                                      ...agentConfig,
+                                      customRules: e.target.value
+                                    })} className="glow-hover font-mono text-sm min-h-[200px]" />
                                   <p className="text-xs text-muted-foreground">
                                     Define custom rules specific to this agent. Rules will be applied locally on the agent.
                                   </p>
@@ -3708,11 +3396,7 @@ const SecurityDashboard = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <Dialog open={isGvmManagementOpen} onOpenChange={setIsGvmManagementOpen}>
                         <DialogTrigger asChild>
-                          <Button 
-                            className="glow-hover" 
-                            variant="default"
-                            size="sm"
-                          >
+                          <Button className="glow-hover" variant="default" size="sm">
                             Manage GVM/OpenVAS
                           </Button>
                         </DialogTrigger>
@@ -3769,27 +3453,17 @@ const SecurityDashboard = () => {
                                   </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                  <Button 
-                                    onClick={handleStartCveScan}
-                                    disabled={cveScanning}
-                                    className="w-full glow-hover group"
-                                    variant={cveScanning ? "secondary" : "default"}
-                                  >
-                                    {cveScanning ? (
-                                      <>
+                                  <Button onClick={handleStartCveScan} disabled={cveScanning} className="w-full glow-hover group" variant={cveScanning ? "secondary" : "default"}>
+                                    {cveScanning ? <>
                                         <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                                         Scanning...
-                                      </>
-                                    ) : (
-                                      <>
+                                      </> : <>
                                         <Scan className="h-4 w-4 mr-2 group-hover:animate-bounce" />
                                         Start CVE Scan
-                                      </>
-                                    )}
+                                      </>}
                                   </Button>
                                   
-                                  {cveScanning && (
-                                    <div className="space-y-2">
+                                  {cveScanning && <div className="space-y-2">
                                       <div className="flex justify-between text-sm">
                                         <span>Scan Progress</span>
                                         <span>{Math.round(scanProgress)}%</span>
@@ -3798,8 +3472,7 @@ const SecurityDashboard = () => {
                                       <p className="text-xs text-muted-foreground">
                                         Analyzing {agents.length} hosts for vulnerabilities...
                                       </p>
-                                    </div>
-                                  )}
+                                    </div>}
                                   
                                   <div className="pt-2 border-t border-border/50">
                                     <div className="text-sm text-muted-foreground mb-2">Last Scan</div>
@@ -3899,29 +3572,16 @@ const SecurityDashboard = () => {
                                       </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                      {cveVulnerabilities.map((vuln, index) => (
-                                        <TableRow key={vuln.id} className="hover:bg-primary/5 transition-colors group animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
+                                      {cveVulnerabilities.map((vuln, index) => <TableRow key={vuln.id} className="hover:bg-primary/5 transition-colors group animate-fade-in" style={{
+                                          animationDelay: `${index * 0.1}s`
+                                        }}>
                                           <TableCell className="font-mono text-sm font-semibold text-primary group-hover:text-accent transition-colors">
                                             {vuln.id}
                                           </TableCell>
                                           <TableCell>
                                             <div className="flex items-center gap-2">
-                                              <div className={`w-3 h-3 rounded-full ${
-                                                vuln.severity === 'CRITICAL' 
-                                                  ? 'bg-red-500 shadow-lg shadow-red-500/50 animate-pulse' 
-                                                  : vuln.severity === 'HIGH'
-                                                  ? 'bg-orange-500 shadow-lg shadow-orange-500/50 animate-pulse'
-                                                  : vuln.severity === 'MEDIUM'
-                                                  ? 'bg-yellow-500 shadow-lg shadow-yellow-500/50'
-                                                  : 'bg-blue-500 shadow-lg shadow-blue-500/50'
-                                              }`} />
-                                              <Badge 
-                                                variant={
-                                                  vuln.severity === 'CRITICAL' ? 'destructive' : 
-                                                  vuln.severity === 'HIGH' ? 'destructive' : 'secondary'
-                                                }
-                                                className="text-xs animate-pulse-glow"
-                                              >
+                                              <div className={`w-3 h-3 rounded-full ${vuln.severity === 'CRITICAL' ? 'bg-red-500 shadow-lg shadow-red-500/50 animate-pulse' : vuln.severity === 'HIGH' ? 'bg-orange-500 shadow-lg shadow-orange-500/50 animate-pulse' : vuln.severity === 'MEDIUM' ? 'bg-yellow-500 shadow-lg shadow-yellow-500/50' : 'bg-blue-500 shadow-lg shadow-blue-500/50'}`} />
+                                              <Badge variant={vuln.severity === 'CRITICAL' ? 'destructive' : vuln.severity === 'HIGH' ? 'destructive' : 'secondary'} className="text-xs animate-pulse-glow">
                                                 {vuln.severity}
                                               </Badge>
                                             </div>
@@ -3936,35 +3596,25 @@ const SecurityDashboard = () => {
                                           </TableCell>
                                           <TableCell>
                                             <div className="space-y-1">
-                                              {vuln.hosts.map((host, i) => (
-                                                <Badge key={i} variant="outline" className="text-xs font-mono">
+                                              {vuln.hosts.map((host, i) => <Badge key={i} variant="outline" className="text-xs font-mono">
                                                   {host}
-                                                </Badge>
-                                              ))}
+                                                </Badge>)}
                                             </div>
                                           </TableCell>
                                           <TableCell>
-                                            <Badge 
-                                              variant={vuln.status === 'open' ? 'destructive' : vuln.status === 'patched' ? 'default' : 'secondary'}
-                                              className="text-xs"
-                                            >
+                                            <Badge variant={vuln.status === 'open' ? 'destructive' : vuln.status === 'patched' ? 'default' : 'secondary'} className="text-xs">
                                               {vuln.status.toUpperCase()}
                                             </Badge>
                                           </TableCell>
                                           <TableCell>
-                                            <div className={`font-bold text-sm ${
-                                              vuln.score >= 9 ? 'text-red-500' :
-                                              vuln.score >= 7 ? 'text-orange-500' :
-                                              vuln.score >= 4 ? 'text-yellow-500' : 'text-blue-500'
-                                            }`}>
+                                            <div className={`font-bold text-sm ${vuln.score >= 9 ? 'text-red-500' : vuln.score >= 7 ? 'text-orange-500' : vuln.score >= 4 ? 'text-yellow-500' : 'text-blue-500'}`}>
                                               {vuln.score}/10
                                             </div>
                                           </TableCell>
                                           <TableCell className="text-sm">
                                             {vuln.published}
                                           </TableCell>
-                                        </TableRow>
-                                      ))}
+                                        </TableRow>)}
                                     </TableBody>
                                   </Table>
                                 </ScrollArea>
@@ -4140,8 +3790,9 @@ const SecurityDashboard = () => {
                                       </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                      {getFilteredScans().map((scan, index) => (
-                                        <TableRow key={scan.id} className="hover:bg-primary/5 transition-colors group animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
+                                      {getFilteredScans().map((scan, index) => <TableRow key={scan.id} className="hover:bg-primary/5 transition-colors group animate-fade-in" style={{
+                                          animationDelay: `${index * 0.1}s`
+                                        }}>
                                           <TableCell>
                                             <div className="font-medium group-hover:text-primary transition-colors">
                                               {scan.name}
@@ -4151,15 +3802,7 @@ const SecurityDashboard = () => {
                                             </div>
                                           </TableCell>
                                           <TableCell>
-                                            <Badge 
-                                              variant="outline" 
-                                              className={`text-xs ${
-                                                scan.type === 'network' ? 'border-blue-500/50 text-blue-400' :
-                                                scan.type === 'web' ? 'border-green-500/50 text-green-400' :
-                                                scan.type === 'database' ? 'border-purple-500/50 text-purple-400' :
-                                                'border-orange-500/50 text-orange-400'
-                                              }`}
-                                            >
+                                            <Badge variant="outline" className={`text-xs ${scan.type === 'network' ? 'border-blue-500/50 text-blue-400' : scan.type === 'web' ? 'border-green-500/50 text-green-400' : scan.type === 'database' ? 'border-purple-500/50 text-purple-400' : 'border-orange-500/50 text-orange-400'}`}>
                                               {scan.type.toUpperCase()}
                                             </Badge>
                                           </TableCell>
@@ -4170,50 +3813,28 @@ const SecurityDashboard = () => {
                                           </TableCell>
                                           <TableCell>
                                             <div className="flex items-center gap-2">
-                                              <div className={`w-2 h-2 rounded-full ${
-                                                scan.status === 'completed' 
-                                                  ? 'bg-green-500 shadow-lg shadow-green-500/50' 
-                                                  : scan.status === 'running'
-                                                  ? 'bg-blue-500 shadow-lg shadow-blue-500/50 animate-pulse'
-                                                  : 'bg-yellow-500 shadow-lg shadow-yellow-500/50'
-                                              }`} />
-                                              <Badge 
-                                                variant={
-                                                  scan.status === 'completed' ? 'default' : 
-                                                  scan.status === 'running' ? 'secondary' : 'outline'
-                                                }
-                                                className="text-xs"
-                                              >
+                                              <div className={`w-2 h-2 rounded-full ${scan.status === 'completed' ? 'bg-green-500 shadow-lg shadow-green-500/50' : scan.status === 'running' ? 'bg-blue-500 shadow-lg shadow-blue-500/50 animate-pulse' : 'bg-yellow-500 shadow-lg shadow-yellow-500/50'}`} />
+                                              <Badge variant={scan.status === 'completed' ? 'default' : scan.status === 'running' ? 'secondary' : 'outline'} className="text-xs">
                                                 {scan.status.toUpperCase()}
                                               </Badge>
                                             </div>
-                                            {scan.status === 'running' && (
-                                              <Progress value={scan.progress} className="mt-1 h-1" />
-                                            )}
+                                            {scan.status === 'running' && <Progress value={scan.progress} className="mt-1 h-1" />}
                                           </TableCell>
                                           <TableCell>
                                             <div className="space-y-1">
                                               <div className="flex gap-1 flex-wrap">
-                                                {scan.vulnerabilities.critical > 0 && (
-                                                  <Badge variant="destructive" className="text-xs px-1 animate-pulse">
+                                                {scan.vulnerabilities.critical > 0 && <Badge variant="destructive" className="text-xs px-1 animate-pulse">
                                                     C:{scan.vulnerabilities.critical}
-                                                  </Badge>
-                                                )}
-                                                {scan.vulnerabilities.high > 0 && (
-                                                  <Badge variant="destructive" className="text-xs px-1">
+                                                  </Badge>}
+                                                {scan.vulnerabilities.high > 0 && <Badge variant="destructive" className="text-xs px-1">
                                                     H:{scan.vulnerabilities.high}
-                                                  </Badge>
-                                                )}
-                                                {scan.vulnerabilities.medium > 0 && (
-                                                  <Badge variant="secondary" className="text-xs px-1">
+                                                  </Badge>}
+                                                {scan.vulnerabilities.medium > 0 && <Badge variant="secondary" className="text-xs px-1">
                                                     M:{scan.vulnerabilities.medium}
-                                                  </Badge>
-                                                )}
-                                                {scan.vulnerabilities.low > 0 && (
-                                                  <Badge variant="outline" className="text-xs px-1">
+                                                  </Badge>}
+                                                {scan.vulnerabilities.low > 0 && <Badge variant="outline" className="text-xs px-1">
                                                     L:{scan.vulnerabilities.low}
-                                                  </Badge>
-                                                )}
+                                                  </Badge>}
                                               </div>
                                               <div className="text-xs text-muted-foreground">
                                                 Total: {(scan.vulnerabilities as any).critical + (scan.vulnerabilities as any).high + (scan.vulnerabilities as any).medium + (scan.vulnerabilities as any).low}
@@ -4224,11 +3845,9 @@ const SecurityDashboard = () => {
                                             <div className="text-sm">
                                               {scan.duration}
                                             </div>
-                                            {scan.startTime && (
-                                              <div className="text-xs text-muted-foreground">
+                                            {scan.startTime && <div className="text-xs text-muted-foreground">
                                                 Started: {scan.startTime.split(' ')[1]}
-                                              </div>
-                                            )}
+                                              </div>}
                                           </TableCell>
                                           <TableCell>
                                             <div className="text-sm">
@@ -4242,8 +3861,7 @@ const SecurityDashboard = () => {
                                               </div>
                                             </div>
                                           </TableCell>
-                                        </TableRow>
-                                      ))}
+                                        </TableRow>)}
                                     </TableBody>
                                   </Table>
                                 </ScrollArea>
@@ -4610,20 +4228,10 @@ const SecurityDashboard = () => {
                                       </Badge>
                                     </CardTitle>
                                     <div className="flex gap-2">
-                                      <Button 
-                                        variant="outline" 
-                                        size="sm"
-                                        onClick={() => setSelectedSpiderfootModules(spiderfootModules.map(m => m.id))}
-                                        className="glow-hover"
-                                      >
+                                      <Button variant="outline" size="sm" onClick={() => setSelectedSpiderfootModules(spiderfootModules.map(m => m.id))} className="glow-hover">
                                         Select All
                                       </Button>
-                                      <Button 
-                                        variant="outline" 
-                                        size="sm"
-                                        onClick={() => setSelectedSpiderfootModules([])}
-                                        className="glow-hover"
-                                      >
+                                      <Button variant="outline" size="sm" onClick={() => setSelectedSpiderfootModules([])} className="glow-hover">
                                         Clear All
                                       </Button>
                                     </div>
@@ -4639,20 +4247,14 @@ const SecurityDashboard = () => {
                                     
                                     <TabsContent value="network" className="space-y-3">
                                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        {spiderfootModules.filter(m => ['Network', 'Subdomains', 'Certificates'].includes(m.category)).map(module => (
-                                          <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
-                                            <Checkbox
-                                              id={`sf-module-${module.id}`}
-                                              checked={selectedSpiderfootModules.includes(module.id)}
-                                              onCheckedChange={(checked) => {
-                                                if (checked) {
-                                                  setSelectedSpiderfootModules([...selectedSpiderfootModules, module.id]);
-                                                } else {
-                                                  setSelectedSpiderfootModules(selectedSpiderfootModules.filter(id => id !== module.id));
-                                                }
-                                              }}
-                                              className="glow-hover"
-                                            />
+                                        {spiderfootModules.filter(m => ['Network', 'Subdomains', 'Certificates'].includes(m.category)).map(module => <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
+                                            <Checkbox id={`sf-module-${module.id}`} checked={selectedSpiderfootModules.includes(module.id)} onCheckedChange={checked => {
+                                              if (checked) {
+                                                setSelectedSpiderfootModules([...selectedSpiderfootModules, module.id]);
+                                              } else {
+                                                setSelectedSpiderfootModules(selectedSpiderfootModules.filter(id => id !== module.id));
+                                              }
+                                            }} className="glow-hover" />
                                             <div className="flex-1 min-w-0">
                                               <label htmlFor={`sf-module-${module.id}`} className="text-sm font-medium cursor-pointer line-clamp-1">
                                                 {module.name}
@@ -4669,27 +4271,20 @@ const SecurityDashboard = () => {
                                                 </Badge>
                                               </div>
                                             </div>
-                                          </div>
-                                        ))}
+                                          </div>)}
                                       </div>
                                     </TabsContent>
                                     
                                     <TabsContent value="threat" className="space-y-3">
                                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        {spiderfootModules.filter(m => m.category === 'Threat Intel').map(module => (
-                                          <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
-                                            <Checkbox
-                                              id={`sf-module-${module.id}`}
-                                              checked={selectedSpiderfootModules.includes(module.id)}
-                                              onCheckedChange={(checked) => {
-                                                if (checked) {
-                                                  setSelectedSpiderfootModules([...selectedSpiderfootModules, module.id]);
-                                                } else {
-                                                  setSelectedSpiderfootModules(selectedSpiderfootModules.filter(id => id !== module.id));
-                                                }
-                                              }}
-                                              className="glow-hover"
-                                            />
+                                        {spiderfootModules.filter(m => m.category === 'Threat Intel').map(module => <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
+                                            <Checkbox id={`sf-module-${module.id}`} checked={selectedSpiderfootModules.includes(module.id)} onCheckedChange={checked => {
+                                              if (checked) {
+                                                setSelectedSpiderfootModules([...selectedSpiderfootModules, module.id]);
+                                              } else {
+                                                setSelectedSpiderfootModules(selectedSpiderfootModules.filter(id => id !== module.id));
+                                              }
+                                            }} className="glow-hover" />
                                             <div className="flex-1 min-w-0">
                                               <label htmlFor={`sf-module-${module.id}`} className="text-sm font-medium cursor-pointer line-clamp-1">
                                                 {module.name}
@@ -4706,27 +4301,20 @@ const SecurityDashboard = () => {
                                                 </Badge>
                                               </div>
                                             </div>
-                                          </div>
-                                        ))}
+                                          </div>)}
                                       </div>
                                     </TabsContent>
                                     
                                     <TabsContent value="search" className="space-y-3">
                                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        {spiderfootModules.filter(m => ['Search Engines', 'People'].includes(m.category)).map(module => (
-                                          <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
-                                            <Checkbox
-                                              id={`sf-module-${module.id}`}
-                                              checked={selectedSpiderfootModules.includes(module.id)}
-                                              onCheckedChange={(checked) => {
-                                                if (checked) {
-                                                  setSelectedSpiderfootModules([...selectedSpiderfootModules, module.id]);
-                                                } else {
-                                                  setSelectedSpiderfootModules(selectedSpiderfootModules.filter(id => id !== module.id));
-                                                }
-                                              }}
-                                              className="glow-hover"
-                                            />
+                                        {spiderfootModules.filter(m => ['Search Engines', 'People'].includes(m.category)).map(module => <div key={module.id} className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all">
+                                            <Checkbox id={`sf-module-${module.id}`} checked={selectedSpiderfootModules.includes(module.id)} onCheckedChange={checked => {
+                                              if (checked) {
+                                                setSelectedSpiderfootModules([...selectedSpiderfootModules, module.id]);
+                                              } else {
+                                                setSelectedSpiderfootModules(selectedSpiderfootModules.filter(id => id !== module.id));
+                                              }
+                                            }} className="glow-hover" />
                                             <div className="flex-1 min-w-0">
                                               <label htmlFor={`sf-module-${module.id}`} className="text-sm font-medium cursor-pointer line-clamp-1">
                                                 {module.name}
@@ -4743,8 +4331,7 @@ const SecurityDashboard = () => {
                                                 </Badge>
                                               </div>
                                             </div>
-                                          </div>
-                                        ))}
+                                          </div>)}
                                       </div>
                                     </TabsContent>
                                   </Tabs>
@@ -4829,48 +4416,25 @@ const SecurityDashboard = () => {
                                     <div className="space-y-2">
                                       <Label htmlFor="sf-target">Target Value *</Label>
                                       <div className="flex items-center gap-2">
-                                        {React.createElement(getTargetTypeIcon(spiderfootTargetType), { 
-                                          className: "h-4 w-4 text-muted-foreground" 
-                                        })}
-                                        <Input
-                                          id="sf-target"
-                                          placeholder={
-                                            spiderfootTargetType === 'domain' ? 'example.com' :
-                                            spiderfootTargetType === 'ip' ? '192.168.1.1' :
-                                            spiderfootTargetType === 'email' ? 'user@domain.com' :
-                                            spiderfootTargetType === 'phone' ? '+1-555-123-4567' :
-                                            spiderfootTargetType === 'name' ? 'John Doe' :
-                                            'Company Name'
-                                          }
-                                          value={spiderfootTarget}
-                                          onChange={(e) => setSpiderfootTarget(e.target.value)}
-                                          className="glow-hover flex-1"
-                                        />
+                                        {React.createElement(getTargetTypeIcon(spiderfootTargetType), {
+                                            className: "h-4 w-4 text-muted-foreground"
+                                          })}
+                                        <Input id="sf-target" placeholder={spiderfootTargetType === 'domain' ? 'example.com' : spiderfootTargetType === 'ip' ? '192.168.1.1' : spiderfootTargetType === 'email' ? 'user@domain.com' : spiderfootTargetType === 'phone' ? '+1-555-123-4567' : spiderfootTargetType === 'name' ? 'John Doe' : 'Company Name'} value={spiderfootTarget} onChange={e => setSpiderfootTarget(e.target.value)} className="glow-hover flex-1" />
                                       </div>
                                     </div>
                                   </div>
                                   
-                                  <Button 
-                                    onClick={handleSpiderfootScan}
-                                    disabled={spiderfootScanning}
-                                    className="w-full glow-hover group"
-                                    variant={spiderfootScanning ? "secondary" : "default"}
-                                  >
-                                    {spiderfootScanning ? (
-                                      <>
+                                  <Button onClick={handleSpiderfootScan} disabled={spiderfootScanning} className="w-full glow-hover group" variant={spiderfootScanning ? "secondary" : "default"}>
+                                    {spiderfootScanning ? <>
                                         <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                                         Gathering Intelligence...
-                                      </>
-                                    ) : (
-                                      <>
+                                      </> : <>
                                         <Play className="h-4 w-4 mr-2 group-hover:animate-bounce" />
                                         Launch OSINT Scan
-                                      </>
-                                    )}
+                                      </>}
                                   </Button>
                                   
-                                  {spiderfootScanning && (
-                                    <div className="space-y-2">
+                                  {spiderfootScanning && <div className="space-y-2">
                                       <div className="flex justify-between text-sm">
                                         <span>OSINT Progress</span>
                                         <span>{Math.round(scanProgress)}%</span>
@@ -4879,8 +4443,7 @@ const SecurityDashboard = () => {
                                       <p className="text-xs text-muted-foreground">
                                         Running {selectedSpiderfootModules.length} intelligence modules...
                                       </p>
-                                    </div>
-                                  )}
+                                    </div>}
                                 </CardContent>
                               </Card>
 
@@ -4969,27 +4532,18 @@ const SecurityDashboard = () => {
                             <TabsContent value="profiles" className="space-y-4">
                               <ScrollArea className="h-[400px] w-full">
                                 <div className="space-y-4 pr-4">
-                                  {osintProfiles.map((profile) => (
-                                    <Card key={profile.id} className="gradient-card border border-primary/20 glow-hover">
+                                  {osintProfiles.map(profile => <Card key={profile.id} className="gradient-card border border-primary/20 glow-hover">
                                       <CardHeader className="pb-3">
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-3">
-                                            <div className={`w-3 h-3 rounded-full ${
-                                              profile.status === 'active' ? 'bg-green-500 animate-pulse' :
-                                              profile.status === 'paused' ? 'bg-yellow-500' :
-                                              'bg-gray-500'
-                                            }`} />
+                                            <div className={`w-3 h-3 rounded-full ${profile.status === 'active' ? 'bg-green-500 animate-pulse' : profile.status === 'paused' ? 'bg-yellow-500' : 'bg-gray-500'}`} />
                                             <div>
                                               <CardTitle className="text-lg">{profile.name}</CardTitle>
                                               <CardDescription className="flex items-center gap-2">
                                                 <Badge variant="outline" className="text-xs">
                                                   {profile.type.toUpperCase()}
                                                 </Badge>
-                                                <Badge variant={
-                                                  profile.priority === 'critical' ? 'destructive' :
-                                                  profile.priority === 'high' ? 'default' :
-                                                  'secondary'
-                                                } className="text-xs">
+                                                <Badge variant={profile.priority === 'critical' ? 'destructive' : profile.priority === 'high' ? 'default' : 'secondary'} className="text-xs">
                                                   {profile.priority.toUpperCase()}
                                                 </Badge>
                                               </CardDescription>
@@ -4999,12 +4553,7 @@ const SecurityDashboard = () => {
                                             <Button variant="ghost" size="sm" className="glow-hover">
                                               <Settings className="h-4 w-4" />
                                             </Button>
-                                            <Button 
-                                              variant="ghost" 
-                                              size="sm" 
-                                              className="glow-hover text-destructive hover:text-destructive"
-                                              onClick={() => handleDeleteProfile(profile.id)}
-                                            >
+                                            <Button variant="ghost" size="sm" className="glow-hover text-destructive hover:text-destructive" onClick={() => handleDeleteProfile(profile.id)}>
                                               <AlertTriangle className="h-4 w-4" />
                                             </Button>
                                           </div>
@@ -5014,21 +4563,17 @@ const SecurityDashboard = () => {
                                         <div>
                                           <div className="text-sm font-medium mb-2">Monitored Targets ({profile.targets.length})</div>
                                           <div className="flex flex-wrap gap-2">
-                                            {profile.targets.map((target, idx) => (
-                                              <Badge key={idx} variant="outline" className="text-xs font-mono bg-muted/50">
+                                            {profile.targets.map((target, idx) => <Badge key={idx} variant="outline" className="text-xs font-mono bg-muted/50">
                                                 <Lock className="h-3 w-3 mr-1" />
                                                 {target}
-                                              </Badge>
-                                            ))}
+                                              </Badge>)}
                                           </div>
                                         </div>
                                         
-                                        {profile.description && (
-                                          <div>
+                                        {profile.description && <div>
                                             <div className="text-sm font-medium mb-1">Description</div>
                                             <p className="text-sm text-muted-foreground">{profile.description}</p>
-                                          </div>
-                                        )}
+                                          </div>}
 
                                         <div className="grid grid-cols-3 gap-4 pt-2 border-t border-border/50">
                                           <div className="text-center">
@@ -5060,8 +4605,7 @@ const SecurityDashboard = () => {
                                           </Button>
                                         </div>
                                       </CardContent>
-                                    </Card>
-                                  ))}
+                                    </Card>)}
                                 </div>
                               </ScrollArea>
                             </TabsContent>
@@ -5085,18 +4629,18 @@ const SecurityDashboard = () => {
                                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                           <Label htmlFor="profile-name">Profile Name *</Label>
-                                          <Input
-                                            id="profile-name"
-                                            placeholder="e.g., Corporate Domain Monitoring"
-                                            value={newProfile.name}
-                                            onChange={(e) => setNewProfile({ ...newProfile, name: e.target.value })}
-                                            className="glow-hover"
-                                          />
+                                          <Input id="profile-name" placeholder="e.g., Corporate Domain Monitoring" value={newProfile.name} onChange={e => setNewProfile({
+                                              ...newProfile,
+                                              name: e.target.value
+                                            })} className="glow-hover" />
                                         </div>
 
                                         <div className="space-y-2">
                                           <Label htmlFor="profile-type">Asset Type</Label>
-                                          <Select value={newProfile.type} onValueChange={(value) => setNewProfile({ ...newProfile, type: value })}>
+                                          <Select value={newProfile.type} onValueChange={value => setNewProfile({
+                                              ...newProfile,
+                                              type: value
+                                            })}>
                                             <SelectTrigger className="glow-hover">
                                               <SelectValue />
                                             </SelectTrigger>
@@ -5144,7 +4688,10 @@ const SecurityDashboard = () => {
 
                                       <div className="space-y-2">
                                         <Label htmlFor="profile-priority">Priority Level</Label>
-                                        <Select value={newProfile.priority} onValueChange={(value) => setNewProfile({ ...newProfile, priority: value })}>
+                                        <Select value={newProfile.priority} onValueChange={value => setNewProfile({
+                                            ...newProfile,
+                                            priority: value
+                                          })}>
                                           <SelectTrigger className="glow-hover">
                                             <SelectValue />
                                           </SelectTrigger>
@@ -5171,13 +4718,10 @@ const SecurityDashboard = () => {
 
                                       <div className="space-y-2">
                                         <Label htmlFor="profile-description">Description</Label>
-                                        <Textarea
-                                          id="profile-description"
-                                          placeholder="Describe what this profile monitors and why it's important..."
-                                          value={newProfile.description}
-                                          onChange={(e) => setNewProfile({ ...newProfile, description: e.target.value })}
-                                          className="glow-hover min-h-[80px]"
-                                        />
+                                        <Textarea id="profile-description" placeholder="Describe what this profile monitors and why it's important..." value={newProfile.description} onChange={e => setNewProfile({
+                                            ...newProfile,
+                                            description: e.target.value
+                                          })} className="glow-hover min-h-[80px]" />
                                       </div>
                                     </CardContent>
                                   </Card>
@@ -5194,42 +4738,16 @@ const SecurityDashboard = () => {
                                       </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
-                                      {newProfile.targets.map((target, index) => (
-                                        <div key={index} className="flex items-center gap-2">
+                                      {newProfile.targets.map((target, index) => <div key={index} className="flex items-center gap-2">
                                           <div className="flex-1">
-                                            <Input
-                                              placeholder={
-                                                newProfile.type === 'domain' ? 'example.com' :
-                                                newProfile.type === 'ip' ? '192.168.1.0/24' :
-                                                newProfile.type === 'email' ? 'contact@example.com' :
-                                                newProfile.type === 'phone' ? '+1-555-0123' :
-                                                newProfile.type === 'person' ? 'John Doe' :
-                                                'Company Name'
-                                              }
-                                              value={target}
-                                              onChange={(e) => handleTargetChange(index, e.target.value)}
-                                              className="glow-hover"
-                                            />
+                                            <Input placeholder={newProfile.type === 'domain' ? 'example.com' : newProfile.type === 'ip' ? '192.168.1.0/24' : newProfile.type === 'email' ? 'contact@example.com' : newProfile.type === 'phone' ? '+1-555-0123' : newProfile.type === 'person' ? 'John Doe' : 'Company Name'} value={target} onChange={e => handleTargetChange(index, e.target.value)} className="glow-hover" />
                                           </div>
-                                          {newProfile.targets.length > 1 && (
-                                            <Button
-                                              variant="ghost"
-                                              size="sm"
-                                              onClick={() => removeTargetField(index)}
-                                              className="text-destructive hover:text-destructive glow-hover"
-                                            >
+                                          {newProfile.targets.length > 1 && <Button variant="ghost" size="sm" onClick={() => removeTargetField(index)} className="text-destructive hover:text-destructive glow-hover">
                                               <AlertTriangle className="h-4 w-4" />
-                                            </Button>
-                                          )}
-                                        </div>
-                                      ))}
+                                            </Button>}
+                                        </div>)}
                                       
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={addTargetField}
-                                        className="glow-hover"
-                                      >
+                                      <Button variant="outline" size="sm" onClick={addTargetField} className="glow-hover">
                                         <Target className="h-4 w-4 mr-2" />
                                         Add Another Target
                                       </Button>
@@ -5257,17 +4775,10 @@ const SecurityDashboard = () => {
                               </ScrollArea>
 
                               <div className="flex justify-end gap-2 pt-4 border-t border-border/50">
-                                <Button 
-                                  variant="outline" 
-                                  onClick={() => setIsOsintProfilesOpen(false)}
-                                  className="glow-hover"
-                                >
+                                <Button variant="outline" onClick={() => setIsOsintProfilesOpen(false)} className="glow-hover">
                                   Cancel
                                 </Button>
-                                <Button 
-                                  onClick={handleCreateProfile}
-                                  className="glow-hover group"
-                                >
+                                <Button onClick={handleCreateProfile} className="glow-hover group">
                                   <Shield className="h-4 w-4 mr-2 group-hover:animate-pulse" />
                                   Create Encrypted Profile
                                 </Button>
@@ -5401,13 +4912,8 @@ const SecurityDashboard = () => {
                                 <CardContent>
                                   <ScrollArea className="h-[300px] w-full">
                                     <div className="space-y-4 pr-4">
-                                      {threatAnalysisData.activeThreatCampaigns.slice(0, 10).map((threat) => (
-                                        <div key={threat.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/20 border border-border/30">
-                                          <div className={`w-3 h-3 rounded-full mt-2 ${
-                                            threat.severity === 'critical' ? 'bg-red-500 animate-pulse' :
-                                            threat.severity === 'high' ? 'bg-orange-500' :
-                                            'bg-yellow-500'
-                                          }`} />
+                                      {threatAnalysisData.activeThreatCampaigns.slice(0, 10).map(threat => <div key={threat.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/20 border border-border/30">
+                                          <div className={`w-3 h-3 rounded-full mt-2 ${threat.severity === 'critical' ? 'bg-red-500 animate-pulse' : threat.severity === 'high' ? 'bg-orange-500' : 'bg-yellow-500'}`} />
                                           <div className="flex-1 space-y-1">
                                             <div className="flex items-center justify-between">
                                               <div className="font-medium">{threat.name}</div>
@@ -5422,8 +4928,7 @@ const SecurityDashboard = () => {
                                               Last Activity: {threat.lastActivity} | Confidence: {threat.confidence}%
                                             </div>
                                           </div>
-                                        </div>
-                                      ))}
+                                        </div>)}
                                     </div>
                                   </ScrollArea>
                                 </CardContent>
@@ -5454,16 +4959,11 @@ const SecurityDashboard = () => {
 
                               <ScrollArea className="h-[500px] w-full">
                                 <div className="space-y-4 pr-4">
-                                  {getFilteredThreats().map((threat) => (
-                                    <Card key={threat.id} className="gradient-card border border-primary/20 glow-hover">
+                                  {getFilteredThreats().map(threat => <Card key={threat.id} className="gradient-card border border-primary/20 glow-hover">
                                       <CardHeader className="pb-4">
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-3">
-                                            <div className={`w-4 h-4 rounded-full ${
-                                              threat.status === 'active' ? 'bg-red-500 animate-pulse' :
-                                              threat.status === 'monitoring' ? 'bg-yellow-500' :
-                                              'bg-gray-500'
-                                            }`} />
+                                            <div className={`w-4 h-4 rounded-full ${threat.status === 'active' ? 'bg-red-500 animate-pulse' : threat.status === 'monitoring' ? 'bg-yellow-500' : 'bg-gray-500'}`} />
                                             <div>
                                               <CardTitle className="text-lg">{threat.name}</CardTitle>
                                               <CardDescription className="flex items-center gap-2 mt-1">
@@ -5488,22 +4988,18 @@ const SecurityDashboard = () => {
                                           <div>
                                             <div className="text-sm font-medium mb-2">Targeted Sectors</div>
                                             <div className="flex flex-wrap gap-1">
-                                              {threat.targetedSectors.map((sector, idx) => (
-                                                <Badge key={idx} variant="outline" className="text-xs">
+                                              {threat.targetedSectors.map((sector, idx) => <Badge key={idx} variant="outline" className="text-xs">
                                                   {sector}
-                                                </Badge>
-                                              ))}
+                                                </Badge>)}
                                             </div>
                                           </div>
                                           
                                           <div>
                                             <div className="text-sm font-medium mb-2">MITRE ATT&CK TTPs</div>
                                             <div className="flex flex-wrap gap-1">
-                                              {threat.ttps.map((ttp, idx) => (
-                                                <Badge key={idx} variant="secondary" className="text-xs font-mono">
+                                              {threat.ttps.map((ttp, idx) => <Badge key={idx} variant="secondary" className="text-xs font-mono">
                                                   {ttp}
-                                                </Badge>
-                                              ))}
+                                                </Badge>)}
                                             </div>
                                           </div>
                                         </div>
@@ -5511,11 +5007,9 @@ const SecurityDashboard = () => {
                                         <div>
                                           <div className="text-sm font-medium mb-2">Indicators of Compromise (IOCs)</div>
                                           <div className="space-y-1">
-                                            {threat.iocs.map((ioc, idx) => (
-                                              <div key={idx} className="text-xs font-mono bg-muted/50 p-2 rounded border">
+                                            {threat.iocs.map((ioc, idx) => <div key={idx} className="text-xs font-mono bg-muted/50 p-2 rounded border">
                                                 {ioc}
-                                              </div>
-                                            ))}
+                                              </div>)}
                                           </div>
                                         </div>
 
@@ -5535,8 +5029,7 @@ const SecurityDashboard = () => {
                                           </div>
                                         </div>
                                       </CardContent>
-                                    </Card>
-                                  ))}
+                                    </Card>)}
                                 </div>
                               </ScrollArea>
                             </TabsContent>
@@ -5544,10 +5037,7 @@ const SecurityDashboard = () => {
                             {/* Threat Intelligence Tab */}
                             <TabsContent value="intelligence" className="space-y-4">
                               <div className="flex items-center gap-4 mb-4">
-                                <Button 
-                                  onClick={handleCreateIOC}
-                                  className="glow-hover"
-                                >
+                                <Button onClick={handleCreateIOC} className="glow-hover">
                                   <Target className="h-4 w-4 mr-2" />
                                   Add IOC
                                 </Button>
@@ -5573,18 +5063,18 @@ const SecurityDashboard = () => {
                                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div className="space-y-2">
                                       <Label htmlFor="ioc-indicator">Indicator Value</Label>
-                                      <Input
-                                        id="ioc-indicator"
-                                        placeholder="domain.com, IP, hash..."
-                                        value={newIOC.indicator}
-                                        onChange={(e) => setNewIOC({ ...newIOC, indicator: e.target.value })}
-                                        className="glow-hover font-mono"
-                                      />
+                                      <Input id="ioc-indicator" placeholder="domain.com, IP, hash..." value={newIOC.indicator} onChange={e => setNewIOC({
+                                          ...newIOC,
+                                          indicator: e.target.value
+                                        })} className="glow-hover font-mono" />
                                     </div>
 
                                     <div className="space-y-2">
                                       <Label htmlFor="ioc-type">Indicator Type</Label>
-                                      <Select value={newIOC.type} onValueChange={(value) => setNewIOC({ ...newIOC, type: value })}>
+                                      <Select value={newIOC.type} onValueChange={value => setNewIOC({
+                                          ...newIOC,
+                                          type: value
+                                        })}>
                                         <SelectTrigger className="glow-hover">
                                           <SelectValue />
                                         </SelectTrigger>
@@ -5601,7 +5091,10 @@ const SecurityDashboard = () => {
 
                                     <div className="space-y-2">
                                       <Label htmlFor="ioc-severity">Severity</Label>
-                                      <Select value={newIOC.severity} onValueChange={(value) => setNewIOC({ ...newIOC, severity: value })}>
+                                      <Select value={newIOC.severity} onValueChange={value => setNewIOC({
+                                          ...newIOC,
+                                          severity: value
+                                        })}>
                                         <SelectTrigger className="glow-hover">
                                           <SelectValue />
                                         </SelectTrigger>
@@ -5615,10 +5108,7 @@ const SecurityDashboard = () => {
                                     </div>
 
                                     <div className="flex items-end">
-                                      <Button 
-                                        onClick={handleCreateIOC}
-                                        className="w-full glow-hover"
-                                      >
+                                      <Button onClick={handleCreateIOC} className="w-full glow-hover">
                                         <Target className="h-4 w-4 mr-2" />
                                         Add IOC
                                       </Button>
@@ -5630,8 +5120,7 @@ const SecurityDashboard = () => {
                               {/* IOC Database */}
                               <ScrollArea className="h-[400px] w-full">
                                 <div className="space-y-2 pr-4">
-                                  {threatAnalysisData.threatIntelligence.map((intel) => (
-                                    <div key={intel.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30 glow-hover">
+                                  {threatAnalysisData.threatIntelligence.map(intel => <div key={intel.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30 glow-hover">
                                       <div className="flex items-center gap-3">
                                         <div className={`w-3 h-3 rounded-full ${getRiskColor(intel.severity).split(' ')[0].replace('text-', 'bg-')}`} />
                                         <div className="font-mono text-sm">{intel.indicator}</div>
@@ -5653,8 +5142,7 @@ const SecurityDashboard = () => {
                                           <Eye className="h-4 w-4" />
                                         </Button>
                                       </div>
-                                    </div>
-                                  ))}
+                                    </div>)}
                                 </div>
                               </ScrollArea>
                             </TabsContent>
@@ -5674,17 +5162,9 @@ const SecurityDashboard = () => {
                                 <CardContent className="space-y-4">
                                   <div className="flex gap-2">
                                     <div className="flex-1">
-                                      <Input
-                                        placeholder="Enter threat hunting query (e.g., process_name:powershell.exe AND command_line:*DownloadString*)"
-                                        value={threatHuntingQuery}
-                                        onChange={(e) => setThreatHuntingQuery(e.target.value)}
-                                        className="glow-hover font-mono"
-                                      />
+                                      <Input placeholder="Enter threat hunting query (e.g., process_name:powershell.exe AND command_line:*DownloadString*)" value={threatHuntingQuery} onChange={e => setThreatHuntingQuery(e.target.value)} className="glow-hover font-mono" />
                                     </div>
-                                    <Button 
-                                      onClick={handleThreatHunt}
-                                      className="glow-hover"
-                                    >
+                                    <Button onClick={handleThreatHunt} className="glow-hover">
                                       <Search className="h-4 w-4 mr-2" />
                                       Hunt
                                     </Button>
@@ -5755,34 +5235,24 @@ const SecurityDashboard = () => {
                                       </div>
                                       <div className="text-sm text-muted-foreground">Overall Risk Score</div>
                                       <Badge variant="secondary" className="mt-2">
-                                        {threatAnalysisData.riskAssessment.overallRiskScore >= 80 ? 'HIGH RISK' :
-                                         threatAnalysisData.riskAssessment.overallRiskScore >= 60 ? 'MEDIUM RISK' :
-                                         'LOW RISK'}
+                                        {threatAnalysisData.riskAssessment.overallRiskScore >= 80 ? 'HIGH RISK' : threatAnalysisData.riskAssessment.overallRiskScore >= 60 ? 'MEDIUM RISK' : 'LOW RISK'}
                                       </Badge>
                                     </div>
                                   </div>
                                   
-                                  <Progress 
-                                    value={threatAnalysisData.riskAssessment.overallRiskScore} 
-                                    className="glow mb-4" 
-                                  />
+                                  <Progress value={threatAnalysisData.riskAssessment.overallRiskScore} className="glow mb-4" />
                                 </CardContent>
                               </Card>
 
                               {/* Risk Categories */}
                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {Object.entries(threatAnalysisData.riskAssessment.categories).map(([category, data]) => (
-                                  <Card key={category} className="gradient-card border border-primary/20 glow-hover">
+                                {Object.entries(threatAnalysisData.riskAssessment.categories).map(([category, data]) => <Card key={category} className="gradient-card border border-primary/20 glow-hover">
                                     <CardContent className="p-4">
                                       <div className="flex items-center justify-between mb-3">
                                         <div className="font-medium capitalize">
                                           {category.replace('_', ' ')}
                                         </div>
-                                        <Badge variant={
-                                          data.trend === 'increasing' ? 'destructive' :
-                                          data.trend === 'decreasing' ? 'default' :
-                                          'secondary'
-                                        } className="text-xs">
+                                        <Badge variant={data.trend === 'increasing' ? 'destructive' : data.trend === 'decreasing' ? 'default' : 'secondary'} className="text-xs">
                                           {data.trend.toUpperCase()}
                                         </Badge>
                                       </div>
@@ -5797,8 +5267,7 @@ const SecurityDashboard = () => {
                                         Trend: {data.trend} | Score: {data.score}/100
                                       </div>
                                     </CardContent>
-                                  </Card>
-                                ))}
+                                  </Card>)}
                               </div>
 
                               {/* Risk Recommendations */}
@@ -5865,19 +5334,11 @@ const SecurityDashboard = () => {
             <p className="text-muted-foreground">Real-time monitoring of security infrastructure</p>
           </div>
           <div className="flex items-center gap-3">
-            {isCheckingServices && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {isCheckingServices && <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <RefreshCw className="h-4 w-4 animate-spin" />
                 Checking services...
-              </div>
-            )}
-            <Button
-              onClick={handleRefreshServices}
-              variant="outline"
-              size="sm"
-              className="glow-hover"
-              disabled={isCheckingServices}
-            >
+              </div>}
+            <Button onClick={handleRefreshServices} variant="outline" size="sm" className="glow-hover" disabled={isCheckingServices}>
               <RefreshCw className={`h-4 w-4 mr-2 ${isCheckingServices ? 'animate-spin' : ''}`} />
               Refresh Status
             </Button>
@@ -5886,36 +5347,20 @@ const SecurityDashboard = () => {
 
         {/* Status Overview - Dynamic Data */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {getDynamicToolsData().map((tool, index) => (
-            <Card key={tool.name} className={`gradient-card glow-hover transition-all duration-300 ${
-              tool.status === 'offline' ? 'border-red-500/20 bg-gradient-to-br from-red-500/5 to-red-600/5' : 
-              tool.status === 'active' ? 'border-green-500/20 bg-gradient-to-br from-green-500/5 to-green-600/5' :
-              'border-primary/20'
-            }`}>
+          {getDynamicToolsData().map((tool, index) => <Card key={tool.name} className={`gradient-card glow-hover transition-all duration-300 ${tool.status === 'offline' ? 'border-red-500/20 bg-gradient-to-br from-red-500/5 to-red-600/5' : tool.status === 'active' ? 'border-green-500/20 bg-gradient-to-br from-green-500/5 to-green-600/5' : 'border-primary/20'}`}>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className="relative">
                     <tool.icon className={`h-8 w-8 ${tool.status === 'offline' ? 'text-red-500' : `text-${tool.color}`}`} />
-                    {tool.status === 'offline' && (
-                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
-                    )}
+                    {tool.status === 'offline' && <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />}
                   </div>
                   <div className="flex flex-col items-end gap-1">
-                    <Badge 
-                      variant={
-                        tool.status === 'active' ? 'default' : 
-                        tool.status === 'offline' ? 'destructive' : 
-                        'secondary'
-                      }
-                      className="animate-pulse-glow"
-                    >
+                    <Badge variant={tool.status === 'active' ? 'default' : tool.status === 'offline' ? 'destructive' : 'secondary'} className="animate-pulse-glow">
                       {tool.status.toUpperCase()}
                     </Badge>
-                    {tool.lastCheck && (
-                      <div className="text-xs text-muted-foreground">
+                    {tool.lastCheck && <div className="text-xs text-muted-foreground">
                         {new Date(tool.lastCheck).toLocaleTimeString()}
-                      </div>
-                    )}
+                      </div>}
                   </div>
                 </div>
                 <CardTitle className="text-lg text-glow">{tool.name}</CardTitle>
@@ -5927,68 +5372,49 @@ const SecurityDashboard = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-sm">
                     {/* Show appropriate metrics based on service type */}
-                    {tool.agents !== undefined && (
-                      <span className="flex items-center gap-1">
+                    {tool.agents !== undefined && <span className="flex items-center gap-1">
                         <Server className="h-4 w-4" />
                         <span className={tool.agents === 0 ? 'text-red-500 font-medium' : ''}>
                           {tool.agents} agents
                         </span>
-                        {tool.agents === 0 && (
-                          <AlertTriangle className="h-3 w-3 text-red-500 animate-pulse" />
-                        )}
-                      </span>
-                    )}
-                    {tool.vulnerabilities !== undefined && (
-                      <span className="flex items-center gap-1 text-destructive">
+                        {tool.agents === 0 && <AlertTriangle className="h-3 w-3 text-red-500 animate-pulse" />}
+                      </span>}
+                    {tool.vulnerabilities !== undefined && <span className="flex items-center gap-1 text-destructive">
                         <div className={`w-2 h-2 rounded-full ${tool.vulnerabilities > 0 ? 'bg-red-500 animate-pulse' : 'bg-gray-500'}`} />
                         {tool.vulnerabilities} vulns
-                      </span>
-                    )}
-                    {tool.scans !== undefined && (
-                      <span className="flex items-center gap-1">
+                      </span>}
+                    {tool.scans !== undefined && <span className="flex items-center gap-1">
                         <Activity className="h-4 w-4" />
                         {tool.scans} scans
-                      </span>
-                    )}
-                    {tool.sources !== undefined && (
-                      <span className="flex items-center gap-1">
+                      </span>}
+                    {tool.sources !== undefined && <span className="flex items-center gap-1">
                         <Database className="h-4 w-4" />
                         {tool.sources} sources
-                      </span>
-                    )}
-                    {tool.findings !== undefined && (
-                      <span className="flex items-center gap-1">
+                      </span>}
+                    {tool.findings !== undefined && <span className="flex items-center gap-1">
                         <Bug className="h-4 w-4" />
                         {tool.findings} findings
-                      </span>
-                    )}
-                    {tool.entities !== undefined && (
-                      <span className="flex items-center gap-1">
+                      </span>}
+                    {tool.entities !== undefined && <span className="flex items-center gap-1">
                         <Eye className="h-4 w-4" />
                         {tool.entities} entities
-                      </span>
-                    )}
+                      </span>}
                   </div>
 
                   {/* Show error message for offline services */}
-                  {tool.status === 'offline' && tool.error && (
-                    <div className="p-2 rounded bg-red-500/10 border border-red-500/20">
+                  {tool.status === 'offline' && tool.error && <div className="p-2 rounded bg-red-500/10 border border-red-500/20">
                       <div className="text-xs text-red-400 font-medium">Connection Failed</div>
                       <div className="text-xs text-muted-foreground truncate">{tool.error}</div>
-                    </div>
-                  )}
+                    </div>}
 
                   {/* Zero state indicators */}
-                  {tool.agents === 0 && (
-                    <div className="p-2 rounded bg-yellow-500/10 border border-yellow-500/20">
+                  {tool.agents === 0 && <div className="p-2 rounded bg-yellow-500/10 border border-yellow-500/20">
                       <div className="text-xs text-yellow-400 font-medium">No Active Agents</div>
                       <div className="text-xs text-muted-foreground">Check agent connectivity</div>
-                    </div>
-                  )}
+                    </div>}
                 </div>
               </CardContent>
-            </Card>
-          ))}
+            </Card>)}
         </div>
 
         {/* Connection Status Summary */}
@@ -5997,9 +5423,7 @@ const SecurityDashboard = () => {
             <CardTitle className="flex items-center gap-2 text-glow">
               <div className="relative">
                 <Activity className="h-5 w-5" />
-                <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full animate-ping ${
-                  getDynamicToolsData().every(tool => tool.status !== 'offline') ? 'bg-green-500' : 'bg-red-500'
-                }`} />
+                <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full animate-ping ${getDynamicToolsData().every(tool => tool.status !== 'offline') ? 'bg-green-500' : 'bg-red-500'}`} />
               </div>
               Service Connection Summary
             </CardTitle>
@@ -6009,21 +5433,15 @@ const SecurityDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {getDynamicToolsData().map((tool) => (
-                <div key={tool.name} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30">
+              {getDynamicToolsData().map(tool => <div key={tool.name} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30">
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      tool.status === 'active' ? 'bg-green-500' :
-                      tool.status === 'monitoring' ? 'bg-blue-500' :
-                      'bg-red-500'
-                    } ${tool.status === 'offline' ? 'animate-pulse' : ''}`} />
+                    <div className={`w-2 h-2 rounded-full ${tool.status === 'active' ? 'bg-green-500' : tool.status === 'monitoring' ? 'bg-blue-500' : 'bg-red-500'} ${tool.status === 'offline' ? 'animate-pulse' : ''}`} />
                     <span className="text-sm font-medium">{tool.name}</span>
                   </div>
                   <Badge variant={tool.status === 'offline' ? 'destructive' : 'default'} className="text-xs">
                     {tool.status === 'offline' ? 'OFFLINE' : 'ONLINE'}
                   </Badge>
-                </div>
-              ))}
+                </div>)}
             </div>
             
             <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
@@ -6050,10 +5468,7 @@ const SecurityDashboard = () => {
             <CardTitle className="flex items-center gap-2 text-glow">
               <div className="relative">
                 <AlertTriangle className="h-5 w-5" />
-                <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full animate-ping ${
-                  getDynamicAlertFeed().some(alert => alert.connected && alert.type === 'critical') ? 'bg-red-500' : 
-                  getDynamicAlertFeed().some(alert => alert.connected) ? 'bg-green-500' : 'bg-gray-500'
-                }`} />
+                <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full animate-ping ${getDynamicAlertFeed().some(alert => alert.connected && alert.type === 'critical') ? 'bg-red-500' : getDynamicAlertFeed().some(alert => alert.connected) ? 'bg-green-500' : 'bg-gray-500'}`} />
               </div>
               Real-time Security Alert Feed
               <Badge variant={getDynamicAlertFeed().some(alert => alert.connected) ? 'default' : 'secondary'} className="ml-2">
@@ -6066,38 +5481,22 @@ const SecurityDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {getDynamicAlertFeed().map((alert, index) => (
-                <div key={index} className={`flex items-center justify-between p-4 rounded-lg border transition-all duration-300 ${
-                  alert.connected 
-                    ? 'bg-muted/20 border-border/30 glow-hover' 
-                    : 'bg-muted/10 border-red-500/20 border-dashed'
-                }`}>
+              {getDynamicAlertFeed().map((alert, index) => <div key={index} className={`flex items-center justify-between p-4 rounded-lg border transition-all duration-300 ${alert.connected ? 'bg-muted/20 border-border/30 glow-hover' : 'bg-muted/10 border-red-500/20 border-dashed'}`}>
                   <div className="flex items-center gap-3">
-                    {alert.connected ? (
-                      <div className={`w-2 h-2 rounded-full ${
-                        alert.type === 'critical' ? 'bg-red-500 animate-pulse' :
-                        alert.type === 'warning' ? 'bg-orange-500 animate-pulse' :
-                        alert.type === 'info' ? 'bg-blue-500' :
-                        'bg-primary'
-                      }`} />
-                    ) : (
-                      <div className="relative">
+                    {alert.connected ? <div className={`w-2 h-2 rounded-full ${alert.type === 'critical' ? 'bg-red-500 animate-pulse' : alert.type === 'warning' ? 'bg-orange-500 animate-pulse' : alert.type === 'info' ? 'bg-blue-500' : 'bg-primary'}`} /> : <div className="relative">
                         <div className="w-2 h-2 rounded-full bg-gray-500" />
                         <div className="absolute inset-0 w-2 h-2 rounded-full bg-red-500 animate-ping opacity-50" />
-                      </div>
-                    )}
+                      </div>}
                     <div className="flex-1">
                       <p className={`font-medium ${!alert.connected ? 'text-muted-foreground' : ''}`}>
                         {alert.message}
                       </p>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>Source: {alert.source}</span>
-                        {!alert.connected && alert.error && (
-                          <>
+                        {!alert.connected && alert.error && <>
                             <span>•</span>
                             <span className="text-red-400 text-xs">({alert.error})</span>
-                          </>
-                        )}
+                          </>}
                       </div>
                     </div>
                   </div>
@@ -6106,20 +5505,12 @@ const SecurityDashboard = () => {
                       <Clock className="h-4 w-4" />
                       {alert.time}
                     </div>
-                    {!alert.connected && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="ml-3 glow-hover"
-                        onClick={handleRefreshServices}
-                      >
+                    {!alert.connected && <Button variant="outline" size="sm" className="ml-3 glow-hover" onClick={handleRefreshServices}>
                         <Settings className="h-4 w-4 mr-2" />
                         Connect
-                      </Button>
-                    )}
+                      </Button>}
                   </div>
-                </div>
-              ))}
+                </div>)}
             </div>
 
             {/* Feed Status Summary */}
@@ -6136,14 +5527,12 @@ const SecurityDashboard = () => {
                       <div>• Last Refresh: {new Date().toLocaleTimeString()}</div>
                     </div>
                   </div>
-                  {getDynamicAlertFeed().filter(alert => !alert.connected).length > 0 && (
-                    <div className="mt-3 p-2 rounded bg-yellow-500/10 border border-yellow-500/20">
+                  {getDynamicAlertFeed().filter(alert => !alert.connected).length > 0 && <div className="mt-3 p-2 rounded bg-yellow-500/10 border border-yellow-500/20">
                       <div className="text-sm text-yellow-400">
                         <strong>Backend Integration Required:</strong> Connect security services to receive real-time alerts.
                         Services showing "Connect feed" need backend API integration.
                       </div>
-                    </div>
-                  )}
+                    </div>}
                 </div>
               </div>
             </div>
@@ -6155,8 +5544,7 @@ const SecurityDashboard = () => {
 
         
         {/* Agentic Pentest Interface Modal */}
-        {isAgenticPentestOpen && (
-          <Dialog open={isAgenticPentestOpen} onOpenChange={setIsAgenticPentestOpen}>
+        {isAgenticPentestOpen && <Dialog open={isAgenticPentestOpen} onOpenChange={setIsAgenticPentestOpen}>
             <DialogContent className="max-w-7xl h-[90vh] p-0 flex flex-col">
               <DialogHeader className="p-6 pb-0 flex-shrink-0">
                 <DialogTitle className="flex items-center gap-2">
@@ -6174,18 +5562,14 @@ const SecurityDashboard = () => {
                 <EnhancedAgenticPentestInterface onClose={() => setIsAgenticPentestOpen(false)} />
               </div>
             </DialogContent>
-          </Dialog>
-        )}
+          </Dialog>}
         
         {/* Automatic OSINT Agent */}
-        {isOSINTAgentOpen && (
-          <AutomaticOSINTAgent onClose={() => setIsOSINTAgentOpen(false)} />
-        )}
+        {isOSINTAgentOpen && <AutomaticOSINTAgent onClose={() => setIsOSINTAgentOpen(false)} />}
         </div>
 
         {/* Intelligent Reporting System */}
-        {isReportingOpen && (
-          <Dialog open={isReportingOpen} onOpenChange={setIsReportingOpen}>
+        {isReportingOpen && <Dialog open={isReportingOpen} onOpenChange={setIsReportingOpen}>
             <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Intelligent Reporting System</DialogTitle>
@@ -6195,12 +5579,10 @@ const SecurityDashboard = () => {
               </DialogHeader>
               <IntelligentReportingSystem />
             </DialogContent>
-          </Dialog>
-        )}
+          </Dialog>}
 
         {/* Security Test Scheduler */}
-        {isSchedulerOpen && (
-          <Dialog open={isSchedulerOpen} onOpenChange={setIsSchedulerOpen}>
+        {isSchedulerOpen && <Dialog open={isSchedulerOpen} onOpenChange={setIsSchedulerOpen}>
             <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
@@ -6577,23 +5959,21 @@ const SecurityDashboard = () => {
                   Cancel
                 </Button>
                 <Button onClick={() => {
-                  toast({
-                    title: "Schedule Created",
-                    description: "Security test has been scheduled successfully",
-                  });
-                  setIsSchedulerOpen(false);
-                }}>
+              toast({
+                title: "Schedule Created",
+                description: "Security test has been scheduled successfully"
+              });
+              setIsSchedulerOpen(false);
+            }}>
                   <PlayCircle className="h-4 w-4 mr-2" />
                   Schedule Test
                 </Button>
               </div>
             </DialogContent>
-          </Dialog>
-        )}
+          </Dialog>}
 
         {/* Production Security Configuration */}
-        {isProductionConfigOpen && (
-          <Dialog open={isProductionConfigOpen} onOpenChange={setIsProductionConfigOpen}>
+        {isProductionConfigOpen && <Dialog open={isProductionConfigOpen} onOpenChange={setIsProductionConfigOpen}>
             <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Production Security Configuration</DialogTitle>
@@ -6603,27 +5983,17 @@ const SecurityDashboard = () => {
               </DialogHeader>
               <ProductionReadySecurityConfig />
             </DialogContent>
-          </Dialog>
-        )}
+          </Dialog>}
 
         {/* Documentation Library */}
-        {isDocumentationOpen && (
-          <DocumentationLibrary onClose={() => setIsDocumentationOpen(false)} />
-        )}
+        {isDocumentationOpen && <DocumentationLibrary onClose={() => setIsDocumentationOpen(false)} />}
 
 
         {/* IppsY Chat Pane */}
-        {isIppsYOpen && (
-          <div className="fixed right-0 top-14 bottom-0 w-96 z-30 border-l border-border/30">
-            <IppsYChatPane 
-              isOpen={isIppsYOpen} 
-              onToggle={() => setIsIppsYOpen(!isIppsYOpen)} 
-            />
-          </div>
-        )}
+        {isIppsYOpen && <div className="fixed right-0 top-14 bottom-0 w-96 z-30 border-l border-border/30">
+            <IppsYChatPane isOpen={isIppsYOpen} onToggle={() => setIsIppsYOpen(!isIppsYOpen)} />
+          </div>}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default SecurityDashboard;
