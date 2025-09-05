@@ -3387,7 +3387,7 @@ const SecurityDashboard = () => {
                   <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="siem" className="flex items-center gap-2">
                       <Shield className="h-4 w-4" />
-                      SIEM
+                      Wazuh
                     </TabsTrigger>
                     <TabsTrigger value="vulnerability" className="flex items-center gap-2">
                       <Eye className="h-4 w-4" />
