@@ -2647,11 +2647,12 @@ const SecurityDashboard = () => {
         <div className={`flex-1 transition-all duration-300 ${isIppsYOpen ? 'mr-96' : ''}`}>
           {/* Hero Section */}
           <div className="relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20" style={{
-            backgroundImage: `url(${heroImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }} />
+        <img 
+          src={heroImage} 
+          alt="Security monitoring dashboard background" 
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+          fetchPriority="high"
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
         
         <div className="relative container mx-auto px-6 py-16">
