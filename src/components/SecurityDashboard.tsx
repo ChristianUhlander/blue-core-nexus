@@ -24,10 +24,7 @@ import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterfa
 import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 import { AutomaticOSINTAgent } from "./AutomaticOSINTAgent";
-import { ADPentestingModule } from "./ADPentestingModule";
-import { NetworkPentestingModule } from "./NetworkPentestingModule";
-import { WebAppPentestingModule } from "./WebAppPentestingModule";
-import { OSINTPentestingModule } from "./OSINTPentestingModule";
+import { ZapProxyModule } from "./ZapProxyModule";
 import WazuhManagement from "../pages/WazuhManagement";
 import { WazuhSBOMManagement } from "./WazuhSBOMManagement";
 import GVMManagement from "../pages/GVMManagement";
@@ -85,14 +82,8 @@ const SecurityDashboard = () => {
   const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
 
-  // Pentesting dialog states
-  const [isADPentestOpen, setIsADPentestOpen] = useState(false);
-  const [isWebPentestOpen, setIsWebPentestOpen] = useState(false);
-  const [isNetworkPentestOpen, setIsNetworkPentestOpen] = useState(false);
-  const [isWirelessPentestOpen, setIsWirelessPentestOpen] = useState(false);
-  const [isSocialEngPentestOpen, setIsSocialEngPentestOpen] = useState(false);
-  const [isPhysicalPentestOpen, setIsPhysicalPentestOpen] = useState(false);
-  const [isOSINTPentestOpen, setIsOSINTPentestOpen] = useState(false);
+  // ZAP Proxy dialog state
+  const [isZapProxyOpen, setIsZapProxyOpen] = useState(false);
 
   // Target configuration for pentest modules
   const pentestTargetConfig = {
@@ -112,82 +103,12 @@ const SecurityDashboard = () => {
     compliance: []
   };
 
-  // Pentesting content components
-  const ADPentestingContent = () => {
-    return <ScrollArea className="h-[70vh] rounded-md border">
-        <ADPentestingModule sessionId="demo-session" targetConfig={pentestTargetConfig} />
-      </ScrollArea>;
-  };
-  const WebPentestingContent = () => <ScrollArea className="h-[70vh] rounded-md border">
-      <WebAppPentestingModule sessionId="demo-session" targetConfig={pentestTargetConfig} />
-    </ScrollArea>;
-  const NetworkPentestingContent = () => <ScrollArea className="h-[70vh] rounded-md border">
-      <NetworkPentestingModule sessionId="demo-session" targetConfig={pentestTargetConfig} />
-    </ScrollArea>;
-
-  // OSINT Pentesting content component
-  const OSINTPentestingContent = () => {
-    return <ScrollArea className="h-[70vh] rounded-md border">
-        <OSINTPentestingModule sessionId="demo-session" targetConfig={{
-        ...pentestTargetConfig,
-        type: 'domain'
-      }} />
-      </ScrollArea>;
-  };
-  const WirelessPentestingContent = () => <ScrollArea className="h-[70vh] rounded-md border">
-      <div className="space-y-6 p-6">
-        <Card className="gradient-card border-green-500/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Wifi className="h-5 w-5 text-green-500" />
-              Wireless Security Assessment
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <Wifi className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>WiFi, Bluetooth, and RF security testing tools</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </ScrollArea>;
-  const SocialEngPentestingContent = () => <ScrollArea className="h-[70vh] rounded-md border">
-      <div className="space-y-6 p-6">
-        <Card className="gradient-card border-purple-500/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-purple-500" />
-              Social Engineering Assessment
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Phishing campaigns, OSINT gathering, and human factor testing</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </ScrollArea>;
-  const PhysicalPentestingContent = () => <ScrollArea className="h-[70vh] rounded-md border">
-      <div className="space-y-6 p-6">
-        <Card className="gradient-card border-orange-500/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Building className="h-5 w-5 text-orange-500" />
-              Physical Security Assessment
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <Building className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Lock picking, access control bypass, and RFID/badge cloning</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </ScrollArea>;
+  // ZAP Proxy content component
+  const ZapProxyContent = () => (
+    <ScrollArea className="h-[70vh] rounded-md border">
+      <ZapProxyModule sessionId="demo-session" />
+    </ScrollArea>
+  );
 
   // IppsY chat pane state
   const [isIppsYOpen, setIsIppsYOpen] = useState(false);
@@ -3890,62 +3811,20 @@ const SecurityDashboard = () => {
                   </TabsContent>
                   
                    <TabsContent value="webapp" className="mt-4">
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                       {/* AD Penetration Testing */}
-                       <Dialog open={isADPentestOpen} onOpenChange={setIsADPentestOpen}>
+                     <div className="grid grid-cols-1 gap-4">
+                       {/* OWASP ZAP Proxy */}
+                       <Dialog open={isZapProxyOpen} onOpenChange={setIsZapProxyOpen}>
                          <DialogTrigger asChild>
                            <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
                              <CardContent className="p-6 text-center">
                                <div className="flex flex-col items-center gap-4">
                                  <div className="relative">
-                                   <Shield className="h-12 w-12 text-red-500 animate-pulse" />
-                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-ping" />
+                                   <Zap className="h-16 w-16 text-yellow-500 animate-pulse" />
+                                   <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full animate-ping" />
                                  </div>
                                  <div>
-                                   <h3 className="text-lg font-semibold text-glow">Active Directory</h3>
-                                   <p className="text-sm text-muted-foreground">BloodHound • CrackMapExec • Kerberos</p>
-                                 </div>
-                                 <Badge variant="destructive" className="animate-pulse-glow">
-                                   High Impact
-                                 </Badge>
-                               </div>
-                             </CardContent>
-                           </Card>
-                         </DialogTrigger>
-                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
-                           <DialogHeader>
-                             <DialogTitle className="flex items-center gap-2 text-xl">
-                               <div className="relative">
-                                 <Shield className="h-6 w-6 text-red-500 animate-pulse" />
-                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
-                               </div>
-                               Active Directory Penetration Testing
-                               <Badge variant="destructive" className="ml-2 animate-pulse-glow">
-                                 ENTERPRISE SECURITY
-                               </Badge>
-                             </DialogTitle>
-                             <DialogDescription className="text-base">
-                               Comprehensive AD security assessment with BloodHound, CrackMapExec, and advanced attack techniques
-                             </DialogDescription>
-                           </DialogHeader>
-                           
-                           <ADPentestingContent />
-                         </DialogContent>
-                       </Dialog>
-
-                       {/* Web Application Testing */}
-                       <Dialog open={isWebPentestOpen} onOpenChange={setIsWebPentestOpen}>
-                         <DialogTrigger asChild>
-                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
-                             <CardContent className="p-6 text-center">
-                               <div className="flex flex-col items-center gap-4">
-                                 <div className="relative">
-                                   <Zap className="h-12 w-12 text-yellow-500 animate-pulse" />
-                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full animate-ping" />
-                                 </div>
-                                 <div>
-                                   <h3 className="text-lg font-semibold text-glow">Web Applications</h3>
-                                   <p className="text-sm text-muted-foreground">OWASP ZAP • Top 10 • SQL Injection</p>
+                                   <h3 className="text-2xl font-semibold text-glow">OWASP ZAP Proxy</h3>
+                                   <p className="text-sm text-muted-foreground mt-2">Web Application Security Testing</p>
                                  </div>
                                  <Badge variant="secondary" className="animate-pulse-glow">
                                    OWASP Standard
@@ -3961,227 +3840,17 @@ const SecurityDashboard = () => {
                                  <Zap className="h-6 w-6 text-yellow-500 animate-pulse" />
                                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full animate-ping" />
                                </div>
-                               Web Application Penetration Testing
+                               OWASP ZAP Web Application Security Testing
                                <Badge variant="secondary" className="ml-2 animate-pulse-glow">
                                  OWASP STANDARD
                                </Badge>
                              </DialogTitle>
                              <DialogDescription className="text-base">
-                               Complete web application security testing with OWASP ZAP and Top 10 vulnerability assessment
+                               Comprehensive web application security testing with OWASP ZAP Proxy
                              </DialogDescription>
                            </DialogHeader>
                            
-                           <WebPentestingContent />
-                         </DialogContent>
-                       </Dialog>
-
-                       {/* Network Penetration Testing */}
-                       <Dialog open={isNetworkPentestOpen} onOpenChange={setIsNetworkPentestOpen}>
-                         <DialogTrigger asChild>
-                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
-                             <CardContent className="p-6 text-center">
-                               <div className="flex flex-col items-center gap-4">
-                                 <div className="relative">
-                                   <Network className="h-12 w-12 text-blue-500 animate-pulse" />
-                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full animate-ping" />
-                                 </div>
-                                 <div>
-                                   <h3 className="text-lg font-semibold text-glow">Network Infrastructure</h3>
-                                   <p className="text-sm text-muted-foreground">Nmap • Nessus • Port Scanning</p>
-                                 </div>
-                                 <Badge variant="outline" className="animate-pulse-glow">
-                                   Infrastructure
-                                 </Badge>
-                               </div>
-                             </CardContent>
-                           </Card>
-                         </DialogTrigger>
-                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
-                           <DialogHeader>
-                             <DialogTitle className="flex items-center gap-2 text-xl">
-                               <div className="relative">
-                                 <Network className="h-6 w-6 text-blue-500 animate-pulse" />
-                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping" />
-                               </div>
-                               Network Infrastructure Penetration Testing
-                               <Badge variant="outline" className="ml-2 animate-pulse-glow">
-                                 NETWORK SECURITY
-                               </Badge>
-                             </DialogTitle>
-                             <DialogDescription className="text-base">
-                               Comprehensive network security assessment with port scanning, vulnerability detection, and service enumeration
-                             </DialogDescription>
-                           </DialogHeader>
-                           
-                           <NetworkPentestingContent />
-                         </DialogContent>
-                       </Dialog>
-
-                       {/* Wireless Security Testing */}
-                       <Dialog open={isWirelessPentestOpen} onOpenChange={setIsWirelessPentestOpen}>
-                         <DialogTrigger asChild>
-                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
-                             <CardContent className="p-6 text-center">
-                               <div className="flex flex-col items-center gap-4">
-                                 <div className="relative">
-                                   <Wifi className="h-12 w-12 text-green-500 animate-pulse" />
-                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-ping" />
-                                 </div>
-                                 <div>
-                                   <h3 className="text-lg font-semibold text-glow">Wireless Networks</h3>
-                                   <p className="text-sm text-muted-foreground">WiFi • Bluetooth • Radio Frequency</p>
-                                 </div>
-                                 <Badge variant="default" className="animate-pulse-glow">
-                                   RF Testing
-                                 </Badge>
-                               </div>
-                             </CardContent>
-                           </Card>
-                         </DialogTrigger>
-                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
-                           <DialogHeader>
-                             <DialogTitle className="flex items-center gap-2 text-xl">
-                               <div className="relative">
-                                 <Wifi className="h-6 w-6 text-green-500 animate-pulse" />
-                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-ping" />
-                               </div>
-                               Wireless Security Penetration Testing
-                               <Badge variant="default" className="ml-2 animate-pulse-glow">
-                                 RF SECURITY
-                               </Badge>
-                             </DialogTitle>
-                             <DialogDescription className="text-base">
-                               Complete wireless security assessment including WiFi, Bluetooth, and RF communication testing
-                             </DialogDescription>
-                           </DialogHeader>
-                           
-                           <WirelessPentestingContent />
-                         </DialogContent>
-                       </Dialog>
-
-                       {/* Social Engineering */}
-                       <Dialog open={isSocialEngPentestOpen} onOpenChange={setIsSocialEngPentestOpen}>
-                         <DialogTrigger asChild>
-                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
-                             <CardContent className="p-6 text-center">
-                               <div className="flex flex-col items-center gap-4">
-                                 <div className="relative">
-                                   <Users className="h-12 w-12 text-purple-500 animate-pulse" />
-                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full animate-ping" />
-                                 </div>
-                                 <div>
-                                   <h3 className="text-lg font-semibold text-glow">Social Engineering</h3>
-                                   <p className="text-sm text-muted-foreground">Phishing • OSINT • Human Factor</p>
-                                 </div>
-                                 <Badge className="bg-purple-500/10 text-purple-500 animate-pulse-glow">
-                                   Human Factor
-                                 </Badge>
-                               </div>
-                             </CardContent>
-                           </Card>
-                         </DialogTrigger>
-                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
-                           <DialogHeader>
-                             <DialogTitle className="flex items-center gap-2 text-xl">
-                               <div className="relative">
-                                 <Users className="h-6 w-6 text-purple-500 animate-pulse" />
-                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-purple-500 rounded-full animate-ping" />
-                               </div>
-                               Social Engineering Assessment
-                               <Badge className="ml-2 bg-purple-500/10 text-purple-500 animate-pulse-glow">
-                                 HUMAN FACTOR
-                               </Badge>
-                             </DialogTitle>
-                             <DialogDescription className="text-base">
-                               Human-focused security testing including phishing campaigns, OSINT gathering, and awareness assessment
-                             </DialogDescription>
-                           </DialogHeader>
-                           
-                           <SocialEngPentestingContent />
-                         </DialogContent>
-                        </Dialog>
-
-                        {/* OSINT Reconnaissance */}
-                        <Dialog open={isOSINTPentestOpen} onOpenChange={setIsOSINTPentestOpen}>
-                          <DialogTrigger asChild>
-                            <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
-                              <CardContent className="p-6 text-center">
-                                <div className="flex flex-col items-center gap-4">
-                                  <div className="relative">
-                                    <Search className="h-12 w-12 text-blue-500 animate-pulse" />
-                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full animate-ping" />
-                                  </div>
-                                  <div>
-                                    <h3 className="text-lg font-semibold text-glow">OSINT Reconnaissance</h3>
-                                    <p className="text-sm text-muted-foreground">SpiderFoot • Intelligence • Data Mining</p>
-                                  </div>
-                                  <Badge className="bg-blue-500/10 text-blue-500 animate-pulse-glow">
-                                    200+ Modules
-                                  </Badge>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
-                            <DialogHeader>
-                              <DialogTitle className="flex items-center gap-2 text-xl">
-                                <div className="relative">
-                                  <Search className="h-6 w-6 text-blue-500 animate-pulse" />
-                                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping" />
-                                </div>
-                                OSINT Intelligence Reconnaissance
-                                <Badge className="ml-2 bg-blue-500/10 text-blue-500 animate-pulse-glow">
-                                  INTELLIGENCE GATHERING
-                                </Badge>
-                              </DialogTitle>
-                              <DialogDescription className="text-base">
-                                Open Source Intelligence gathering with SpiderFoot's 200+ modules for comprehensive reconnaissance
-                              </DialogDescription>
-                            </DialogHeader>
-                            
-                            <OSINTPentestingContent />
-                          </DialogContent>
-                        </Dialog>
-
-                        {/* Physical Security Testing */}
-                       <Dialog open={isPhysicalPentestOpen} onOpenChange={setIsPhysicalPentestOpen}>
-                         <DialogTrigger asChild>
-                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
-                             <CardContent className="p-6 text-center">
-                               <div className="flex flex-col items-center gap-4">
-                                 <div className="relative">
-                                   <Building className="h-12 w-12 text-orange-500 animate-pulse" />
-                                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full animate-ping" />
-                                 </div>
-                                 <div>
-                                   <h3 className="text-lg font-semibold text-glow">Physical Security</h3>
-                                   <p className="text-sm text-muted-foreground">Locks • Access Control • RFID</p>
-                                 </div>
-                                 <Badge className="bg-orange-500/10 text-orange-500 animate-pulse-glow">
-                                   Physical Access
-                                 </Badge>
-                               </div>
-                             </CardContent>
-                           </Card>
-                         </DialogTrigger>
-                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
-                           <DialogHeader>
-                             <DialogTitle className="flex items-center gap-2 text-xl">
-                               <div className="relative">
-                                 <Building className="h-6 w-6 text-orange-500 animate-pulse" />
-                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-ping" />
-                               </div>
-                               Physical Security Assessment
-                               <Badge className="ml-2 bg-orange-500/10 text-orange-500 animate-pulse-glow">
-                                 PHYSICAL ACCESS
-                               </Badge>
-                             </DialogTitle>
-                             <DialogDescription className="text-base">
-                               Physical security testing including lock picking, access control bypass, and RFID/badge cloning
-                             </DialogDescription>
-                           </DialogHeader>
-                           
-                           <PhysicalPentestingContent />
+                           <ZapProxyContent />
                          </DialogContent>
                        </Dialog>
                      </div>
