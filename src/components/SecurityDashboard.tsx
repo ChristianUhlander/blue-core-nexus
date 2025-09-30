@@ -1293,17 +1293,6 @@ const SecurityDashboard = () => {
    */
   const getDynamicToolsData = () => {
     return [{
-      name: "Wazuh SIEM",
-      description: "Security Information and Event Management",
-      status: serviceStatus.wazuh.online ? "active" : "offline",
-      agents: serviceStatus.wazuh.agents,
-      vulnerabilities: serviceStatus.wazuh.agents > 0 ? 15 : 0,
-      // Sample vulnerability count
-      icon: Shield,
-      color: serviceStatus.wazuh.online ? "green-500" : "red-500",
-      lastCheck: serviceStatus.wazuh.lastCheck,
-      error: serviceStatus.wazuh.error
-    }, {
       name: "OpenVAS Scanner",
       description: "Vulnerability Assessment and Management",
       status: serviceStatus.gvm.online ? "active" : "offline",
@@ -1323,16 +1312,6 @@ const SecurityDashboard = () => {
       color: serviceStatus.zap.online ? "yellow-500" : "red-500",
       lastCheck: serviceStatus.zap.lastCheck,
       error: serviceStatus.zap.error
-    }, {
-      name: "Spiderfoot OSINT",
-      description: "Open Source Intelligence Gathering",
-      status: serviceStatus.spiderfoot.online ? "monitoring" : "offline",
-      sources: serviceStatus.spiderfoot.sources,
-      entities: serviceStatus.spiderfoot.online ? 89 : 0,
-      icon: Search,
-      color: serviceStatus.spiderfoot.online ? "purple-500" : "red-500",
-      lastCheck: serviceStatus.spiderfoot.lastCheck,
-      error: serviceStatus.spiderfoot.error
     }];
   };
 
@@ -1361,23 +1340,6 @@ const SecurityDashboard = () => {
     const dynamicAlerts = [];
 
     // Only show real alerts if services are connected
-    if (serviceStatus.wazuh.online) {
-      dynamicAlerts.push({
-        type: "critical",
-        message: "Suspicious network activity detected on agent-001",
-        time: "2m ago",
-        source: "Wazuh SIEM",
-        severity: "high",
-        connected: true
-      }, {
-        type: "warning",
-        message: "Failed login attempts exceed threshold",
-        time: "8m ago",
-        source: "Wazuh SIEM",
-        severity: "medium",
-        connected: true
-      });
-    }
     if (serviceStatus.gvm.online) {
       dynamicAlerts.push({
         type: "warning",
@@ -1398,29 +1360,8 @@ const SecurityDashboard = () => {
         connected: true
       });
     }
-    if (serviceStatus.spiderfoot.online) {
-      dynamicAlerts.push({
-        type: "warning",
-        message: "New threat intelligence indicators discovered",
-        time: "15m ago",
-        source: "Spiderfoot OSINT",
-        severity: "medium",
-        connected: true
-      });
-    }
 
     // Add "Connect feed" messages for offline services
-    if (!serviceStatus.wazuh.online) {
-      dynamicAlerts.push({
-        type: "disconnected",
-        message: "Connect feed to receive SIEM alerts",
-        time: serviceStatus.wazuh.lastCheck ? `Last check: ${new Date(serviceStatus.wazuh.lastCheck).toLocaleTimeString()}` : "Never connected",
-        source: "Wazuh SIEM",
-        severity: "offline",
-        connected: false,
-        error: serviceStatus.wazuh.error
-      });
-    }
     if (!serviceStatus.gvm.online) {
       dynamicAlerts.push({
         type: "disconnected",
@@ -1441,17 +1382,6 @@ const SecurityDashboard = () => {
         severity: "offline",
         connected: false,
         error: serviceStatus.zap.error
-      });
-    }
-    if (!serviceStatus.spiderfoot.online) {
-      dynamicAlerts.push({
-        type: "disconnected",
-        message: "Connect feed to receive OSINT alerts",
-        time: serviceStatus.spiderfoot.lastCheck ? `Last check: ${new Date(serviceStatus.spiderfoot.lastCheck).toLocaleTimeString()}` : "Never connected",
-        source: "Spiderfoot OSINT",
-        severity: "offline",
-        connected: false,
-        error: serviceStatus.spiderfoot.error
       });
     }
 
@@ -3506,13 +3436,6 @@ const SecurityDashboard = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-sm">
                     {/* Show appropriate metrics based on service type */}
-                    {tool.agents !== undefined && <span className="flex items-center gap-1">
-                        <Server className="h-4 w-4" />
-                        <span className={tool.agents === 0 ? 'text-red-500 font-medium' : ''}>
-                          {tool.agents} agents
-                        </span>
-                        {tool.agents === 0 && <AlertTriangle className="h-3 w-3 text-red-500 animate-pulse" />}
-                      </span>}
                     {tool.vulnerabilities !== undefined && <span className="flex items-center gap-1 text-destructive">
                         <div className={`w-2 h-2 rounded-full ${tool.vulnerabilities > 0 ? 'bg-red-500 animate-pulse' : 'bg-gray-500'}`} />
                         {tool.vulnerabilities} vulns
@@ -3521,17 +3444,9 @@ const SecurityDashboard = () => {
                         <Activity className="h-4 w-4" />
                         {tool.scans} scans
                       </span>}
-                    {tool.sources !== undefined && <span className="flex items-center gap-1">
-                        <Database className="h-4 w-4" />
-                        {tool.sources} sources
-                      </span>}
                     {tool.findings !== undefined && <span className="flex items-center gap-1">
                         <Bug className="h-4 w-4" />
                         {tool.findings} findings
-                      </span>}
-                    {tool.entities !== undefined && <span className="flex items-center gap-1">
-                        <Eye className="h-4 w-4" />
-                        {tool.entities} entities
                       </span>}
                   </div>
 
@@ -3539,12 +3454,6 @@ const SecurityDashboard = () => {
                   {tool.status === 'offline' && tool.error && <div className="p-2 rounded bg-red-500/10 border border-red-500/20">
                       <div className="text-xs text-red-400 font-medium">Connection Failed</div>
                       <div className="text-xs text-muted-foreground truncate">{tool.error}</div>
-                    </div>}
-
-                  {/* Zero state indicators */}
-                  {tool.agents === 0 && <div className="p-2 rounded bg-yellow-500/10 border border-yellow-500/20">
-                      <div className="text-xs text-yellow-400 font-medium">No Active Agents</div>
-                      <div className="text-xs text-muted-foreground">Check agent connectivity</div>
                     </div>}
                 </div>
               </CardContent>
