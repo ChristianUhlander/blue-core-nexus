@@ -2690,7 +2690,8 @@ const SecurityDashboard = () => {
                       <div className="max-w-2xl">
                         <p className="text-lg text-muted-foreground leading-relaxed">
                           <span className="text-primary font-medium">Advanced AI-powered</span> autonomous penetration testing with 
-                          <span className="text-accent font-medium"> LLM integration</span>. Connect GPT-5, Claude, or Perplexity to automatically
+                          <span className="text-accent font-medium"> LLM integration</span>. Connect GPT-5, Claude, Perplexity, 
+                          <span className="text-blue-400 font-medium"> or run local models</span> (Ollama, LM Studio) to automatically
                           analyze, plan, and execute security assessments using Kali Linux tools.
                         </p>
                         
