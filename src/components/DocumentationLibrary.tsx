@@ -400,6 +400,574 @@ nslookup -type=MX target.com
       ]
     },
     {
+      id: 'local-ai-deployment',
+      title: 'Local AI Deployment',
+      description: 'Deploy and configure local LLM models for security operations',
+      icon: Brain,
+      badge: 'AI/ML',
+      items: [
+        {
+          id: 'lm-studio-setup',
+          title: 'LM Studio Setup & Configuration Guide',
+          description: 'Complete guide to setting up LM Studio for local LLM deployment in penetration testing',
+          type: 'tutorial',
+          difficulty: 'intermediate',
+          estimatedTime: '30 minutes',
+          content: `# LM Studio Setup & Configuration Guide
+
+## Overview
+
+LM Studio is a desktop application that makes running large language models (LLMs) locally simple and accessible. Unlike cloud-based solutions, LM Studio gives you complete control, privacy, and offline capabilities for your AI-powered security operations.
+
+### Why Use LM Studio for Security?
+
+- **Data Privacy**: All data stays on your infrastructure
+- **Offline Operations**: No internet dependency for sensitive engagements
+- **Cost Control**: No per-token API fees
+- **Customization**: Full control over model selection and parameters
+- **Compliance**: Meet strict data residency requirements
+
+## System Requirements
+
+### Minimum Requirements
+- **CPU**: 8-core processor (Intel i7/AMD Ryzen 7 or better)
+- **RAM**: 16 GB DDR4
+- **Storage**: 50 GB free space (SSD recommended)
+- **OS**: Windows 10/11, macOS 12+, Linux (Ubuntu 20.04+)
+
+### Recommended Configuration
+- **CPU**: 12+ core processor with AVX2 support
+- **RAM**: 32 GB+ DDR4/DDR5
+- **GPU**: NVIDIA RTX 3060+ (12GB+ VRAM) or AMD RX 6800+
+- **Storage**: 200 GB NVMe SSD
+- **OS**: Latest stable version
+
+### GPU Acceleration (Optional but Recommended)
+- **NVIDIA**: CUDA 11.8+ compatible GPU with 8GB+ VRAM
+- **AMD**: ROCm compatible GPU (Linux only)
+- **Apple Silicon**: M1/M2/M3 chips with Metal acceleration
+
+## Installation Guide
+
+### Step 1: Download LM Studio
+
+1. Visit the official website: **https://lmstudio.ai**
+2. Click "Download for [Your OS]"
+3. Choose the appropriate installer:
+   - **Windows**: \`.exe\` installer
+   - **macOS**: \`.dmg\` disk image
+   - **Linux**: \`.AppImage\` or \`.deb\` package
+
+### Step 2: Install LM Studio
+
+#### Windows Installation
+\`\`\`powershell
+# Run the downloaded installer
+# Follow the installation wizard
+# Choose installation directory (default: C:\\Program Files\\LM Studio)
+# Select "Create desktop shortcut" for easy access
+\`\`\`
+
+#### macOS Installation
+\`\`\`bash
+# Open the .dmg file
+# Drag LM Studio to Applications folder
+# First launch: System Preferences → Security → Allow LM Studio
+\`\`\`
+
+#### Linux Installation (AppImage)
+\`\`\`bash
+# Make the AppImage executable
+chmod +x LM-Studio-*.AppImage
+
+# Run LM Studio
+./LM-Studio-*.AppImage
+
+# Optional: Create desktop shortcut
+mkdir -p ~/.local/share/applications
+cat > ~/.local/share/applications/lmstudio.desktop << EOF
+[Desktop Entry]
+Name=LM Studio
+Exec=/path/to/LM-Studio.AppImage
+Type=Application
+Icon=/path/to/icon.png
+EOF
+\`\`\`
+
+### Step 3: First Launch Configuration
+
+1. **Launch LM Studio** from Applications/Start Menu
+2. **Accept License Agreement** and privacy policy
+3. **Choose Model Storage Location**
+   - Default: \`~/lm-studio/models\`
+   - Recommended: Dedicated SSD with ample space
+4. **Configure Hardware Acceleration**
+   - Auto-detect available GPUs
+   - Choose CPU-only or GPU-accelerated mode
+
+## Model Selection for Security Operations
+
+### Recommended Models for Penetration Testing
+
+#### 1. **Code Llama 13B** (Best for Code Analysis)
+- **Size**: 7.37 GB (quantized)
+- **Use Case**: Vulnerability detection, code review
+- **Context Window**: 16K tokens
+- **Download**: Search "CodeLlama-13B-Instruct-GGUF" in LM Studio
+
+#### 2. **Mistral 7B Instruct** (Best All-Rounder)
+- **Size**: 4.37 GB (Q4 quantization)
+- **Use Case**: General security tasks, report generation
+- **Context Window**: 32K tokens
+- **Download**: Search "Mistral-7B-Instruct-v0.2-GGUF"
+
+#### 3. **Llama 3 8B** (Latest Technology)
+- **Size**: 4.92 GB (Q4 quantization)
+- **Use Case**: Advanced reasoning, multi-step analysis
+- **Context Window**: 8K tokens
+- **Download**: Search "Meta-Llama-3-8B-Instruct-GGUF"
+
+#### 4. **DeepSeek Coder 6.7B** (Specialized Security)
+- **Size**: 3.82 GB
+- **Use Case**: Code vulnerability scanning, exploit development
+- **Context Window**: 16K tokens
+- **Download**: Search "DeepSeek-Coder-6.7B-Instruct-GGUF"
+
+### Model Quantization Guide
+
+Quantization reduces model size while maintaining quality:
+
+- **Q2**: 2-bit (smallest, lowest quality) - Not recommended
+- **Q4**: 4-bit (good balance) - **RECOMMENDED for most users**
+- **Q5**: 5-bit (better quality, larger size)
+- **Q8**: 8-bit (highest quality, largest size) - Recommended if you have resources
+
+**Rule of thumb**: Start with Q4, upgrade to Q5/Q8 if quality is insufficient.
+
+## Downloading Your First Model
+
+### Step-by-Step Download Process
+
+1. **Open LM Studio** and click the "Search" icon (magnifying glass)
+
+2. **Search for a model**: Type "Mistral-7B-Instruct"
+
+3. **Browse available versions**:
+   - Look for "GGUF" format (required for LM Studio)
+   - Check quantization levels (Q4_K_M recommended)
+   - Review model size vs. your available storage
+
+4. **Download the model**:
+   - Click the download button next to your chosen version
+   - Monitor download progress (typically 5-10 minutes)
+   - Models are stored in your configured models directory
+
+5. **Verify download**:
+   - Check "Local Models" tab
+   - Confirm model appears in the list
+   - Note the model path for API integration
+
+### Multiple Model Management
+
+\`\`\`bash
+# Models are stored in structured directories
+~/lm-studio/models/
+├── TheBloke/
+│   ├── Mistral-7B-Instruct-v0.2-GGUF/
+│   └── CodeLlama-13B-Instruct-GGUF/
+└── meta-llama/
+    └── Meta-Llama-3-8B-Instruct-GGUF/
+\`\`\`
+
+## API Server Configuration
+
+### Starting the Local API Server
+
+LM Studio provides an **OpenAI-compatible API** for easy integration.
+
+#### Step 1: Load a Model
+
+1. Go to "Local Models" tab
+2. Click "Load" on your chosen model
+3. Wait for model initialization (20-60 seconds)
+4. Status will show "Model loaded successfully"
+
+#### Step 2: Configure Server Settings
+
+1. Click the **"Local Server"** tab
+2. Configure server parameters:
+
+\`\`\`json
+{
+  "host": "127.0.0.1",           // localhost only (secure)
+  "port": 1234,                   // default port
+  "cors": true,                   // enable for web apps
+  "max_requests": 10,             // concurrent requests
+  "context_length": 4096          // adjust based on model
+}
+\`\`\`
+
+#### Step 3: Start the Server
+
+1. Click **"Start Server"** button
+2. Server status will show "Running"
+3. API endpoint: \`http://localhost:1234/v1\`
+4. Test with provided curl command
+
+### API Testing
+
+Test your server with a simple curl command:
+
+\`\`\`bash
+curl http://localhost:1234/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "mistral-7b-instruct",
+    "messages": [
+      {"role": "system", "content": "You are a cybersecurity expert."},
+      {"role": "user", "content": "Explain SQL injection in simple terms."}
+    ],
+    "temperature": 0.7,
+    "max_tokens": 500
+  }'
+\`\`\`
+
+### Expected Response
+
+\`\`\`json
+{
+  "id": "chatcmpl-abc123",
+  "object": "chat.completion",
+  "created": 1699000000,
+  "model": "mistral-7b-instruct",
+  "choices": [{
+    "index": 0,
+    "message": {
+      "role": "assistant",
+      "content": "SQL injection is a web security vulnerability..."
+    },
+    "finish_reason": "stop"
+  }],
+  "usage": {
+    "prompt_tokens": 25,
+    "completion_tokens": 150,
+    "total_tokens": 175
+  }
+}
+\`\`\`
+
+## Integration with IPS Security Center
+
+### Backend Integration (Python)
+
+\`\`\`python
+import requests
+
+class LMStudioClient:
+    def __init__(self, base_url="http://localhost:1234/v1"):
+        self.base_url = base_url
+        
+    def analyze_vulnerability(self, code_snippet: str) -> dict:
+        """Analyze code for security vulnerabilities"""
+        response = requests.post(
+            f"{self.base_url}/chat/completions",
+            json={
+                "model": "codellama-13b-instruct",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a security code reviewer. Identify vulnerabilities."
+                    },
+                    {
+                        "role": "user", 
+                        "content": f"Review this code for security issues:\\n\\n{code_snippet}"
+                    }
+                ],
+                "temperature": 0.3,  # Low temperature for consistent analysis
+                "max_tokens": 1000
+            }
+        )
+        return response.json()
+
+# Usage
+client = LMStudioClient()
+result = client.analyze_vulnerability("""
+def login(username, password):
+    query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+    return db.execute(query)
+""")
+print(result['choices'][0]['message']['content'])
+\`\`\`
+
+### Frontend Integration (TypeScript/React)
+
+\`\`\`typescript
+// services/lmStudioService.ts
+export interface LMStudioMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
+export class LMStudioService {
+  private apiUrl = 'http://localhost:1234/v1';
+  
+  async generateSecurityReport(findings: any[]): Promise<string> {
+    const response = await fetch(\`\${this.apiUrl}/chat/completions\`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'mistral-7b-instruct',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a security report writer. Create clear, actionable reports.'
+          },
+          {
+            role: 'user',
+            content: \`Generate an executive summary for these findings: \${JSON.stringify(findings)}\`
+          }
+        ],
+        temperature: 0.5,
+        max_tokens: 2000
+      })
+    });
+    
+    const data = await response.json();
+    return data.choices[0].message.content;
+  }
+}
+\`\`\`
+
+## Performance Optimization
+
+### GPU Acceleration Setup
+
+#### NVIDIA GPUs (CUDA)
+\`\`\`bash
+# Verify CUDA installation
+nvidia-smi
+
+# LM Studio will automatically detect and use GPU
+# Monitor GPU usage during inference
+watch -n 1 nvidia-smi
+\`\`\`
+
+#### Apple Silicon (Metal)
+- Automatic acceleration on M1/M2/M3 chips
+- No additional configuration needed
+- Monitor activity with Activity Monitor
+
+### Memory Management
+
+Adjust these settings in LM Studio → Preferences:
+
+- **GPU Layers**: Number of model layers on GPU (higher = faster, more VRAM)
+  - Start with 32, increase until VRAM limit reached
+  - Monitor with \`nvidia-smi\` or Task Manager
+
+- **Context Size**: Maximum conversation history
+  - Default: 2048 tokens
+  - Security reports: 4096+ tokens recommended
+
+- **Batch Size**: Inference batch processing
+  - CPU: 512
+  - GPU: 2048+
+
+### Performance Benchmarks
+
+Expected generation speeds (tokens/second):
+
+| Hardware | Q4 Model | Q8 Model |
+|----------|----------|----------|
+| CPU Only (16GB) | 3-8 t/s | 1-4 t/s |
+| RTX 3060 (12GB) | 25-40 t/s | 15-25 t/s |
+| RTX 4090 (24GB) | 80-120 t/s | 50-80 t/s |
+| M2 Max (32GB) | 35-55 t/s | 20-35 t/s |
+
+## Troubleshooting
+
+### Common Issues
+
+#### Model Won't Load
+\`\`\`
+Error: Failed to load model
+
+Solutions:
+1. Check available RAM (need 2x model size)
+2. Verify GGUF format (not .bin or .pt)
+3. Redownload potentially corrupted model
+4. Update LM Studio to latest version
+\`\`\`
+
+#### Slow Inference Speed
+\`\`\`
+Solutions:
+1. Enable GPU acceleration in Settings
+2. Reduce context window size
+3. Use lower quantization (Q4 vs Q8)
+4. Close background applications
+5. Increase batch size for GPUs
+\`\`\`
+
+#### API Connection Refused
+\`\`\`
+Error: Connection refused at localhost:1234
+
+Solutions:
+1. Verify server is running (check status indicator)
+2. Confirm port 1234 isn't blocked by firewall
+3. Check model is loaded before starting server
+4. Review server logs for specific errors
+\`\`\`
+
+#### Out of Memory Errors
+\`\`\`
+Error: CUDA out of memory / Insufficient RAM
+
+Solutions:
+1. Use smaller model (7B vs 13B)
+2. Lower GPU layers setting
+3. Reduce context window
+4. Use more aggressive quantization (Q4 vs Q8)
+5. Close other GPU-intensive applications
+\`\`\`
+
+## Security Considerations
+
+### Network Security
+\`\`\`bash
+# Bind to localhost only (default - secure)
+host: 127.0.0.1
+
+# If remote access needed, use SSH tunneling instead
+ssh -L 1234:localhost:1234 user@remote-server
+
+# Never expose directly to internet without authentication
+\`\`\`
+
+### Access Control
+- LM Studio doesn't include built-in authentication
+- Use reverse proxy (nginx) for production deployments
+- Implement API key validation in your application layer
+
+### Data Privacy
+- All processing happens locally - no data sent to cloud
+- Models don't retain conversation history between sessions
+- Review model licenses for commercial use restrictions
+
+## Advanced Configuration
+
+### Custom Model Prompts
+
+Create specialized security prompts:
+
+\`\`\`json
+{
+  "system_prompts": {
+    "vuln_scanner": "You are an expert vulnerability scanner. Analyze code for OWASP Top 10 issues. Be precise and provide CVE references.",
+    "report_writer": "You are a technical security report writer. Use clear language for executive audiences. Include severity ratings.",
+    "incident_responder": "You are an incident response expert. Provide immediate actionable steps, then detailed analysis."
+  }
+}
+\`\`\`
+
+### Model Comparison Testing
+
+Test multiple models for your use case:
+
+\`\`\`python
+models = ["mistral-7b", "codellama-13b", "llama3-8b"]
+test_prompt = "Identify vulnerabilities in this SQL query..."
+
+for model in models:
+    start_time = time.time()
+    response = client.query(model, test_prompt)
+    duration = time.time() - start_time
+    
+    print(f"{model}: {duration:.2f}s - Quality: {rate_quality(response)}")
+\`\`\`
+
+## Production Deployment
+
+### Docker Deployment
+
+\`\`\`dockerfile
+FROM ubuntu:22.04
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \\
+    curl \\
+    wget \\
+    build-essential
+
+# Install LM Studio CLI (if available) or use llama.cpp
+# Download models during build or mount as volume
+
+EXPOSE 1234
+CMD ["lm-studio-server", "--host", "0.0.0.0", "--port", "1234"]
+\`\`\`
+
+### Kubernetes Deployment
+
+\`\`\`yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lm-studio
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: lm-studio
+        image: lm-studio:latest
+        resources:
+          requests:
+            memory: "16Gi"
+            nvidia.com/gpu: 1
+          limits:
+            memory: "32Gi"
+            nvidia.com/gpu: 1
+        ports:
+        - containerPort: 1234
+\`\`\`
+
+## Next Steps
+
+1. **Experiment with Models**: Download 2-3 models and compare performance
+2. **Integrate with Tools**: Connect to your existing security tools
+3. **Optimize Performance**: Fine-tune settings for your hardware
+4. **Create Workflows**: Build automated security analysis pipelines
+5. **Monitor Usage**: Track performance metrics and costs
+
+## Resources
+
+- **Official Documentation**: https://lmstudio.ai/docs
+- **Model Repository**: https://huggingface.co/models?library=gguf
+- **Community Discord**: https://discord.gg/lmstudio
+- **GitHub Issues**: Report bugs and request features
+
+## Conclusion
+
+LM Studio provides a powerful, privacy-focused platform for running local LLMs in security operations. With proper configuration and model selection, you can achieve performance comparable to cloud services while maintaining complete control over your data and processes.`,
+          prerequisites: [
+            'Basic understanding of AI/LLM concepts',
+            'Command line familiarity',
+            'Network configuration knowledge'
+          ],
+          expectedOutcomes: [
+            'Successfully install and configure LM Studio',
+            'Download and run security-focused models',
+            'Set up local API server for integration',
+            'Optimize performance for your hardware',
+            'Integrate with IPS Security Center'
+          ],
+          tags: ['ai', 'llm', 'local-deployment', 'lm-studio', 'privacy'],
+          lastUpdated: '2025-01-15'
+        }
+      ]
+    },
+    {
       id: 'backend-development',
       title: 'Backend Development',
       description: 'Backend architecture and development guides',
