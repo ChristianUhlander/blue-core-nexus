@@ -61,8 +61,8 @@ export class WazuhService {
     const startTime = Date.now();
     
     try {
-      // TODO: Replace with actual Supabase Edge Function call
-      // This would call: /functions/v1/wazuh-health-check
+      // TODO: Replace with actual backend API call
+      // This would call: /api/wazuh-health-check
       const response = await fetch(`${this.baseUrl}/security/user/authenticate`, {
         method: 'POST',
         headers: {
@@ -101,8 +101,8 @@ export class WazuhService {
    */
   async getAgents(): Promise<any[]> {
     try {
-      // TODO: Implement via Supabase Edge Function
-      // This would call: /functions/v1/wazuh-agents
+      // TODO: Implement via backend API
+      // This would call: /api/wazuh-agents
       const response = await fetch(`${this.baseUrl}/agents`, {
         headers: { 'Authorization': `Bearer ${this.apiKey}` }
       });
@@ -124,7 +124,7 @@ export class WazuhService {
    */
   async getAlerts(limit: number = 50): Promise<any[]> {
     try {
-      // TODO: Implement via Supabase Edge Function
+      // TODO: Implement via backend API
       const response = await fetch(`${this.baseUrl}/security/events?limit=${limit}`, {
         headers: { 'Authorization': `Bearer ${this.apiKey}` }
       });
@@ -175,8 +175,8 @@ export class OpenVASService {
     const startTime = Date.now();
     
     try {
-      // TODO: Replace with Supabase Edge Function call
-      // This would call: /functions/v1/openvas-health-check
+      // TODO: Replace with backend API call
+      // This would call: /api/openvas-health-check
       const authString = btoa(`${this.username}:${this.password}`);
       const response = await fetch(`${this.baseUrl}/gmp`, {
         method: 'POST',
@@ -219,8 +219,8 @@ export class OpenVASService {
    */
   async startScan(targetId: string, configId: string): Promise<string> {
     try {
-      // TODO: Implement via Supabase Edge Function
-      // This would call: /functions/v1/openvas-start-scan
+      // TODO: Implement via backend API
+      // This would call: /api/openvas-start-scan
       const response = await fetch(`${this.baseUrl}/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -244,7 +244,7 @@ export class OpenVASService {
    */
   async getScanResults(taskId: string): Promise<any> {
     try {
-      // TODO: Implement via Supabase Edge Function
+      // TODO: Implement via backend API
       const response = await fetch(`${this.baseUrl}/results?task_id=${taskId}`);
       
       if (!response.ok) throw new Error('Failed to fetch scan results');
@@ -290,8 +290,8 @@ export class ZAPService {
     const startTime = Date.now();
     
     try {
-      // TODO: Replace with Supabase Edge Function call
-      // This would call: /functions/v1/zap-health-check
+      // TODO: Replace with backend API call
+      // This would call: /api/zap-health-check
       const response = await fetch(`${this.baseUrl}/JSON/core/view/version/?apikey=${this.apiKey}`);
       
       const latency = Date.now() - startTime;
@@ -325,8 +325,8 @@ export class ZAPService {
    */
   async startOWASPScan(targetUrl: string): Promise<string> {
     try {
-      // TODO: Implement via Supabase Edge Function
-      // This would call: /functions/v1/zap-owasp-scan
+      // TODO: Implement via backend API
+      // This would call: /api/zap-owasp-scan
       const response = await fetch(`${this.baseUrl}/JSON/ascan/action/scan/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -355,7 +355,7 @@ export class ZAPService {
    */
   async getScanProgress(scanId: string): Promise<number> {
     try {
-      // TODO: Implement via Supabase Edge Function
+      // TODO: Implement via backend API
       const response = await fetch(`${this.baseUrl}/JSON/ascan/view/status/?scanId=${scanId}&apikey=${this.apiKey}`);
       
       if (!response.ok) throw new Error('Failed to get scan progress');
@@ -402,8 +402,8 @@ export class SpiderfootService {
     const startTime = Date.now();
     
     try {
-      // TODO: Replace with Supabase Edge Function call
-      // This would call: /functions/v1/spiderfoot-health-check
+      // TODO: Replace with backend API call
+      // This would call: /api/spiderfoot-health-check
       const response = await fetch(`${this.baseUrl}/api?func=ping&apikey=${this.apiKey}`);
       
       const latency = Date.now() - startTime;
@@ -438,8 +438,8 @@ export class SpiderfootService {
    */
   async startScan(target: string, modules: string[] = []): Promise<string> {
     try {
-      // TODO: Implement via Supabase Edge Function
-      // This would call: /functions/v1/spiderfoot-start-scan
+      // TODO: Implement via backend API
+      // This would call: /api/spiderfoot-start-scan
       const response = await fetch(`${this.baseUrl}/api`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -469,7 +469,7 @@ export class SpiderfootService {
    */
   async getScanResults(scanId: string): Promise<any[]> {
     try {
-      // TODO: Implement via Supabase Edge Function
+      // TODO: Implement via backend API
       const response = await fetch(`${this.baseUrl}/api?func=scandata&id=${scanId}&apikey=${this.apiKey}`);
       
       if (!response.ok) throw new Error('Failed to fetch scan results');
@@ -502,10 +502,10 @@ export class SecurityApiManager {
 
   /**
    * Initialize all security services
-   * In production, these would be configured via Supabase secrets
+   * In production, these would be configured via environment variables
    */
   private initializeServices(): void {
-    // TODO: Replace with Supabase secret management
+    // TODO: Replace with proper secret management
     this.services.set('wazuh', new WazuhService());
     this.services.set('openvas', new OpenVASService());
     this.services.set('zap', new ZAPService());

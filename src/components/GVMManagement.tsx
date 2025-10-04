@@ -63,7 +63,7 @@ const GVMManagement: React.FC = () => {
 
   /**
    * Load vulnerability scans from GVM
-   * In production, this would call a Supabase Edge Function
+   * In production, this would call the backend API
    */
   const loadScans = async () => {
     setIsLoading(true);
@@ -73,8 +73,8 @@ const GVMManagement: React.FC = () => {
         throw new Error('GVM service not available');
       }
 
-      // TODO: This will be replaced with actual API call via Supabase Edge Function
-      // This would call: /functions/v1/gvm-get-scans
+      // TODO: This will be replaced with actual API call to backend
+      // This would call: /api/gvm-get-scans
       
       // Mock data for demonstration - remove when API is connected
       const mockScans: VulnerabilityScan[] = [
@@ -127,13 +127,13 @@ const GVMManagement: React.FC = () => {
 
   /**
    * Load CVE entries from GVM
-   * In production, this would call a Supabase Edge Function
+   * In production, this would call the backend API
    */
   const loadCVEs = async () => {
     setIsLoading(true);
     try {
-      // TODO: This will be replaced with actual API call via Supabase Edge Function
-      // This would call: /functions/v1/gvm-get-cves
+      // TODO: This will be replaced with actual API call to backend
+      // This would call: /api/gvm-get-cves
       
       // Mock data for demonstration - remove when API is connected
       const mockCVEs: CVEEntry[] = [
@@ -200,8 +200,8 @@ const GVMManagement: React.FC = () => {
         throw new Error('GVM service not available');
       }
 
-      // TODO: This will be replaced with actual API call via Supabase Edge Function
-      // This would call: /functions/v1/gvm-start-scan
+      // TODO: This will be replaced with actual API call to backend
+      // This would call: /api/gvm-start-scan
       const scanId = await gvmService.startScan('target-001', 'config-001');
       
       const newScan: VulnerabilityScan = {
@@ -240,8 +240,8 @@ const GVMManagement: React.FC = () => {
    */
   const controlScan = async (scanId: string, action: 'pause' | 'resume') => {
     try {
-      // TODO: Implement via Supabase Edge Function
-      // This would call: /functions/v1/gvm-control-scan
+      // TODO: Implement via backend API
+      // This would call: /api/gvm-control-scan
       
       setScans(prev => prev.map(scan => 
         scan.id === scanId 

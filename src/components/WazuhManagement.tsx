@@ -55,7 +55,7 @@ const WazuhManagement: React.FC = () => {
 
   /**
    * Load Wazuh agents from API
-   * In production, this would call a Supabase Edge Function
+   * In production, this would call the backend API
    */
   const loadAgents = async () => {
     setIsLoading(true);
@@ -65,7 +65,7 @@ const WazuhManagement: React.FC = () => {
         throw new Error('Wazuh service not available');
       }
 
-      // TODO: This will be replaced with actual API call via Supabase Edge Function
+      // TODO: This will be replaced with actual API call to backend
       const agentData = await wazuhService.getAgents();
       
       // Mock data for demonstration - remove when API is connected
@@ -119,7 +119,7 @@ const WazuhManagement: React.FC = () => {
 
   /**
    * Load recent alerts from Wazuh
-   * In production, this would call a Supabase Edge Function
+   * In production, this would call the backend API
    */
   const loadAlerts = async () => {
     setIsLoading(true);
@@ -129,7 +129,7 @@ const WazuhManagement: React.FC = () => {
         throw new Error('Wazuh service not available');
       }
 
-      // TODO: This will be replaced with actual API call via Supabase Edge Function
+      // TODO: This will be replaced with actual API call to backend
       const alertData = await wazuhService.getAlerts(50);
       
       // Mock data for demonstration - remove when API is connected
@@ -182,8 +182,8 @@ const WazuhManagement: React.FC = () => {
    */
   const restartAgent = async (agentId: string) => {
     try {
-      // TODO: Implement via Supabase Edge Function
-      // This would call: /functions/v1/wazuh-restart-agent
+      // TODO: Implement via backend API
+      // This would call: /api/wazuh-restart-agent
       
       toast({
         title: "Agent Restart",
@@ -631,8 +631,8 @@ const WazuhManagement: React.FC = () => {
 
                 <div className="pt-4">
                   <p className="text-sm text-muted-foreground">
-                    <strong>Note:</strong> This interface requires a Supabase backend connection to manage 
-                    actual Wazuh SIEM instances. Configure your API endpoints in the Supabase Edge Functions.
+                    <strong>Note:</strong> This interface requires a backend connection to manage 
+                    actual Wazuh SIEM instances. Configure your API endpoints in the backend service.
                   </p>
                 </div>
               </div>

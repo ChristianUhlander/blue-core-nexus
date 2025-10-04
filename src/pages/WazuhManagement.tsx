@@ -1056,7 +1056,7 @@ const WazuhManagement = () => {
 
       <div className="mt-8 text-center">
         <p className="text-sm text-muted-foreground">
-          Connect to Supabase to enable Wazuh API integration and real-time functionality
+          Connect to backend API to enable Wazuh integration and real-time functionality
         </p>
       </div>
     </div>
