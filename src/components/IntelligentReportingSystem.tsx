@@ -52,7 +52,7 @@ import {
 } from '@/types/reporting';
 
 export const IntelligentReportingSystem: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('generator');
+  const [activeTab, setActiveTab] = useState('examples');
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [selectedAudience, setSelectedAudience] = useState<string>('technical');
   const [reportTitle, setReportTitle] = useState('Security Assessment Report');
@@ -626,7 +626,11 @@ ${content}
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="examples" className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4" />
+            Examples
+          </TabsTrigger>
           <TabsTrigger value="generator" className="flex items-center gap-2">
             <FileText className="w-4 h-4" />
             Generator
@@ -644,6 +648,292 @@ ${content}
             Settings
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="examples" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5" />
+                Example Reports
+              </CardTitle>
+              <CardDescription>
+                Preview different report styles to help you choose the right template and audience
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <div className="grid gap-4">
+            {/* Executive Summary - Executive Audience */}
+            <Card className="border-primary/20">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Executive Security Summary</CardTitle>
+                    <CardDescription>For C-Suite & Board Members</CardDescription>
+                  </div>
+                  <Badge variant="default">Executive</Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-72 w-full border rounded-md p-4 bg-muted/30">
+                  <div className="space-y-4 text-sm">
+                    <div>
+                      <h3 className="font-semibold text-base mb-2">📊 Risk Overview</h3>
+                      <p className="text-muted-foreground">
+                        Our current security posture indicates a <strong>moderate risk level</strong> with 3 critical vulnerabilities requiring immediate attention. Overall risk score: <strong>67/100</strong> (Fair). The primary concerns are outdated SSL certificates affecting customer trust and unpatched systems exposing sensitive data.
+                      </p>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h3 className="font-semibold text-base mb-2">💼 Business Impact</h3>
+                      <div className="bg-background border rounded-md p-3 space-y-2">
+                        <div className="flex justify-between">
+                          <span>Potential Revenue Loss:</span>
+                          <span className="font-medium text-destructive">$500K - $2M</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Regulatory Compliance:</span>
+                          <span className="font-medium text-yellow-600">78% (Partial)</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Customer Trust Impact:</span>
+                          <span className="font-medium text-destructive">High Risk</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h3 className="font-semibold text-base mb-2">💰 Investment Recommendations</h3>
+                      <ul className="space-y-2 text-muted-foreground">
+                        <li>• <strong>$50K:</strong> Immediate vulnerability remediation (ROI: 400% risk reduction)</li>
+                        <li>• <strong>$120K:</strong> Security automation platform (ROI: 60% operational efficiency)</li>
+                        <li>• <strong>$30K:</strong> Staff security training (ROI: 70% incident reduction)</li>
+                      </ul>
+                    </div>
+                  </div>
+                </ScrollArea>
+                <div className="flex gap-2 mt-3">
+                  <Button size="sm" variant="outline" onClick={() => {
+                    setSelectedTemplate('executive-summary');
+                    setSelectedAudience('executive');
+                    setActiveTab('generator');
+                  }}>
+                    Use This Template
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Technical Assessment - Technical Audience */}
+            <Card className="border-blue-500/20">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Technical Security Assessment</CardTitle>
+                    <CardDescription>For Security Engineers & DevOps</CardDescription>
+                  </div>
+                  <Badge variant="secondary">Technical</Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-72 w-full border rounded-md p-4 bg-muted/30">
+                  <div className="space-y-4 text-sm font-mono">
+                    <div>
+                      <h3 className="font-semibold text-base mb-2 font-sans">🔍 Vulnerability Analysis</h3>
+                      <div className="bg-background border rounded-md p-3 space-y-2">
+                        <div>
+                          <span className="text-destructive font-bold">[CRITICAL]</span> CVE-2024-1234: SQL Injection in /api/users endpoint
+                        </div>
+                        <div className="pl-4 text-muted-foreground">
+                          CVSS: 9.8 | Attack Vector: Network | Exploitability: High
+                          <br />
+                          Affected: api-server v2.3.1, Lines 145-167 in user_controller.py
+                          <br />
+                          Recommendation: Implement parameterized queries, upgrade to v2.3.2
+                        </div>
+                      </div>
+                      <div className="bg-background border rounded-md p-3 mt-2 space-y-2">
+                        <div>
+                          <span className="text-orange-600 font-bold">[HIGH]</span> CVE-2024-5678: XSS in dashboard component
+                        </div>
+                        <div className="pl-4 text-muted-foreground">
+                          CVSS: 7.4 | CWE-79 | Stored XSS
+                          <br />
+                          Fix: Sanitize user input in dashboard.tsx:89-102
+                        </div>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h3 className="font-semibold text-base mb-2 font-sans">🛠️ Technical Recommendations</h3>
+                      <ul className="space-y-1 text-muted-foreground">
+                        <li>1. Deploy WAF rules for SQL injection protection</li>
+                        <li>2. Enable CSP headers: default-src 'self'; script-src 'self'</li>
+                        <li>3. Implement rate limiting: 100 req/min per IP</li>
+                        <li>4. Update dependencies: express@4.18.2 → 4.19.0</li>
+                      </ul>
+                    </div>
+                  </div>
+                </ScrollArea>
+                <div className="flex gap-2 mt-3">
+                  <Button size="sm" variant="outline" onClick={() => {
+                    setSelectedTemplate('technical-assessment');
+                    setSelectedAudience('technical');
+                    setActiveTab('generator');
+                  }}>
+                    Use This Template
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Compliance Report - Compliance Audience */}
+            <Card className="border-green-500/20">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Compliance & Regulatory Report</CardTitle>
+                    <CardDescription>For Compliance Officers & Auditors</CardDescription>
+                  </div>
+                  <Badge className="bg-green-600">Compliance</Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-72 w-full border rounded-md p-4 bg-muted/30">
+                  <div className="space-y-4 text-sm">
+                    <div>
+                      <h3 className="font-semibold text-base mb-2">📋 Compliance Status Overview</h3>
+                      <div className="space-y-3">
+                        <div className="bg-background border rounded-md p-3">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="font-medium">SOC 2 Type II</span>
+                            <Badge variant="default" className="bg-green-600">Compliant</Badge>
+                          </div>
+                          <Progress value={95} className="h-2" />
+                          <p className="text-xs text-muted-foreground mt-1">95% - All critical controls met, 2 minor gaps</p>
+                        </div>
+                        <div className="bg-background border rounded-md p-3">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="font-medium">GDPR</span>
+                            <Badge variant="default" className="bg-yellow-600">Partial</Badge>
+                          </div>
+                          <Progress value={78} className="h-2" />
+                          <p className="text-xs text-muted-foreground mt-1">78% - Data retention policies need updating</p>
+                        </div>
+                        <div className="bg-background border rounded-md p-3">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="font-medium">ISO 27001</span>
+                            <Badge variant="default" className="bg-green-600">Compliant</Badge>
+                          </div>
+                          <Progress value={92} className="h-2" />
+                          <p className="text-xs text-muted-foreground mt-1">92% - Certified, next audit in 4 months</p>
+                        </div>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h3 className="font-semibold text-base mb-2">⚠️ Compliance Gaps</h3>
+                      <ul className="space-y-2 text-muted-foreground">
+                        <li>• <strong>GDPR Art. 30:</strong> Records of processing activities incomplete for 3 systems</li>
+                        <li>• <strong>SOC 2 CC6.1:</strong> Logical access controls need documentation update</li>
+                        <li>• <strong>PCI-DSS 6.5.1:</strong> Injection flaws identified in payment processing</li>
+                      </ul>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h3 className="font-semibold text-base mb-2">✅ Remediation Actions</h3>
+                      <ul className="space-y-1 text-muted-foreground text-xs">
+                        <li>□ Update data processing records (Due: 30 days, Owner: DPO)</li>
+                        <li>□ Document access control procedures (Due: 15 days, Owner: InfoSec)</li>
+                        <li>□ Remediate injection vulnerabilities (Due: 7 days, Owner: DevOps)</li>
+                      </ul>
+                    </div>
+                  </div>
+                </ScrollArea>
+                <div className="flex gap-2 mt-3">
+                  <Button size="sm" variant="outline" onClick={() => {
+                    setSelectedTemplate('compliance-report');
+                    setSelectedAudience('compliance');
+                    setActiveTab('generator');
+                  }}>
+                    Use This Template
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Developer Guide - Developer Audience */}
+            <Card className="border-purple-500/20">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Developer Security Guide</CardTitle>
+                    <CardDescription>For Software Developers & Engineering Teams</CardDescription>
+                  </div>
+                  <Badge className="bg-purple-600">Developer</Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-72 w-full border rounded-md p-4 bg-muted/30">
+                  <div className="space-y-4 text-sm">
+                    <div>
+                      <h3 className="font-semibold text-base mb-2">🐛 Code-Level Vulnerabilities</h3>
+                      <div className="bg-background border rounded-md p-3 font-mono text-xs">
+                        <div className="text-destructive font-bold mb-1">src/api/user.ts:145-167</div>
+                        <pre className="text-muted-foreground overflow-x-auto">{`// ❌ VULNERABLE CODE
+const query = \`SELECT * FROM users 
+  WHERE email = '\${email}'\`;
+db.execute(query);
+
+// ✅ FIXED CODE  
+const query = 'SELECT * FROM users WHERE email = ?';
+db.execute(query, [email]);`}</pre>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h3 className="font-semibold text-base mb-2">🔧 Quick Fixes</h3>
+                      <div className="space-y-2">
+                        <div className="bg-background border rounded-md p-3">
+                          <div className="font-medium mb-1">1. Update Dependencies</div>
+                          <code className="text-xs bg-muted p-2 rounded block">npm audit fix && npm update express helmet cors</code>
+                        </div>
+                        <div className="bg-background border rounded-md p-3">
+                          <div className="font-medium mb-1">2. Enable Security Headers</div>
+                          <code className="text-xs bg-muted p-2 rounded block">app.use(helmet()); // Add to server.ts</code>
+                        </div>
+                        <div className="bg-background border rounded-md p-3">
+                          <div className="font-medium mb-1">3. Add Input Validation</div>
+                          <code className="text-xs bg-muted p-2 rounded block">{`import { z } from 'zod';`}</code>
+                        </div>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h3 className="font-semibold text-base mb-2">📚 Security Best Practices</h3>
+                      <ul className="space-y-1 text-muted-foreground text-xs">
+                        <li>✓ Use parameterized queries for all database operations</li>
+                        <li>✓ Sanitize user input with validator libraries (zod, joi)</li>
+                        <li>✓ Implement CSRF tokens for state-changing operations</li>
+                        <li>✓ Enable CORS with strict origin whitelist</li>
+                        <li>✓ Use environment variables for secrets (never hardcode)</li>
+                      </ul>
+                    </div>
+                  </div>
+                </ScrollArea>
+                <div className="flex gap-2 mt-3">
+                  <Button size="sm" variant="outline" onClick={() => {
+                    setSelectedTemplate('developer-guide');
+                    setSelectedAudience('developer');
+                    setActiveTab('generator');
+                  }}>
+                    Use This Template
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
 
         <TabsContent value="generator" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
