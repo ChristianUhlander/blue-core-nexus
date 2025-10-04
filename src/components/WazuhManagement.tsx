@@ -19,7 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useSecurityStatus } from '@/hooks/useSecurityStatus';
-import { securityApiManager } from '@/services/securityApi';
+import { fastApiClient, WazuhAgent as FastApiWazuhAgent, WazuhAlert as FastApiWazuhAlert } from '@/services/fastApiClient';
 
 interface WazuhAgent {
   id: string;
@@ -54,56 +54,33 @@ const WazuhManagement: React.FC = () => {
   const connectionStatus = getConnectionIndicator('wazuhsiem');
 
   /**
-   * Load Wazuh agents from API
-   * In production, this would call the backend API
+   * Load Wazuh agents from API via FastAPI client
    */
   const loadAgents = async () => {
     setIsLoading(true);
     try {
-      const wazuhService = securityApiManager.getService('wazuh');
-      if (!wazuhService) {
-        throw new Error('Wazuh service not available');
-      }
-
-      // TODO: This will be replaced with actual API call to backend
-      const agentData = await wazuhService.getAgents();
+      const response = await fastApiClient.getWazuhAgents(100, 'status');
       
-      // Mock data for demonstration - remove when API is connected
-      const mockAgents: WazuhAgent[] = [
-        {
-          id: '001',
-          name: 'web-server-01',
-          ip: '192.168.1.100',
-          status: 'active',
-          os_platform: 'ubuntu',
-          version: '4.3.10',
-          last_keep_alive: new Date().toISOString()
-        },
-        {
-          id: '002',
-          name: 'db-server-01',
-          ip: '192.168.1.101',
-          status: 'active',
-          os_platform: 'centos',
-          version: '4.3.10',
-          last_keep_alive: new Date().toISOString()
-        },
-        {
-          id: '003',
-          name: 'workstation-01',
-          ip: '192.168.1.102',
-          status: 'disconnected',
-          os_platform: 'windows',
-          version: '4.3.9',
-          last_keep_alive: new Date(Date.now() - 300000).toISOString()
-        }
-      ];
-
-      setAgents(connectionStatus.status === 'connected' ? agentData : mockAgents);
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to load agents');
+      }
+      
+      // Transform FastAPI response to component format
+      const transformedAgents: WazuhAgent[] = (response.data || []).map(agent => ({
+        id: agent.id,
+        name: agent.name,
+        ip: agent.ip,
+        status: agent.status as 'active' | 'disconnected' | 'never_connected',
+        os_platform: agent.os.platform,
+        version: agent.version,
+        last_keep_alive: agent.lastKeepAlive
+      }));
+      
+      setAgents(transformedAgents);
       
       toast({
         title: "Agents Updated",
-        description: `Loaded ${mockAgents.length} agents from Wazuh SIEM`,
+        description: `Loaded ${transformedAgents.length} agents from Wazuh SIEM`,
       });
     } catch (error) {
       console.error('Failed to load agents:', error);
@@ -118,52 +95,32 @@ const WazuhManagement: React.FC = () => {
   };
 
   /**
-   * Load recent alerts from Wazuh
-   * In production, this would call the backend API
+   * Load recent alerts from Wazuh via FastAPI client
    */
   const loadAlerts = async () => {
     setIsLoading(true);
     try {
-      const wazuhService = securityApiManager.getService('wazuh');
-      if (!wazuhService) {
-        throw new Error('Wazuh service not available');
-      }
-
-      // TODO: This will be replaced with actual API call to backend
-      const alertData = await wazuhService.getAlerts(50);
+      const response = await fastApiClient.searchWazuhAlerts({ 
+        size: 50,
+        sort: '-timestamp'
+      });
       
-      // Mock data for demonstration - remove when API is connected
-      const mockAlerts: WazuhAlert[] = [
-        {
-          id: '1',
-          timestamp: new Date().toISOString(),
-          rule_id: 5712,
-          rule_description: 'Multiple SSH authentication failures',
-          agent_name: 'web-server-01',
-          level: 10,
-          location: '/var/log/auth.log'
-        },
-        {
-          id: '2',
-          timestamp: new Date(Date.now() - 120000).toISOString(),
-          rule_id: 31151,
-          rule_description: 'Web vulnerability exploit attempt',
-          agent_name: 'web-server-01',
-          level: 12,
-          location: '/var/log/apache2/access.log'
-        },
-        {
-          id: '3',
-          timestamp: new Date(Date.now() - 300000).toISOString(),
-          rule_id: 18152,
-          rule_description: 'Rootkit detection',
-          agent_name: 'db-server-01',
-          level: 7,
-          location: 'rootcheck'
-        }
-      ];
-
-      setAlerts(connectionStatus.status === 'connected' ? alertData : mockAlerts);
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to load alerts');
+      }
+      
+      // Transform FastAPI response to component format
+      const transformedAlerts: WazuhAlert[] = (response.data || []).map(alert => ({
+        id: alert.id,
+        timestamp: alert.timestamp,
+        rule_id: alert.rule.id,
+        rule_description: alert.rule.description,
+        agent_name: alert.agent.name,
+        level: alert.rule.level,
+        location: alert.location
+      }));
+      
+      setAlerts(transformedAlerts);
     } catch (error) {
       console.error('Failed to load alerts:', error);
       toast({
@@ -177,22 +134,25 @@ const WazuhManagement: React.FC = () => {
   };
 
   /**
-   * Restart a Wazuh agent
+   * Restart a Wazuh agent via FastAPI client
    * @param agentId - ID of the agent to restart
    */
   const restartAgent = async (agentId: string) => {
     try {
-      // TODO: Implement via backend API
-      // This would call: /api/wazuh-restart-agent
+      const response = await fastApiClient.restartWazuhAgent(agentId, false);
+      
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to restart agent');
+      }
       
       toast({
         title: "Agent Restart",
-        description: `Restart command sent to agent ${agentId}`,
+        description: response.data?.message || `Restart command sent to agent ${agentId}`,
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to restart agent",
+        description: error instanceof Error ? error.message : "Failed to restart agent",
         variant: "destructive",
       });
     }

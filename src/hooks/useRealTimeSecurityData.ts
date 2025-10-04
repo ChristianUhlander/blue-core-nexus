@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { k8sSecurityApi } from '@/services/k8sSecurityApi';
+import { fastApiClient } from '@/services/fastApiClient';
 import { 
   SecurityAlert, 
   WazuhAgent, 
@@ -246,29 +246,64 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
   }, [handleStatusUpdate, handleNewAlert, handleAgentUpdate, handleScanProgress]);
 
   /**
-   * Refresh all service data
+   * Refresh all service data via FastAPI client
    */
   const refreshAll = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      // Skip backend calls in demo mode to prevent errors
-      console.log('🔄 Refreshing security data (demo mode)');
+      console.log('🔄 Refreshing security data via FastAPI');
       
-      // Set mock data for demo
+      // Fetch agents
+      const agentsResponse = await fastApiClient.getWazuhAgents();
+      if (agentsResponse.success && agentsResponse.data) {
+        setState(prev => ({
+          ...prev,
+          agents: agentsResponse.data as unknown as WazuhAgent[]
+        }));
+        console.log(`✅ Loaded ${agentsResponse.data.length} Wazuh agents`);
+      }
+      
+      // Fetch alerts
+      const alertsResponse = await fastApiClient.getWazuhAlerts(100);
+      if (alertsResponse.success && alertsResponse.data) {
+        const mappedAlerts: SecurityAlert[] = alertsResponse.data.map(alert => ({
+          id: alert.id,
+          source: 'wazuh' as const,
+          timestamp: alert.timestamp,
+          severity: alert.rule.level >= 12 ? 'critical' : 
+                   alert.rule.level >= 8 ? 'high' :
+                   alert.rule.level >= 5 ? 'medium' : 'low',
+          title: alert.rule.description,
+          description: alert.full_log,
+          agentId: alert.agent.id,
+          agentName: alert.agent.name,
+          rule: {
+            id: alert.rule.id.toString(),
+            description: alert.rule.description,
+            level: alert.rule.level
+          },
+          acknowledged: false
+        }));
+        
+        setState(prev => ({
+          ...prev,
+          alerts: mappedAlerts
+        }));
+        console.log(`✅ Loaded ${mappedAlerts.length} security alerts`);
+      }
+      
+      // Check health of all services
+      const healthResponse = await fastApiClient.getServicesHealth();
+      if (healthResponse.success && healthResponse.data) {
+        console.log('✅ Services health checked');
+      }
+      
       setState(prev => ({
         ...prev,
         isLoading: false,
         lastUpdate: new Date().toISOString(),
-        isConnected: false, // Keep as false since no real backend
-        services: {
-          wazuh: { ...prev.services.wazuh, online: false, error: 'Demo mode - no backend' },
-          gvm: { ...prev.services.gvm, online: false, error: 'Demo mode - no backend' },
-          zap: { ...prev.services.zap, online: false, error: 'Demo mode - no backend' },
-          spiderfoot: { ...prev.services.spiderfoot, online: false, error: 'Demo mode - no backend' }
-        },
-        alerts: [], // Mock data can be added here if needed
-        agents: [] // Mock data can be added here if needed
+        isConnected: true
       }));
       
     } catch (error) {
@@ -276,35 +311,51 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error: 'Demo mode - backend services not available',
+        error: error instanceof Error ? error.message : 'Failed to refresh data',
         isConnected: false
       }));
     }
   }, []);
 
   /**
-   * Refresh specific service data
+   * Refresh specific service data via FastAPI
    */
   const refreshService = useCallback(async (service: keyof RealTimeSecurityState['services']) => {
     try {
-      console.log(`🔄 Refreshing ${service} service (demo mode)`);
+      console.log(`🔄 Refreshing ${service} service via FastAPI`);
       
-      // Update service status without backend call
+      const response = await fastApiClient.checkServiceHealth(service);
+      
+      if (response.success && response.data) {
+        setState(prev => ({
+          ...prev,
+          services: {
+            ...prev.services,
+            [service]: { 
+              ...prev.services[service],
+              online: response.data.status === 'healthy',
+              error: response.data.error || null,
+              lastCheck: new Date().toISOString(),
+              responseTime: response.data.responseTime
+            }
+          },
+          lastUpdate: new Date().toISOString()
+        }));
+      }
+    } catch (error) {
+      console.error(`❌ Failed to refresh ${service} service:`, error);
       setState(prev => ({
         ...prev,
         services: {
           ...prev.services,
           [service]: { 
-            ...prev.services[service], 
-            online: false, 
-            error: 'Demo mode - no backend',
+            ...prev.services[service],
+            online: false,
+            error: error instanceof Error ? error.message : 'Connection failed',
             lastCheck: new Date().toISOString()
           }
-        },
-        lastUpdate: new Date().toISOString()
+        }
       }));
-    } catch (error) {
-      console.error(`❌ Failed to refresh ${service} service:`, error);
     }
   }, []);
 
@@ -339,22 +390,28 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
   }, [toast]);
 
   /**
-   * Restart Wazuh agent
+   * Restart Wazuh agent via FastAPI
    */
   const restartAgent = useCallback(async (agentId: string) => {
     try {
-      console.log(`🔄 Restart agent ${agentId} (demo mode)`);
+      console.log(`🔄 Restarting agent ${agentId} via FastAPI`);
       
-      toast({
-        title: 'Demo Mode',
-        description: `Agent restart simulated for ${agentId} - backend not available.`
-      });
+      const response = await fastApiClient.restartWazuhAgent(agentId, false);
+      
+      if (response.success) {
+        toast({
+          title: 'Agent Restart',
+          description: response.data?.message || `Agent ${agentId} restart initiated.`
+        });
+      } else {
+        throw new Error(response.error || 'Failed to restart agent');
+      }
 
     } catch (error) {
       console.error('❌ Failed to restart agent:', error);
       toast({
         title: 'Error',
-        description: 'Failed to restart agent.',
+        description: error instanceof Error ? error.message : 'Failed to restart agent.',
         variant: 'destructive'
       });
     }

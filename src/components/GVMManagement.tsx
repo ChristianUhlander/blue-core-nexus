@@ -22,7 +22,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useSecurityStatus } from '@/hooks/useSecurityStatus';
-import { securityApiManager } from '@/services/securityApi';
+import { fastApiClient } from '@/services/fastApiClient';
+import { GvmTarget, GvmTask } from '@/types/security';
+import { transformTargets, transformTasks } from '@/lib/gvmTransformers';
 
 interface VulnerabilityScan {
   id: string;
@@ -53,6 +55,8 @@ const GVMManagement: React.FC = () => {
   const { toast } = useToast();
   const { getConnectionIndicator, checkServiceConnection } = useSecurityStatus();
   
+  const [targets, setTargets] = useState<GvmTarget[]>([]);
+  const [tasks, setTasks] = useState<GvmTask[]>([]);
   const [scans, setScans] = useState<VulnerabilityScan[]>([]);
   const [cves, setCves] = useState<CVEEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -62,20 +66,77 @@ const GVMManagement: React.FC = () => {
   const connectionStatus = getConnectionIndicator('openvasgvm');
 
   /**
-   * Load vulnerability scans from GVM
-   * In production, this would call the backend API
+   * Load GVM targets from backend via FastAPI client
+   */
+  const loadTargets = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fastApiClient.listGvmTargets();
+      
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to load targets');
+      }
+      
+      // Check if response is XML and transform
+      const data = response.data as any;
+      if (typeof data === 'string' && data.includes('<?xml')) {
+        const transformedTargets = transformTargets(data);
+        setTargets(transformedTargets);
+      } else {
+        setTargets((response.data as GvmTarget[]) || []);
+      }
+    } catch (error) {
+      console.error('Failed to load targets:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load GVM targets. Check connection.",
+        variant: "destructive",
+      });
+      setTargets([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Load GVM tasks from backend via FastAPI client
+   */
+  const loadTasks = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fastApiClient.listGvmTasks();
+      
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to load tasks');
+      }
+      
+      // Check if response is XML and transform
+      const data = response.data as any;
+      if (typeof data === 'string' && data.includes('<?xml')) {
+        const transformedTasks = transformTasks(data);
+        setTasks(transformedTasks);
+      } else {
+        setTasks((response.data as GvmTask[]) || []);
+      }
+    } catch (error) {
+      console.error('Failed to load tasks:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load GVM tasks. Check connection.",
+        variant: "destructive",
+      });
+      setTasks([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Load vulnerability scans from GVM (mock data for now)
    */
   const loadScans = async () => {
     setIsLoading(true);
     try {
-      const gvmService = securityApiManager.getService('openvas');
-      if (!gvmService) {
-        throw new Error('GVM service not available');
-      }
-
-      // TODO: This will be replaced with actual API call to backend
-      // This would call: /api/gvm-get-scans
-      
       // Mock data for demonstration - remove when API is connected
       const mockScans: VulnerabilityScan[] = [
         {
@@ -180,8 +241,7 @@ const GVMManagement: React.FC = () => {
   };
 
   /**
-   * Start a new vulnerability scan
-   * @param target - Target to scan (IP range, hostname, etc.)
+   * Start a new vulnerability scan (simplified version)
    */
   const startNewScan = async () => {
     if (!newScanTarget.trim()) {
@@ -195,18 +255,10 @@ const GVMManagement: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const gvmService = securityApiManager.getService('openvas');
-      if (!gvmService) {
-        throw new Error('GVM service not available');
-      }
-
-      // TODO: This will be replaced with actual API call to backend
-      // This would call: /api/gvm-start-scan
-      const scanId = await gvmService.startScan('target-001', 'config-001');
-      
+      // For now, create a mock scan - replace with FastAPI call when available
       const newScan: VulnerabilityScan = {
-        id: scanId || `scan${Date.now()}`,
-        name: `Scan of ${newScanTarget}`,
+        id: `scan_${Date.now()}`,
+        name: `Scan: ${newScanTarget}`,
         target: newScanTarget,
         status: 'running',
         progress: 0,
@@ -219,7 +271,7 @@ const GVMManagement: React.FC = () => {
       
       toast({
         title: "Scan Started",
-        description: `Vulnerability scan initiated for ${newScanTarget}`,
+        description: `Vulnerability scan started for target: ${newScanTarget}`,
       });
     } catch (error) {
       console.error('Failed to start scan:', error);

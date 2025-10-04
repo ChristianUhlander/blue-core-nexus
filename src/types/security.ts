@@ -162,3 +162,32 @@ export interface WSMessage {
   data: any;
   timestamp: string;
 }
+
+// GVM Types
+export interface GvmTarget {
+  id: string;
+  name: string;
+  hosts: string[];
+  comment?: string;
+  port_list_id?: string;
+}
+
+export interface GvmTask {
+  id: string;
+  name: string;
+  status: 'New' | 'Running' | 'Stopped' | 'Done';
+  progress: number;
+  target: {
+    id: string;
+    name: string;
+  };
+  config: {
+    id: string;
+    name: string;
+  };
+  last_report?: {
+    id: string;
+    timestamp: string;
+  };
+  comment?: string;
+}

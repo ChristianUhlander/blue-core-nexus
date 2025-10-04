@@ -11,6 +11,7 @@ export interface ApiResponse<T = any> {
   error?: string;
   message?: string;
   timestamp: string;
+  requestId?: string;
 }
 
 export interface WazuhAgent {
@@ -138,17 +139,54 @@ class FastApiClient {
   }
 
   // Wazuh API Methods
-  async getWazuhAgents(): Promise<ApiResponse<WazuhAgent[]>> {
-    return this.makeRequest<WazuhAgent[]>(`${this.baseUrl}/api/wazuh/agents`);
+  async getWazuhAgents(limit?: number, sort?: string): Promise<ApiResponse<WazuhAgent[]>> {
+    const params = new URLSearchParams();
+    if (limit) params.append('limit', limit.toString());
+    if (sort) params.append('sort', sort);
+    
+    const queryString = params.toString();
+    const url = `${this.baseUrl}/api/wazuh/agents${queryString ? `?${queryString}` : ''}`;
+    
+    return this.makeRequest<WazuhAgent[]>(url);
   }
 
   async getWazuhAlerts(limit = 50): Promise<ApiResponse<WazuhAlert[]>> {
     return this.makeRequest<WazuhAlert[]>(`${this.baseUrl}/api/wazuh/alerts?limit=${limit}`);
   }
 
-  async restartWazuhAgent(agentId: string): Promise<ApiResponse<void>> {
-    return this.makeRequest(`${this.baseUrl}/api/wazuh/agents/${agentId}/restart`, {
+  async searchWazuhAlerts(query: {
+    size?: number;
+    sort?: string;
+    search?: string;
+    rule_id?: number;
+    agent_id?: string;
+    level?: number;
+  }): Promise<ApiResponse<WazuhAlert[]>> {
+    return this.makeRequest<WazuhAlert[]>(`${this.baseUrl}/api/wazuh/alerts/search`, {
       method: 'POST',
+      body: JSON.stringify(query),
+    });
+  }
+
+  async restartWazuhAgent(agentId: string, waitForComplete = false): Promise<ApiResponse<{
+    status: string;
+    message: string;
+  }>> {
+    return this.makeRequest(`${this.baseUrl}/api/wazuh/agents/${agentId}/restart`, {
+      method: 'PUT',
+      body: JSON.stringify({ wait_for_complete: waitForComplete }),
+    });
+  }
+
+  async searchWazuhVulnerabilities(query: {
+    agent_id?: string;
+    cve?: string;
+    severity?: string;
+    status?: string;
+  }): Promise<ApiResponse<any[]>> {
+    return this.makeRequest(`${this.baseUrl}/api/wazuh/vulnerabilities/search`, {
+      method: 'POST',
+      body: JSON.stringify(query),
     });
   }
 
@@ -162,14 +200,53 @@ class FastApiClient {
   }
 
   // GVM/OpenVAS Methods
-  async getGvmTasks(): Promise<ApiResponse<any[]>> {
-    return this.makeRequest<any[]>(`${this.baseUrl}/api/gvm/tasks`);
+  async listGvmTargets(): Promise<ApiResponse<any[]>> {
+    return this.makeRequest(`${this.baseUrl}/api/gvm/targets`);
   }
 
-  async startGvmScan(taskId: string): Promise<ApiResponse<any>> {
+  async createGvmTarget(target: {
+    name: string;
+    hosts: string[];
+    port_list_id?: string;
+    comment?: string;
+  }): Promise<ApiResponse<{ id: string }>> {
+    return this.makeRequest(`${this.baseUrl}/api/gvm/targets`, {
+      method: 'POST',
+      body: JSON.stringify(target),
+    });
+  }
+
+  async deleteGvmTarget(targetId: string): Promise<ApiResponse<void>> {
+    return this.makeRequest(`${this.baseUrl}/api/gvm/targets/${targetId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async listGvmTasks(): Promise<ApiResponse<any[]>> {
+    return this.makeRequest(`${this.baseUrl}/api/gvm/tasks`);
+  }
+
+  async createGvmTask(task: {
+    name: string;
+    target_id: string;
+    config_id: string;
+    scanner_id?: string;
+    comment?: string;
+  }): Promise<ApiResponse<{ id: string }>> {
+    return this.makeRequest(`${this.baseUrl}/api/gvm/tasks`, {
+      method: 'POST',
+      body: JSON.stringify(task),
+    });
+  }
+
+  async startGvmTask(taskId: string): Promise<ApiResponse<{ report_id: string }>> {
     return this.makeRequest(`${this.baseUrl}/api/gvm/tasks/${taskId}/start`, {
       method: 'POST',
     });
+  }
+
+  async getGvmReport(reportId: string, format: 'xml' | 'pdf' | 'html' = 'xml'): Promise<ApiResponse<any>> {
+    return this.makeRequest(`${this.baseUrl}/api/gvm/reports/${reportId}?format=${format}`);
   }
 
   // OWASP ZAP Methods
