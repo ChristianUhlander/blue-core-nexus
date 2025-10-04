@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Shield, Target, FileText, Users, Settings, Key, Activity, AlertTriangle, CheckCircle, Clock, Play, Pause, Trash2, Eye, Plus, RefreshCw, Download, Edit, Server, Database, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
-import { pentaguardApi, type TargetOut, type TargetIn, type ScannerOut, type ReportOut } from "@/services/pentaguardApi";
+import { ipsstcApi, type TargetOut, type TargetIn, type ScannerOut, type ReportOut } from "@/services/ipsstcApi";
 
 /**
  * GVM Management Console - Production-Ready Implementation
@@ -116,11 +116,11 @@ const GVMManagement = () => {
         statusData,
         portListsData
       ] = await Promise.allSettled([
-        pentaguardApi.getTargets(),
-        pentaguardApi.getScanners(),
-        pentaguardApi.getReports(),
-        pentaguardApi.getGvmStatus(),
-        pentaguardApi.getPortLists()
+        ipsstcApi.getTargets(),
+        ipsstcApi.getScanners(),
+        ipsstcApi.getReports(),
+        ipsstcApi.getGvmStatus(),
+        ipsstcApi.getPortLists()
       ]);
       
       // Handle successful responses
@@ -244,10 +244,10 @@ const GVMManagement = () => {
         is_active: newTarget.is_active ?? true
       };
       
-      await pentaguardApi.createOrUpdateTarget(targetData);
+      await ipsstcApi.createOrUpdateTarget(targetData);
       
       // Refresh targets list
-      const updatedTargets = await pentaguardApi.getTargets();
+      const updatedTargets = await ipsstcApi.getTargets();
       setTargets(updatedTargets);
       
       // Reset form and close dialog
@@ -289,7 +289,7 @@ const GVMManagement = () => {
     try {
       setOperationLoading(prev => ({ ...prev, [`delete_${targetId}`]: true }));
       
-      await pentaguardApi.deleteTarget(targetId);
+      await ipsstcApi.deleteTarget(targetId);
       
       // Remove from local state
       setTargets(prev => prev.filter(t => t.id !== targetId));
@@ -318,7 +318,7 @@ const GVMManagement = () => {
     try {
       setOperationLoading(prev => ({ ...prev, [`scan_${target.id}`]: true }));
       
-      await pentaguardApi.startScan({ name: target.name });
+      await ipsstcApi.startScan({ name: target.name });
       
       toast({
         title: "Scan Started",
@@ -350,7 +350,7 @@ const GVMManagement = () => {
     try {
       setOperationLoading(prev => ({ ...prev, [`download_${report.id}`]: true }));
       
-      const reportData = await pentaguardApi.downloadReport(report.report_id, format);
+      const reportData = await ipsstcApi.downloadReport(report.report_id, format);
       
       // Create download link
       const blob = new Blob([reportData], { type: `application/${format}` });

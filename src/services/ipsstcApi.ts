@@ -1,6 +1,6 @@
 /**
- * Pentaguard API Service
- * Integration with the Pentaguard backend API
+ * IPSSTC API Service
+ * Integration with the IPSSTC backend API
  * Based on OpenAPI specification provided
  */
 
@@ -91,26 +91,26 @@ export interface WazuhLogRequest {
   format?: string;
 }
 
-class PentaguardApiService {
+class IpsstcApiService {
   private baseUrl: string;
   private wsConnection: WebSocket | null = null;
 
   constructor() {
     this.baseUrl = import.meta.env?.PROD
-      ? 'https://pentaguard:3001'
+      ? 'https://ipsstc:3001'
       : 'http://localhost:3001';
     
     this.initializeWebSocket();
   }
 
   private initializeWebSocket() {
-    const wsUrl = `ws://pentaguard:3001/ws`;
+    const wsUrl = `ws://ipsstc:3001/ws`;
     
     try {
       this.wsConnection = new WebSocket(wsUrl);
       
       this.wsConnection.onopen = () => {
-        console.log('🔗 Pentaguard WebSocket connected');
+        console.log('🔗 IPSSTC WebSocket connected');
       };
       
       this.wsConnection.onmessage = (event) => {
@@ -119,18 +119,18 @@ class PentaguardApiService {
       };
       
       this.wsConnection.onclose = () => {
-        console.log('🔗 Pentaguard WebSocket disconnected');
+        console.log('🔗 IPSSTC WebSocket disconnected');
         this.scheduleReconnect();
       };
       
     } catch (error) {
-      console.error('❌ Failed to initialize Pentaguard WebSocket:', error);
+      console.error('❌ Failed to initialize IPSSTC WebSocket:', error);
     }
   }
 
   private handleWebSocketMessage(message: any) {
     // Dispatch custom event for UI updates
-    const event = new CustomEvent('pentaguard:message', {
+    const event = new CustomEvent('ipsstc:message', {
       detail: message
     });
     window.dispatchEvent(event);
@@ -138,7 +138,7 @@ class PentaguardApiService {
 
   private scheduleReconnect() {
     setTimeout(() => {
-      console.log('🔄 Attempting Pentaguard WebSocket reconnection...');
+      console.log('🔄 Attempting IPSSTC WebSocket reconnection...');
       this.initializeWebSocket();
     }, 5000);
   }
@@ -318,4 +318,4 @@ class PentaguardApiService {
   }
 }
 
-export const pentaguardApi = new PentaguardApiService();
+export const ipsstcApi = new IpsstcApiService();
