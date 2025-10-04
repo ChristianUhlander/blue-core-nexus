@@ -96,7 +96,7 @@ export const DocumentationLibrary: React.FC<DocumentationLibraryProps> = ({ onCl
   const [filterType, setFilterType] = useState<string>('all');
   const [filterDifficulty, setFilterDifficulty] = useState<string>('all');
 
-  // Comprehensive documentation sections with same content as before
+  // Comprehensive documentation sections
   const documentationSections: DocSection[] = [
     {
       id: 'getting-started',
@@ -105,6 +105,59 @@ export const DocumentationLibrary: React.FC<DocumentationLibraryProps> = ({ onCl
       icon: Rocket,
       badge: 'Essential',
       items: [
+        {
+          id: 'developer-setup',
+          title: 'Developer Setup Guide',
+          description: 'Complete development environment setup for frontend and backend',
+          type: 'guide',
+          difficulty: 'beginner',
+          estimatedTime: '45 minutes',
+          content: `# Developer Setup Guide - IPS Security Center
+
+## Overview
+
+This guide provides comprehensive instructions for setting up a development environment for the IPS Security Center, including both the current React frontend and the new FastAPI backend infrastructure.
+
+## Prerequisites
+
+### Required Software
+- **Python 3.11+**: Backend development
+- **Node.js 18+**: Frontend development and tooling
+- **Git**: Version control
+- **Docker & Docker Compose**: Container orchestration
+- **PostgreSQL 14+**: Primary database
+- **Redis 6+**: Caching and real-time features
+
+## Environment Setup
+
+### 1. Repository Setup
+\`\`\`bash
+git clone https://github.com/your-org/ips-security-center.git
+cd ips-security-center
+\`\`\`
+
+### 2. Backend Development Environment
+\`\`\`bash
+cd backend/
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+pip install -r requirements-dev.txt
+\`\`\`
+
+### 3. Frontend Development Environment
+\`\`\`bash
+npm install
+npm run dev
+\`\`\`
+
+For complete setup instructions, refer to docs/DEVELOPER_SETUP.md`,
+          prerequisites: ['Modern development tools', 'Basic understanding of React and Python'],
+          expectedOutcomes: [
+            'Functional development environment',
+            'All services running locally',
+            'Ready for feature development'
+          ]
+        },
         {
           id: 'quick-start',
           title: 'Quick Start Guide',
@@ -200,6 +253,442 @@ The IPS Security Center follows a microservices architecture with clear separati
             'Grasp the security model and data flow',
             'Identify integration points for custom tools'
           ]
+        }
+      ]
+    },
+    {
+      id: 'architecture',
+      title: 'System Architecture',
+      description: 'Technical architecture and design documentation',
+      icon: Database,
+      badge: 'Technical',
+      items: [
+        {
+          id: 'technical-architecture',
+          title: 'Technical Architecture',
+          description: 'Complete system architecture and technology stack',
+          type: 'reference',
+          difficulty: 'intermediate',
+          estimatedTime: '30 minutes',
+          content: `# IPS Security Center - Technical Architecture
+
+## Overview
+The IPS Security Center integrates multiple security tools including Wazuh, OpenVAS/GVM, OWASP ZAP. It uses React 18 with TypeScript for the frontend and FastAPI for the backend.
+
+## Current Architecture
+- **Frontend**: React 18, TypeScript, Tailwind CSS, Vite
+- **UI Components**: Radix UI, shadcn/ui
+- **State Management**: React hooks and context
+- **Backend (Planned)**: FastAPI, PostgreSQL, Redis
+
+## Service Integrations
+1. Wazuh SIEM - Host-based intrusion detection
+2. OpenVAS/GVM - Vulnerability assessment
+3. OWASP ZAP - Web application security testing
+
+For complete details, see docs/TECHNICAL_ARCHITECTURE.md`
+        },
+        {
+          id: 'file-structure',
+          title: 'File Structure & Architecture',
+          description: 'Project structure and data flow diagrams',
+          type: 'reference',
+          difficulty: 'intermediate',
+          estimatedTime: '25 minutes',
+          content: `# File Structure and Architecture
+
+## Project Structure
+\`\`\`
+src/
+├── components/       # Reusable UI components
+├── services/        # API integration services
+├── hooks/           # Custom React hooks
+├── pages/           # Page components
+└── types/           # TypeScript definitions
+\`\`\`
+
+## Data Flow
+User → Pages → Components → Hooks → Services → APIs → Security Tools
+
+For complete architecture diagrams, see docs/FILE_STRUCTURE_AND_ARCHITECTURE.md`
+        },
+        {
+          id: 'api-functionality',
+          title: 'API Functionality Summary',
+          description: 'Complete overview of all frontend API integrations',
+          type: 'reference',
+          difficulty: 'advanced',
+          estimatedTime: '40 minutes',
+          content: `# API Functionality Summary
+
+## Available API Services
+1. **agenticPentestApi.ts** - AI-driven penetration testing
+2. **ipsstcApi.ts** - IPSSTC integration
+3. **fastApiClient.ts** - FastAPI backend client
+4. **securityServicesApi.ts** - Security tools orchestration
+5. **openaiService.ts** - OpenAI integration
+6. **enhancedSecurityService.ts** - Enhanced security features
+
+For detailed API documentation, see docs/API_FUNCTIONALITY_SUMMARY.md`
+        }
+      ]
+    },
+    {
+      id: 'backend-development',
+      title: 'Backend Development',
+      description: 'FastAPI backend implementation and migration',
+      icon: Code,
+      badge: 'Backend',
+      items: [
+        {
+          id: 'backend-developer-guide',
+          title: 'Backend Developer Guide',
+          description: 'Comprehensive guide for backend development',
+          type: 'guide',
+          difficulty: 'advanced',
+          estimatedTime: '60 minutes',
+          content: `# Backend Developer Guide
+
+## Architecture Overview
+The backend uses FastAPI with a microservices architecture, integrating multiple security tools through a unified API gateway.
+
+## Key Components
+- API Gateway (FastAPI)
+- Session Manager (Redis/PostgreSQL)
+- Tool Engine (Docker/Podman)
+- AI Agent (LLM/Perplexity)
+
+For complete implementation details, see docs/BACKEND_DEVELOPER_GUIDE.md`
+        },
+        {
+          id: 'fastapi-migration',
+          title: 'FastAPI Migration Guide',
+          description: 'Step-by-step migration from frontend-only to FastAPI backend',
+          type: 'guide',
+          difficulty: 'advanced',
+          estimatedTime: '90 minutes',
+          content: `# FastAPI Migration Guide
+
+## Migration Phases
+1. **Phase 1**: Backend Foundation (Weeks 1-2)
+2. **Phase 2**: Service Migration (Weeks 3-4)
+3. **Phase 3**: Authentication & Authorization (Week 5)
+4. **Phase 4**: Real-time Features (Week 6)
+
+For complete migration roadmap, see docs/FASTAPI_MIGRATION_GUIDE.md`
+        },
+        {
+          id: 'api-specifications',
+          title: 'API Specifications',
+          description: 'Complete API endpoint documentation',
+          type: 'reference',
+          difficulty: 'intermediate',
+          estimatedTime: '45 minutes',
+          content: `# API Specifications
+
+## Authentication Endpoints
+- POST /api/v1/auth/login
+- POST /api/v1/auth/logout
+- GET /api/v1/auth/me
+
+## Security Services
+- Wazuh SIEM endpoints
+- GVM vulnerability scanning
+- OWASP ZAP web security
+  
+For complete API reference, see docs/API_SPECIFICATIONS.md`
+        },
+        {
+          id: 'third-party-integrations',
+          title: 'Third-Party Integrations',
+          description: 'Guide for integrating external security tools',
+          type: 'guide',
+          difficulty: 'advanced',
+          estimatedTime: '50 minutes',
+          content: `# Third-Party Integrations Guide
+
+## Integrated Security Tools
+1. **Wazuh SIEM** - Security monitoring platform
+2. **OpenVAS/GVM** - Vulnerability management
+3. **OWASP ZAP** - Web application security
+4. **AI Services** - OpenAI, Perplexity integration
+
+For implementation patterns, see docs/THIRD_PARTY_INTEGRATIONS.md`
+        }
+      ]
+    },
+    {
+      id: 'ai-configuration',
+      title: 'AI Configuration',
+      description: 'AI agent setup and model configuration',
+      icon: Brain,
+      badge: 'AI/ML',
+      items: [
+        {
+          id: 'ai-agent-configuration',
+          title: 'AI Agent Configuration Guide',
+          description: 'Complete guide for configuring AI agents for penetration testing',
+          type: 'guide',
+          difficulty: 'advanced',
+          estimatedTime: '60 minutes',
+          content: `# AI Agent Configuration Guide
+
+## Overview
+Configure AI agents for automated penetration testing with support for multiple LLM providers.
+
+## Supported Models
+- **GPT-5** (Latest Flagship)
+- **Claude Opus 4** (Most Capable)
+- **GPT-4.1** (Reliable Performance)
+- **O3** (Advanced Reasoning)
+- **Local Models** (Ollama, LM Studio)
+
+## System Prompt Engineering
+Pre-configured prompts for different security scenarios:
+- Penetration Testing Expert
+- Red Team Operator
+- Compliance Expert
+- Beginner-Friendly Mentor
+
+For complete configuration options, see docs/AI_AGENT_CONFIGURATION_GUIDE.md`
+        },
+        {
+          id: 'local-model-deployment',
+          title: 'Local Model Deployment Guide',
+          description: 'Deploy and configure local LLM models',
+          type: 'tutorial',
+          difficulty: 'advanced',
+          estimatedTime: '75 minutes',
+          content: `# Local AI Deployment
+
+## LM Studio Setup
+Complete guide to setting up LM Studio for local LLM deployment in penetration testing.
+
+## System Requirements
+- **Minimum**: 8-core CPU, 16GB RAM, 50GB Storage
+- **Recommended**: 12+ core CPU, 32GB+ RAM, 200GB NVMe SSD
+- **GPU**: NVIDIA RTX 3060+ (12GB+ VRAM) optional but recommended
+
+## Recommended Models
+1. **Llama 2 13B** - General security analysis
+2. **Code Llama 34B** - Code vulnerability analysis
+3. **Mistral 7B** - Fast security analysis
+
+For step-by-step installation, see docs/LOCAL_MODEL_DEPLOYMENT_GUIDE.md`
+        },
+        {
+          id: 'intelligent-reporting',
+          title: 'AI Report System Flow',
+          description: 'Complete AI-powered reporting system architecture',
+          type: 'guide',
+          difficulty: 'advanced',
+          estimatedTime: '55 minutes',
+          content: `# AI Report System - Complete Functionality Flow
+
+## System Architecture
+The AI Report System generates customized, audience-specific security reports by:
+1. Aggregating data from multiple security tools
+2. Enhancing with online research
+3. Adapting content using LLMs
+
+## Report Generation Phases
+1. **Report Initialization** - Configuration and setup
+2. **Security Data Gathering** - Multi-source data collection
+3. **Online Research Integration** - Latest CVE and threat data
+4. **AI-Powered Content Adaptation** - Audience-specific formatting
+5. **Research Enhancement** - Integration of findings
+6. **Executive Summary Generation** - C-level summaries
+7. **Report Formatting & Finalization** - Export and delivery
+
+For complete flow documentation, see docs/AI_REPORT_SYSTEM_FLOW.md`
+        }
+      ]
+    },
+    {
+      id: 'security-testing',
+      title: 'Security Testing',
+      description: 'Penetration testing methodologies and tools',
+      icon: Shield,
+      badge: 'Security',
+      items: [
+        {
+          id: 'offensive-security',
+          title: 'Offensive Security Methodology',
+          description: 'Comprehensive penetration testing command bank and methodology',
+          type: 'reference',
+          difficulty: 'advanced',
+          estimatedTime: '90 minutes',
+          content: `# Comprehensive Offensive Security Methodology
+
+## Coverage
+- 200+ tools
+- 500+ commands
+- 15 attack categories
+- 8 methodologies
+
+## Key Areas
+1. Reconnaissance & Information Gathering
+2. Vulnerability Assessment
+3. Web Application Testing
+4. Network Penetration Testing
+5. Post-Exploitation
+6. Lateral Movement
+7. Data Exfiltration
+
+For complete command reference, see docs/OFFENSIVE_SECURITY_METHODOLOGY.md`
+        },
+        {
+          id: 'wazuh-siem',
+          title: 'Wazuh SIEM Management Guide',
+          description: 'Complete guide to Wazuh SIEM integration and management',
+          type: 'guide',
+          difficulty: 'intermediate',
+          estimatedTime: '70 minutes',
+          content: `# Wazuh SIEM Management Guide
+
+## What is Wazuh SIEM?
+Centralized security monitoring and incident detection engine providing:
+- Real-time log analysis
+- Threat detection
+- Compliance monitoring
+- Security incident response
+
+## Data Sources
+- System Infrastructure Logs (Linux, Windows, Network)
+- Application Security Logs
+- Cloud Infrastructure Logs (AWS, Azure, GCP)
+- Container and Orchestration Logs
+- Security Tool Integration Logs
+
+For complete configuration and integration, see docs/WAZUH_SIEM_MANAGEMENT_GUIDE.md`
+        },
+        {
+          id: 'wazuh-sbom',
+          title: 'Wazuh SBOM Integration Guide',
+          description: 'Software Bill of Materials generation with Wazuh',
+          type: 'guide',
+          difficulty: 'intermediate',
+          estimatedTime: '40 minutes',
+          content: `# Wazuh SBOM Integration Guide
+
+## Overview
+Generate comprehensive Software Bills of Materials using Wazuh's Syscollector module with vulnerability correlation.
+
+## Features
+1. Agent-Based SBOM Generation
+2. Package Inventory Management
+3. Vulnerability Correlation
+4. Export Capabilities (JSON, CycloneDX, CSV)
+
+## Integration Flow
+Agent Selection → Package Inventory → Vulnerability Detection → SBOM Generation → Export
+
+For implementation details, see docs/WAZUH_SBOM_INTEGRATION_GUIDE.md`
+        },
+        {
+          id: 'wazuh-sbom-api',
+          title: 'Wazuh SBOM API Reference',
+          description: 'API reference for SBOM integration',
+          type: 'reference',
+          difficulty: 'advanced',
+          estimatedTime: '50 minutes',
+          content: `# Wazuh SBOM API Reference
+
+## Core API Endpoints
+1. **Agent Management** - List and manage agents
+2. **System Inventory** - Get packages, hardware, OS info
+3. **Vulnerability Detection** - Query vulnerabilities
+4. **SBOM Generation** - Create and export SBOMs
+
+## Export Formats
+- JSON (Native format)
+- CycloneDX XML (Industry standard)
+- CSV (Excel compatible)
+
+For complete API documentation, see docs/WAZUH_SBOM_API_REFERENCE.md`
+        },
+        {
+          id: 'ticketing-attack-plans',
+          title: 'Ticketing & Attack Plans Guide',
+          description: 'Automated security operations with ticketing integration',
+          type: 'guide',
+          difficulty: 'intermediate',
+          estimatedTime: '45 minutes',
+          content: `# Ticketing System & Attack Plans Guide
+
+## Attack Plans Architecture
+Automated, scheduled security assessments that continuously monitor infrastructure.
+
+## Integrated Ticketing Systems
+- Jira Integration
+- ServiceNow Integration
+- Custom API Integration
+
+## Workflow
+Find → Fix → Verify continuous security operations model
+
+For complete implementation, see docs/TICKETING_AND_ATTACK_PLANS_GUIDE.md`
+        }
+      ]
+    },
+    {
+      id: 'quality-security',
+      title: 'Quality & Security Analysis',
+      description: 'QA reports and security assessments',
+      icon: CheckCircle,
+      badge: 'Analysis',
+      items: [
+        {
+          id: 'qa-report',
+          title: 'QA Report',
+          description: 'Comprehensive quality assurance analysis',
+          type: 'reference',
+          difficulty: 'intermediate',
+          estimatedTime: '30 minutes',
+          content: `# QA Report - IPS Security Center
+
+## Overall Status: CRITICAL ISSUES IDENTIFIED
+
+## Critical Findings
+1. **Backend Service Failures** - All security services offline
+2. **Hardcoded Security Credentials** - CVE risk
+3. **Monolithic Component Architecture** - 6,419 line component
+4. **Missing Authentication & Authorization**
+
+## Passing Tests
+✅ UI Components
+✅ Design System
+✅ State Management
+✅ TypeScript Implementation
+
+For complete analysis, see docs/QA_REPORT.md`
+        },
+        {
+          id: 'security-analysis',
+          title: 'Security Analysis Report',
+          description: 'Complete security vulnerability assessment',
+          type: 'reference',
+          difficulty: 'advanced',
+          estimatedTime: '50 minutes',
+          content: `# Security Analysis Report
+
+## Current Security Posture: CRITICAL
+
+## Critical Vulnerabilities
+1. Hardcoded API Keys and Credentials
+2. Direct Client Access to Internal Services
+3. Insecure Authentication and Authorization
+4. Insecure WebSocket Communications
+5. Client-Side Input Validation Only
+
+## OWASP Top 10 Violations
+- A01:2021 – Broken Access Control
+- A02:2021 – Cryptographic Failures
+- A03:2021 – Injection
+- A07:2021 – Authentication Failures
+- A09:2021 – Security Logging Failures
+
+For complete assessment, see docs/SECURITY_ANALYSIS.md`
         }
       ]
     },
