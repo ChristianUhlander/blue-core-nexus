@@ -99,6 +99,283 @@ export const DocumentationLibrary: React.FC<DocumentationLibraryProps> = ({ onCl
   // Comprehensive documentation sections
   const documentationSections: DocSection[] = [
     {
+      id: 'mitre-attack',
+      title: 'MITRE ATT&CK Integration',
+      description: 'Comprehensive guide for implementing MITRE ATT&CK framework mapping',
+      icon: Target,
+      badge: 'Essential',
+      items: [
+        {
+          id: 'mitre-integration-guide',
+          title: 'MITRE ATT&CK Integration Guide',
+          description: 'Complete implementation guide for MITRE ATT&CK framework mapping with Wazuh alerts',
+          type: 'guide',
+          difficulty: 'advanced',
+          estimatedTime: '45 minutes',
+          content: `# MITRE ATT&CK Framework Integration Guide
+
+## Overview
+
+This guide provides backend developers with comprehensive instructions for implementing MITRE ATT&CK framework mapping in the IPS Security Center GUI. The implementation is based on Wazuh's official MITRE ATT&CK integration methodology and extends it with intelligent visualization and analysis capabilities.
+
+## Understanding MITRE ATT&CK Framework
+
+### Framework Components
+
+**MITRE ATT&CK** (Adversarial Tactics, Techniques, and Common Knowledge) consists of:
+
+- **Tactics (14 total)**: The "why" of an attack - the adversary's tactical goal
+  - Initial Access, Execution, Persistence, Privilege Escalation, Defense Evasion, Credential Access, Discovery, Lateral Movement, Collection, Command and Control, Exfiltration, Impact, Reconnaissance, Resource Development
+
+- **Techniques**: The "how" - specific methods used to achieve tactical goals
+  - Format: T#### (e.g., T1543)
+  - Sub-techniques: T####.### (e.g., T1543.003 for "Windows Service")
+
+- **Procedures**: The specific implementations by threat actors
+
+## Wazuh Alert Structure
+
+Wazuh alerts containing MITRE ATT&CK data follow this structure:
+
+\`\`\`json
+{
+  "agent": {
+    "id": "002",
+    "name": "Windows11",
+    "ip": "172.20.10.3"
+  },
+  "rule": {
+    "id": "110011",
+    "level": 10,
+    "description": "PsExec service running as NT AUTHORITY\\\\SYSTEM",
+    "mitre": {
+      "id": ["T1543.003"],
+      "technique": ["Windows Service"],
+      "tactic": ["Persistence", "Privilege Escalation"]
+    }
+  },
+  "timestamp": "2023-10-16T12:12:18.684+0000"
+}
+\`\`\`
+
+### Key MITRE Fields
+
+The \`rule.mitre\` object contains:
+- **id** (array): MITRE technique IDs
+- **technique** (array): Human-readable technique names
+- **tactic** (array): Associated tactics (multiple tactics per technique)
+
+**Important**: Arrays are parallel - id[0] corresponds to technique[0] and its tactics.
+
+## Data Flow Architecture
+
+\`\`\`
+Wazuh Agents → Wazuh Manager → Alert Processing → MITRE Extraction → Database Storage
+                                                                           ↓
+Frontend Request ← FastAPI Endpoint ← Alert Aggregation ← MITRE Mapping ←┘
+\`\`\`
+
+## Backend API Requirements
+
+### GET /api/mitre/alerts
+
+Retrieve alerts with MITRE mappings.
+
+**Query Parameters**:
+- start_date (ISO 8601): Filter from date
+- end_date (ISO 8601): Filter to date
+- tactic (string): Filter by tactic
+- severity (string): Filter by severity level
+- agent_id (string): Filter by agent
+- limit (int): Results limit (default: 100)
+
+### GET /api/mitre/techniques/summary
+
+Get aggregated technique statistics.
+
+### GET /api/mitre/tactics/distribution
+
+Get tactic distribution for visualization.
+
+## Database Schema
+
+### Table: mitre_alerts
+
+\`\`\`sql
+CREATE TABLE mitre_alerts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    alert_id VARCHAR(255) UNIQUE NOT NULL,
+    timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+    
+    -- Agent Information
+    agent_id VARCHAR(50) NOT NULL,
+    agent_name VARCHAR(255),
+    agent_ip INET,
+    
+    -- Rule Information
+    rule_id VARCHAR(50) NOT NULL,
+    rule_level INTEGER NOT NULL,
+    rule_description TEXT NOT NULL,
+    
+    -- MITRE ATT&CK Fields
+    mitre_technique_id VARCHAR(20) NOT NULL,
+    mitre_technique_name VARCHAR(255) NOT NULL,
+    mitre_tactics TEXT[] NOT NULL,
+    
+    -- Severity Classification
+    severity VARCHAR(20) NOT NULL,
+    
+    -- Raw Data
+    raw_alert JSONB NOT NULL
+);
+
+CREATE INDEX idx_mitre_alerts_timestamp ON mitre_alerts(timestamp DESC);
+CREATE INDEX idx_mitre_alerts_technique_id ON mitre_alerts(mitre_technique_id);
+CREATE INDEX idx_mitre_alerts_tactics ON mitre_alerts USING GIN(mitre_tactics);
+\`\`\`
+
+## MITRE Mapping Logic
+
+### Python Implementation
+
+\`\`\`python
+def parse_severity(rule_level: int) -> str:
+    """Map Wazuh rule level to severity classification."""
+    if rule_level >= 13:
+        return "critical"
+    elif rule_level >= 10:
+        return "high"
+    elif rule_level >= 7:
+        return "medium"
+    elif rule_level >= 4:
+        return "low"
+    else:
+        return "info"
+
+def extract_mitre_mappings(alert: WazuhAlert) -> List[Dict]:
+    """Extract individual MITRE technique mappings from a Wazuh alert."""
+    if not alert.rule.mitre or not alert.rule.mitre.id:
+        return []
+    
+    mappings = []
+    mitre = alert.rule.mitre
+    
+    for i, technique_id in enumerate(mitre.id):
+        technique_name = mitre.technique[i] if i < len(mitre.technique) else "Unknown"
+        
+        mapping = {
+            "technique_id": technique_id,
+            "technique_name": technique_name,
+            "tactics": mitre.tactic,
+            "alert_id": alert.id,
+            "timestamp": alert.timestamp,
+            "agent_id": alert.agent.id,
+            "severity": parse_severity(alert.rule.level),
+            "raw_alert": alert.dict()
+        }
+        mappings.append(mapping)
+    
+    return mappings
+\`\`\`
+
+## Visualization Best Practices
+
+### Smart Features for GUI
+
+**Contextual Information**:
+- Link technique IDs to official MITRE ATT&CK pages
+- Show affected systems and recommended mitigations
+- Display related techniques and threat actor groups
+
+**Intelligent Filtering**:
+- Filter by time range (last 24h, 7 days, 30 days, custom)
+- Filter by severity (critical, high, medium, low)
+- Filter by tactic or technique
+- Filter by agent/system
+
+**Aggregation Views**:
+- Top 10 most frequent techniques
+- Most targeted systems
+- Severity distribution
+- Tactic coverage (which tactics are being targeted)
+
+**Drill-Down Capability**:
+- Click technique → view all related alerts
+- Click agent → view all techniques detected on that system
+- Click tactic → view all associated techniques
+
+## Integration with Reporting System
+
+The MITRE data should be included in AI-generated reports:
+
+\`\`\`python
+def build_mitre_report_context(techniques: List[Dict]) -> str:
+    """Build MITRE ATT&CK context for AI report generation."""
+    
+    context = "## MITRE ATT&CK Analysis\\n\\n### Detected Techniques\\n"
+    
+    for tech in techniques[:10]:  # Top 10
+        context += f"""
+    - **{tech['technique_id']} - {tech['technique_name']}**
+      - Occurrences: {tech['total_count']}
+      - Tactics: {', '.join(tech['tactics'])}
+      - Affected Systems: {', '.join(tech['affected_agents'])}
+    """
+    
+    return context
+\`\`\`
+
+## Best Practices Summary
+
+### Do's ✅
+
+1. Always validate MITRE data exists before processing
+2. Handle missing fields gracefully
+3. Use parallel arrays correctly (id[i] → technique[i])
+4. Aggregate data for performance
+5. Provide drill-down capabilities
+6. Link to official MITRE resources
+7. Include temporal analysis
+8. Use proper severity mapping
+
+### Don'ts ❌
+
+1. Don't assume all alerts have MITRE data
+2. Don't ignore null/empty fields
+3. Don't query full alert table for stats (use aggregated tables)
+4. Don't hardcode tactic/technique lists
+5. Don't skip validation
+6. Don't ignore timezones (always use UTC)
+
+## References
+
+- [MITRE ATT&CK Framework](https://attack.mitre.org/)
+- [Wazuh MITRE Integration](https://documentation.wazuh.com/current/user-manual/ruleset/mitre.html)
+- [Wazuh External API Integration](https://documentation.wazuh.com/current/user-manual/manager/integration-with-external-apis.html)
+
+## 14 MITRE ATT&CK Tactics
+
+1. **Reconnaissance**: Gathering information about targets
+2. **Resource Development**: Establishing resources
+3. **Initial Access**: Getting into the network
+4. **Execution**: Running malicious code
+5. **Persistence**: Maintaining presence
+6. **Privilege Escalation**: Gaining higher-level permissions
+7. **Defense Evasion**: Avoiding detection
+8. **Credential Access**: Stealing credentials
+9. **Discovery**: Exploring the environment
+10. **Lateral Movement**: Moving through the network
+11. **Collection**: Gathering data of interest
+12. **Command and Control**: Communicating with compromised systems
+13. **Exfiltration**: Stealing data
+14. **Impact**: Manipulating, interrupting, or destroying systems
+`,
+          tags: ['mitre', 'attack', 'wazuh', 'threat-intelligence', 'backend'],
+          lastUpdated: '2024-10-04'
+        }
+      ]
+    },
+    {
       id: 'getting-started',
       title: 'Getting Started',
       description: 'Quick start guides and basic setup',
