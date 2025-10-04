@@ -16,6 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import IppsYChatPane from "./IppsYChatPane";
 import { DocumentationLibrary } from "./DocumentationLibrary";
+import { EnvironmentConfigStatus } from "./EnvironmentConfigStatus";
 import { useRealTimeSecurityData } from "@/hooks/useRealTimeSecurityData";
 import { k8sSecurityApi } from "@/services/k8sSecurityApi";
 import { enhancedSecurityService, type WazuhAgent, type WazuhAlert, type SecurityServiceHealth } from "@/services/enhancedSecurityService";
@@ -114,6 +115,9 @@ const SecurityDashboard = () => {
 
   // Documentation library state
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
+
+  // Environment Config state
+  const [isEnvConfigOpen, setIsEnvConfigOpen] = useState(false);
 
   // Intelligent Reporting state
   const [isReportingOpen, setIsReportingOpen] = useState(false);
@@ -2621,7 +2625,11 @@ const SecurityDashboard = () => {
             <FileText className="h-4 w-4" />
             Documentation
           </Button>
-          
+
+          <Button onClick={() => setIsEnvConfigOpen(true)} variant="outline" className="flex items-center gap-2 glow-hover transition-all duration-200">
+            <Settings className="h-4 w-4" />
+            Env. Config
+          </Button>
           
           <Button onClick={() => setIsIppsYOpen(!isIppsYOpen)} variant={isIppsYOpen ? "default" : "outline"} className="flex items-center gap-2 glow-hover transition-all duration-200">
             <Bot className="h-4 w-4" />
@@ -3926,6 +3934,19 @@ const SecurityDashboard = () => {
 
         {/* Documentation Library */}
         {isDocumentationOpen && <DocumentationLibrary onClose={() => setIsDocumentationOpen(false)} />}
+
+        {/* Environment Configuration */}
+        {isEnvConfigOpen && <Dialog open={isEnvConfigOpen} onOpenChange={setIsEnvConfigOpen}>
+            <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Environment Configuration Status</DialogTitle>
+                <DialogDescription>
+                  View current system configuration, service endpoints, and environment settings.
+                </DialogDescription>
+              </DialogHeader>
+              <EnvironmentConfigStatus />
+            </DialogContent>
+          </Dialog>}
 
 
         {/* IppsY Chat Pane */}
