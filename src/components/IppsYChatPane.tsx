@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 interface Message {
   id: string;
@@ -29,6 +31,40 @@ const IppsYChatPane = ({ isOpen, onToggle }: IppsYChatPaneProps) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Load active profile config
+  const [profileConfig, setProfileConfig] = useState<any>(null);
+  
+  useEffect(() => {
+    const loadProfile = () => {
+      const savedProfiles = localStorage.getItem('llm_profiles');
+      const savedActiveProfile = localStorage.getItem('active_llm_profile');
+      
+      if (savedProfiles && savedActiveProfile) {
+        const profiles = JSON.parse(savedProfiles);
+        const activeProfile = profiles.find((p: any) => p.id === savedActiveProfile);
+        
+        if (activeProfile) {
+          setProfileConfig(activeProfile);
+          console.log('iPPSY loaded profile:', activeProfile.name);
+        }
+      } else {
+        // Default to Lovable AI if no profile configured
+        setProfileConfig({
+          name: 'Default',
+          config: {
+            provider: 'lovable-ai',
+            model: 'google/gemini-2.5-flash',
+            temperature: 0.7,
+            maxTokens: 2000
+          },
+          apiKey: ''
+        });
+      }
+    };
+    
+    loadProfile();
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -40,6 +76,15 @@ const IppsYChatPane = ({ isOpen, onToggle }: IppsYChatPaneProps) => {
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
+    
+    if (!profileConfig) {
+      toast({
+        title: "Configuration Error",
+        description: "Please configure an AI profile in Settings",
+        variant: "destructive"
+      });
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -52,17 +97,68 @@ const IppsYChatPane = ({ isOpen, onToggle }: IppsYChatPaneProps) => {
     setInputMessage('');
     setIsTyping(true);
 
-    // Simulate AI response (replace with actual Ollama API call later)
-    setTimeout(() => {
+    try {
+      // Prepare conversation history for AI
+      const conversationMessages = messages
+        .filter(m => m.id !== '1') // Exclude initial greeting
+        .map(m => ({
+          role: m.isUser ? 'user' : 'assistant',
+          content: m.content
+        }));
+      
+      conversationMessages.push({
+        role: 'user',
+        content: userMessage.content
+      });
+
+      console.log('Calling iPPSY chat with profile:', profileConfig.name);
+      
+      const { data, error } = await supabase.functions.invoke('ippsy-chat', {
+        body: {
+          messages: conversationMessages,
+          provider: profileConfig.config.provider,
+          model: profileConfig.config.model,
+          apiKey: profileConfig.apiKey,
+          temperature: profileConfig.config.temperature,
+          maxTokens: profileConfig.config.maxTokens
+        }
+      });
+
+      if (error) {
+        console.error('iPPSY chat error:', error);
+        throw error;
+      }
+
+      const aiContent = data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
+      
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: "I understand your security inquiry. Currently, I'm waiting for the Ollama API connection to be established. Once connected, I'll provide detailed security analysis and insights based on your local security-tuned LLM.",
+        content: aiContent,
         isUser: false,
         timestamp: new Date(),
       };
+      
       setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: `Error: ${error.message || 'Failed to get response. Please check your configuration and try again.'}`,
+        isUser: false,
+        timestamp: new Date(),
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+      
+      toast({
+        title: "Chat Error",
+        description: error.message || "Failed to communicate with AI",
+        variant: "destructive"
+      });
+    } finally {
       setIsTyping(false);
-    }, 1000);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -176,7 +272,7 @@ const IppsYChatPane = ({ isOpen, onToggle }: IppsYChatPaneProps) => {
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          🤖 IppsY is ready to help with security analysis
+          🤖 {profileConfig ? `Using: ${profileConfig.name} (${profileConfig.config.provider})` : 'Loading configuration...'}
         </p>
       </div>
     </div>
