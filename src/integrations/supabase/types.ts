@@ -114,6 +114,25 @@ export type Database = {
         Args: { "": string } | { "": unknown } | { "": unknown }
         Returns: string
       }
+      match_hacktricks_guides: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          category: string
+          content: string
+          created_at: string
+          id: string
+          metadata: Json
+          similarity: number
+          tags: string[]
+          title: string
+          updated_at: string
+          url: string
+        }[]
+      }
       sparsevec_out: {
         Args: { "": unknown }
         Returns: unknown
