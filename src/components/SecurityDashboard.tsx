@@ -18,7 +18,7 @@ import IppsYChatPane from "./IppsYChatPane";
 import { DocumentationLibrary } from "./DocumentationLibrary";
 import { EnvironmentConfigStatus } from "./EnvironmentConfigStatus";
 import { useRealTimeSecurityData } from "@/hooks/useRealTimeSecurityData";
-import { k8sSecurityApi } from "@/services/k8sSecurityApi";
+import { securityServicesApi } from "@/services/securityServicesApi";
 import { enhancedSecurityService, type WazuhAgent, type WazuhAlert, type SecurityServiceHealth } from "@/services/enhancedSecurityService";
 import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
 import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterface";
@@ -37,17 +37,16 @@ import * as React from "react";
 
 /**
  * Real-time Security Dashboard
- * Production-ready K8s integration with comprehensive error handling and QA validation
+ * Production-ready security monitoring with comprehensive error handling
  * 
- * BACKEND INTEGRATION REQUIREMENTS:
- * 1. K8s services: wazuh-manager, openvas-gvm, owasp-zap, spiderfoot-osint
- * 2. WebSocket endpoint at /ws for real-time updates
- * 3. REST API endpoints at /api/* with proper authentication
- * 4. Service discovery via K8s DNS (service-name.namespace.svc.cluster.local)
- * 5. Secrets management for API keys and credentials
+ * BACKEND INTEGRATION:
+ * - Security services: Wazuh SIEM, OpenVAS/GVM, OWASP ZAP, SpiderFoot OSINT
+ * - WebSocket endpoint at /ws for real-time security alerts
+ * - REST API endpoints at /api/* with proper authentication
+ * - Service health monitoring and connectivity testing
  */
 const SecurityDashboard = () => {
-  // Real-time security data hook with K8s integration
+  // Real-time security data hook
   const {
     services,
     alerts,
@@ -87,15 +86,15 @@ const SecurityDashboard = () => {
 
   // Target configuration for pentest modules
   const pentestTargetConfig = {
-    type: 'kubernetes' as const,
-    primary: 'cluster.local',
+    type: 'network' as const,
+    primary: 'target.local',
     scope: {
       inScope: [],
       outOfScope: [],
       domains: [],
       ipRanges: [],
       ports: [],
-      k8sNamespaces: ['default', 'kube-system'],
+      networks: ['internal', 'dmz'],
       adDomains: []
     },
     environment: 'staging' as const,
@@ -467,8 +466,8 @@ const SecurityDashboard = () => {
   const [newTeamMember, setNewTeamMember] = useState('');
   const [activePentestSessions, setActivePentestSessions] = useState([{
     id: 'session-001',
-    name: 'Production K8s Assessment',
-    description: 'Comprehensive security assessment of production cluster',
+    name: 'Production Network Assessment',
+    description: 'Comprehensive security assessment of production infrastructure',
     phase: 'exploitation',
     status: 'active',
     findings: [{
@@ -605,7 +604,7 @@ const SecurityDashboard = () => {
 
   /**
    * Real-time Security Service Connection Testing
-   * Backend Integration: K8s service health checks with retry logic
+   * Backend Integration: Service health checks with retry logic
    */
   const handleServiceConnection = useCallback(async (serviceName: string) => {
     toast({
@@ -613,7 +612,7 @@ const SecurityDashboard = () => {
       description: `Checking ${serviceName} service connectivity...`
     });
     try {
-      const result = await k8sSecurityApi.runConnectivityTests();
+      const result = await securityServicesApi.runConnectivityTests();
       const serviceResult = result[serviceName.toLowerCase()];
       if (serviceResult?.success) {
         toast({
@@ -638,7 +637,7 @@ const SecurityDashboard = () => {
   }, [toast]);
 
   /**
-   * Dynamic service connection data based on real K8s services
+   * Dynamic service connection data based on security services
    * Backend Integration: Service discovery and health monitoring
    */
   const apiConnections = useMemo(() => [{
@@ -3844,10 +3843,6 @@ const SecurityDashboard = () => {
                           <div className="flex items-center space-x-2">
                             <Checkbox id="zap-monitoring" />
                             <Label htmlFor="zap-monitoring">OWASP ZAP Web Monitoring</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="k8s-monitoring" />
-                            <Label htmlFor="k8s-monitoring">Kubernetes Security</Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <Checkbox id="threat-intel" />

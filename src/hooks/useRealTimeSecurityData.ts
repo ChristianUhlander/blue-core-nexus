@@ -1,6 +1,6 @@
 /**
  * Real-time Security Data Hook
- * Manages WebSocket connections and real-time updates from K8s security services
+ * Manages WebSocket connections and real-time updates from security services
  * 
  * BACKEND INTEGRATION:
  * - WebSocket server at /ws endpoint
@@ -365,7 +365,7 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
   const acknowledgeAlert = useCallback(async (alertId: string) => {
     try {
       // Backend API call to acknowledge alert
-      // await k8sSecurityApi.acknowledgeAlert(alertId);
+      // await securityServicesApi.acknowledgeAlert(alertId);
       
       setState(prev => ({
         ...prev,

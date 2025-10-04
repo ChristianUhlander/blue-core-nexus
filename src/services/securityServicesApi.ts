@@ -1,19 +1,13 @@
 /**
- * K8s Security API Service
- * Real integration with security tools deployed in Kubernetes cluster
+ * Security Services API Client
+ * HTTP API client for security tools (Wazuh, GVM, ZAP, Spiderfoot)
  * 
- * BACKEND DEPLOYMENT REQUIREMENTS:
- * 1. Wazuh Manager: deployed as StatefulSet with persistent volume
- * 2. OpenVAS/GVM: deployed with Redis and PostgreSQL dependencies  
- * 3. OWASP ZAP: deployed as Deployment with headless service
- * 4. Spiderfoot: deployed with SQLite persistence
- * 5. All services exposed via K8s Services with proper networking
- * 
- * SECURITY CONSIDERATIONS:
- * - All API calls use service discovery (service-name.namespace.svc.cluster.local)
- * - Authentication tokens stored as K8s Secrets
- * - Network policies restrict inter-service communication
- * - TLS termination at ingress level
+ * FEATURES:
+ * - HTTP request handling with retry logic and timeout
+ * - WebSocket connection for real-time security alerts
+ * - API key authentication for each service
+ * - Health checks and service status monitoring
+ * - Exponential backoff for reconnection
  */
 
 import { 
@@ -28,11 +22,11 @@ import {
   ScanResult,
   ApiResponse,
   WSMessage,
-  K8sServiceEndpoint
+  ServiceEndpoint
 } from '@/types/security';
 
-// K8s Service Configuration
-const K8S_SERVICES: Record<string, K8sServiceEndpoint> = {
+// Service endpoint configuration
+const SERVICE_ENDPOINTS: Record<string, ServiceEndpoint> = {
   wazuh: {
     namespace: 'security',
     serviceName: 'wazuh-manager',
@@ -59,7 +53,7 @@ const K8S_SERVICES: Record<string, K8sServiceEndpoint> = {
   }
 };
 
-class K8sSecurityApiService {
+class SecurityServicesApiClient {
   private baseUrl: string;
   private wsConnection: WebSocket | null = null;
   private reconnectAttempts = 0;
@@ -452,11 +446,11 @@ class K8sSecurityApiService {
 }
 
 // Export singleton instance
-export const k8sSecurityApi = new K8sSecurityApiService();
+export const securityServicesApi = new SecurityServicesApiClient();
 
 // Cleanup on page unload
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
-    k8sSecurityApi.cleanup();
+    securityServicesApi.cleanup();
   });
 }

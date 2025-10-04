@@ -1,6 +1,6 @@
 /**
  * Security Service Type Definitions
- * Backend Integration: K8s deployment with service discovery
+ * Backend Integration: Security services API definitions
  */
 
 // Service Configuration Types
@@ -138,8 +138,8 @@ export interface Finding {
   };
 }
 
-// K8s Service Discovery Types
-export interface K8sServiceEndpoint {
+// Service Endpoint Configuration
+export interface ServiceEndpoint {
   namespace: string;
   serviceName: string;
   port: number;
