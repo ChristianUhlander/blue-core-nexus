@@ -82,6 +82,32 @@ export const IntelligentReportingSystem: React.FC = () => {
   const [customPrompt, setCustomPrompt] = useState('');
   const [currentJob, setCurrentJob] = useState<ReportJob | null>(null);
 
+  // Load API key from localStorage on mount
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem('llm_api_key');
+    if (savedApiKey) {
+      setApiKey(savedApiKey);
+      toast({
+        title: "API Key Loaded",
+        description: "Your saved API key has been loaded from storage"
+      });
+    }
+  }, []);
+
+  // Save API key to localStorage whenever it changes
+  const handleApiKeyChange = (value: string) => {
+    setApiKey(value);
+    if (value) {
+      localStorage.setItem('llm_api_key', value);
+      toast({
+        title: "API Key Saved",
+        description: "Your API key has been saved to browser storage"
+      });
+    } else {
+      localStorage.removeItem('llm_api_key');
+    }
+  };
+
   const reportTemplates: ReportTemplate[] = [
     {
       id: 'executive-summary',
@@ -1575,9 +1601,12 @@ db.execute(query, [email]);`}</pre>
                     id="api-key"
                     type="password"
                     value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
+                    onChange={(e) => handleApiKeyChange(e.target.value)}
                     placeholder="Enter your API key"
                   />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    API key is stored locally in your browser
+                  </p>
                 </div>
               )}
 
