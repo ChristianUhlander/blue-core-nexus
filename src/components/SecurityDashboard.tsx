@@ -31,7 +31,6 @@ import WazuhManagement from "../pages/WazuhManagement";
 import { WazuhSBOMManagement } from "./WazuhSBOMManagement";
 import GVMManagement from "../pages/GVMManagement";
 import { ConnectionStatusIndicator } from "./ConnectionStatusIndicator";
-import { EnvironmentConfigStatus } from "./EnvironmentConfigStatus";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import * as React from "react";
@@ -3469,11 +3468,6 @@ const SecurityDashboard = () => {
                 </div>
               </CardContent>
             </Card>)}
-        </div>
-
-        {/* Environment Configuration Status */}
-        <div className="mb-12">
-          <EnvironmentConfigStatus />
         </div>
 
         {/* Connection Status Summary */}
