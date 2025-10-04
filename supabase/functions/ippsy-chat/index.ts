@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,9 +13,67 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, provider, model, apiKey, temperature, maxTokens } = await req.json();
+    const { messages, provider, model, apiKey, temperature, maxTokens, context } = await req.json();
 
     console.log('iPPSY Chat request:', { provider, model, messagesCount: messages.length });
+
+    // Retrieve relevant HackTricks guides if context is provided
+    let retrievedContext = '';
+    if (context && (context.query || context.goal || context.target)) {
+      console.log('Retrieving relevant HackTricks guides...');
+      
+      const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      try {
+        // Build search query from context
+        const searchQuery = [
+          context.query,
+          context.goal,
+          context.target,
+          context.results
+        ].filter(Boolean).join(' ');
+
+        // Generate embedding for the search query
+        const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'text-embedding-3-small',
+            input: searchQuery,
+            dimensions: 1536,
+          }),
+        });
+
+        if (embeddingResponse.ok) {
+          const embeddingData = await embeddingResponse.json();
+          const queryEmbedding = embeddingData.data[0].embedding;
+
+          // Search for relevant guides
+          const { data: guides, error: searchError } = await supabase.rpc('match_hacktricks_guides', {
+            query_embedding: queryEmbedding,
+            match_threshold: 0.7,
+            match_count: 3,
+          });
+
+          if (!searchError && guides && guides.length > 0) {
+            console.log(`Found ${guides.length} relevant guides`);
+            retrievedContext = '\n\n## Relevant HackTricks Guides:\n\n' + 
+              guides.map((guide: any) => 
+                `### ${guide.title}\n${guide.content.substring(0, 1000)}...\n`
+              ).join('\n');
+          }
+        }
+      } catch (error) {
+        console.error('Error retrieving HackTricks context:', error);
+        // Continue without context rather than failing
+      }
+    }
 
     let response;
     let apiUrl;
@@ -46,7 +105,9 @@ serve(async (req) => {
 - Security best practices
 - Incident response
 
-Provide clear, actionable advice with technical depth when appropriate.`
+You have access to a comprehensive library of HackTricks guides. When relevant guides are provided in the context, use them to enhance your responses with specific techniques, commands, and strategies.
+
+Provide clear, actionable advice with technical depth when appropriate.${retrievedContext}`
           },
           ...messages
         ],
@@ -77,7 +138,9 @@ Provide clear, actionable advice with technical depth when appropriate.`
 - Security best practices
 - Incident response
 
-Provide clear, actionable advice with technical depth when appropriate.`
+You have access to a comprehensive library of HackTricks guides. When relevant guides are provided in the context, use them to enhance your responses with specific techniques, commands, and strategies.
+
+Provide clear, actionable advice with technical depth when appropriate.${retrievedContext}`
           },
           ...messages
         ],
