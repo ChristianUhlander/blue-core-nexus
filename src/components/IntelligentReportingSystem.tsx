@@ -31,7 +31,11 @@ import {
   Filter,
   RefreshCw,
   Send,
-  Sparkles
+  Sparkles,
+  Plus,
+  Trash2,
+  Edit2,
+  Save
 } from 'lucide-react';
 
 import { createOpenAIService } from '@/services/openaiService';
@@ -71,6 +75,21 @@ export const IntelligentReportingSystem: React.FC = () => {
   const [reportData, setReportData] = useState<any>(null);
   const [showStructuredReport, setShowStructuredReport] = useState(false);
   
+  // Profile Management
+  interface LLMProfile {
+    id: string;
+    name: string;
+    purpose: string;
+    config: LLMConfig;
+    apiKey: string;
+  }
+
+  const [profiles, setProfiles] = useState<LLMProfile[]>([]);
+  const [activeProfileId, setActiveProfileId] = useState<string>('');
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editingProfileName, setEditingProfileName] = useState('');
+  const [editingProfilePurpose, setEditingProfilePurpose] = useState('');
+  
   const [llmConfig, setLlmConfig] = useState<LLMConfig>({
     provider: 'lovable-ai',
     model: 'google/gemini-2.5-flash',
@@ -82,30 +101,168 @@ export const IntelligentReportingSystem: React.FC = () => {
   const [customPrompt, setCustomPrompt] = useState('');
   const [currentJob, setCurrentJob] = useState<ReportJob | null>(null);
 
-  // Load API key from localStorage on mount
+  // Load profiles from localStorage on mount
   useEffect(() => {
-    const savedApiKey = localStorage.getItem('llm_api_key');
-    if (savedApiKey) {
-      setApiKey(savedApiKey);
-      toast({
-        title: "API Key Loaded",
-        description: "Your saved API key has been loaded from storage"
-      });
+    const savedProfiles = localStorage.getItem('llm_profiles');
+    const savedActiveProfile = localStorage.getItem('active_llm_profile');
+    
+    if (savedProfiles) {
+      const parsedProfiles = JSON.parse(savedProfiles);
+      setProfiles(parsedProfiles);
+      
+      if (savedActiveProfile && parsedProfiles.find((p: LLMProfile) => p.id === savedActiveProfile)) {
+        setActiveProfileId(savedActiveProfile);
+        const activeProfile = parsedProfiles.find((p: LLMProfile) => p.id === savedActiveProfile);
+        if (activeProfile) {
+          setLlmConfig(activeProfile.config);
+          setApiKey(activeProfile.apiKey);
+        }
+      }
+    } else {
+      // Create default profiles
+      const defaultProfiles: LLMProfile[] = [
+        {
+          id: '1',
+          name: 'iPPSY Default',
+          purpose: 'General purpose AI for iPPSY operations',
+          config: {
+            provider: 'lovable-ai',
+            model: 'google/gemini-2.5-flash',
+            temperature: 0.3,
+            maxTokens: 4000
+          },
+          apiKey: ''
+        },
+        {
+          id: '2',
+          name: 'Security Reports',
+          purpose: 'Specialized for generating security assessment reports',
+          config: {
+            provider: 'openai',
+            model: 'gpt-5-2025-08-07',
+            temperature: 0.2,
+            maxTokens: 6000
+          },
+          apiKey: ''
+        },
+        {
+          id: '3',
+          name: 'Agentic Pentest',
+          purpose: 'Optimized for autonomous penetration testing operations',
+          config: {
+            provider: 'lovable-ai',
+            model: 'google/gemini-2.5-pro',
+            temperature: 0.4,
+            maxTokens: 8000
+          },
+          apiKey: ''
+        }
+      ];
+      
+      setProfiles(defaultProfiles);
+      setActiveProfileId(defaultProfiles[0].id);
+      setLlmConfig(defaultProfiles[0].config);
+      localStorage.setItem('llm_profiles', JSON.stringify(defaultProfiles));
+      localStorage.setItem('active_llm_profile', defaultProfiles[0].id);
     }
   }, []);
 
-  // Save API key to localStorage whenever it changes
-  const handleApiKeyChange = (value: string) => {
-    setApiKey(value);
-    if (value) {
-      localStorage.setItem('llm_api_key', value);
+  // Save profiles to localStorage whenever they change
+  const saveProfiles = (updatedProfiles: LLMProfile[]) => {
+    setProfiles(updatedProfiles);
+    localStorage.setItem('llm_profiles', JSON.stringify(updatedProfiles));
+  };
+
+  // Create new profile
+  const handleCreateProfile = () => {
+    if (!editingProfileName.trim()) {
       toast({
-        title: "API Key Saved",
-        description: "Your API key has been saved to browser storage"
+        title: "Error",
+        description: "Profile name is required",
+        variant: "destructive"
       });
-    } else {
-      localStorage.removeItem('llm_api_key');
+      return;
     }
+
+    const newProfile: LLMProfile = {
+      id: Date.now().toString(),
+      name: editingProfileName,
+      purpose: editingProfilePurpose,
+      config: llmConfig,
+      apiKey: apiKey
+    };
+
+    const updatedProfiles = [...profiles, newProfile];
+    saveProfiles(updatedProfiles);
+    setActiveProfileId(newProfile.id);
+    localStorage.setItem('active_llm_profile', newProfile.id);
+    setIsEditingProfile(false);
+    setEditingProfileName('');
+    setEditingProfilePurpose('');
+    
+    toast({
+      title: "Profile Created",
+      description: `"${newProfile.name}" has been created and activated`
+    });
+  };
+
+  // Update active profile
+  const handleSaveActiveProfile = () => {
+    const updatedProfiles = profiles.map(p => 
+      p.id === activeProfileId 
+        ? { ...p, config: llmConfig, apiKey: apiKey }
+        : p
+    );
+    saveProfiles(updatedProfiles);
+    
+    toast({
+      title: "Profile Updated",
+      description: "Configuration saved successfully"
+    });
+  };
+
+  // Switch profile
+  const handleSwitchProfile = (profileId: string) => {
+    const profile = profiles.find(p => p.id === profileId);
+    if (profile) {
+      setActiveProfileId(profileId);
+      setLlmConfig(profile.config);
+      setApiKey(profile.apiKey);
+      localStorage.setItem('active_llm_profile', profileId);
+      
+      toast({
+        title: "Profile Switched",
+        description: `Now using "${profile.name}"`
+      });
+    }
+  };
+
+  // Delete profile
+  const handleDeleteProfile = (profileId: string) => {
+    if (profiles.length === 1) {
+      toast({
+        title: "Cannot Delete",
+        description: "You must have at least one profile",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const updatedProfiles = profiles.filter(p => p.id !== profileId);
+    saveProfiles(updatedProfiles);
+    
+    if (activeProfileId === profileId) {
+      const newActiveProfile = updatedProfiles[0];
+      setActiveProfileId(newActiveProfile.id);
+      setLlmConfig(newActiveProfile.config);
+      setApiKey(newActiveProfile.apiKey);
+      localStorage.setItem('active_llm_profile', newActiveProfile.id);
+    }
+    
+    toast({
+      title: "Profile Deleted",
+      description: "Profile has been removed"
+    });
   };
 
   const reportTemplates: ReportTemplate[] = [
@@ -1548,94 +1705,225 @@ db.execute(query, [email]);`}</pre>
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>LLM Configuration</CardTitle>
-              <CardDescription>
-                Configure your AI model for report generation
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="provider">LLM Provider</Label>
-                <Select value={llmConfig.provider} onValueChange={(value: any) => setLlmConfig({...llmConfig, provider: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="openai">OpenAI</SelectItem>
-                    <SelectItem value="perplexity">Perplexity</SelectItem>
-                    <SelectItem value="local">Local Model</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          <div className="grid gap-4">
+            {/* Profile Selector */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Configuration Profiles</span>
+                  <Button 
+                    size="sm" 
+                    onClick={() => setIsEditingProfile(!isEditingProfile)}
+                    variant={isEditingProfile ? "secondary" : "default"}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Profile
+                  </Button>
+                </CardTitle>
+                <CardDescription>
+                  Manage multiple AI configurations for different purposes
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Create New Profile Form */}
+                {isEditingProfile && (
+                  <Card className="border-2 border-primary">
+                    <CardContent className="pt-6 space-y-4">
+                      <div>
+                        <Label htmlFor="new-profile-name">Profile Name</Label>
+                        <Input
+                          id="new-profile-name"
+                          value={editingProfileName}
+                          onChange={(e) => setEditingProfileName(e.target.value)}
+                          placeholder="e.g., Executive Reports"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="new-profile-purpose">Purpose</Label>
+                        <Input
+                          id="new-profile-purpose"
+                          value={editingProfilePurpose}
+                          onChange={(e) => setEditingProfilePurpose(e.target.value)}
+                          placeholder="e.g., Generate executive-level security reports"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button onClick={handleCreateProfile} className="flex-1">
+                          <Save className="h-4 w-4 mr-2" />
+                          Create Profile
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setIsEditingProfile(false);
+                            setEditingProfileName('');
+                            setEditingProfilePurpose('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
-              <div>
-                <Label htmlFor="model">Model</Label>
-                <Select value={llmConfig.model} onValueChange={(value) => setLlmConfig({...llmConfig, model: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {llmConfig.provider === 'openai' && (
-                      <>
-                        <SelectItem value="gpt-5-2025-08-07">GPT-5 (Recommended)</SelectItem>
-                        <SelectItem value="gpt-4.1-2025-04-14">GPT-4.1</SelectItem>
-                        <SelectItem value="gpt-5-mini-2025-08-07">GPT-5 Mini</SelectItem>
-                      </>
-                    )}
-                    {llmConfig.provider === 'perplexity' && (
-                      <>
-                        <SelectItem value="llama-3.1-sonar-large-128k-online">Llama 3.1 Sonar Large</SelectItem>
-                        <SelectItem value="llama-3.1-sonar-small-128k-online">Llama 3.1 Sonar Small</SelectItem>
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
+                {/* Existing Profiles */}
+                <div className="grid gap-2">
+                  {profiles.map((profile) => (
+                    <Card 
+                      key={profile.id}
+                      className={`cursor-pointer transition-all ${
+                        activeProfileId === profile.id 
+                          ? 'border-2 border-primary bg-primary/5' 
+                          : 'hover:border-primary/50'
+                      }`}
+                      onClick={() => handleSwitchProfile(profile.id)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold">{profile.name}</h4>
+                              {activeProfileId === profile.id && (
+                                <Badge variant="default">Active</Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {profile.purpose}
+                            </p>
+                            <div className="flex gap-2 mt-2 text-xs text-muted-foreground">
+                              <Badge variant="outline">{profile.config.provider}</Badge>
+                              <Badge variant="outline">{profile.config.model}</Badge>
+                            </div>
+                          </div>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteProfile(profile.id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-              {llmConfig.provider !== 'local' && (
-                <div>
-                  <Label htmlFor="api-key">API Key</Label>
-                  <Input
-                    id="api-key"
-                    type="password"
-                    value={apiKey}
-                    onChange={(e) => handleApiKeyChange(e.target.value)}
-                    placeholder="Enter your API key"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    API key is stored locally in your browser
-                  </p>
-                </div>
-              )}
+            {/* Active Profile Configuration */}
+            {activeProfileId && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Configure Active Profile</CardTitle>
+                  <CardDescription>
+                    Editing: {profiles.find(p => p.id === activeProfileId)?.name}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="provider">LLM Provider</Label>
+                    <Select 
+                      value={llmConfig.provider} 
+                      onValueChange={(value: any) => setLlmConfig({...llmConfig, provider: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="lovable-ai">Lovable AI</SelectItem>
+                        <SelectItem value="openai">OpenAI</SelectItem>
+                        <SelectItem value="perplexity">Perplexity</SelectItem>
+                        <SelectItem value="local">Local Model</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="temperature">Temperature: {llmConfig.temperature}</Label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={llmConfig.temperature}
-                    onChange={(e) => setLlmConfig({...llmConfig, temperature: parseFloat(e.target.value)})}
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="max-tokens">Max Tokens</Label>
-                  <Input
-                    type="number"
-                    value={llmConfig.maxTokens}
-                    onChange={(e) => setLlmConfig({...llmConfig, maxTokens: parseInt(e.target.value)})}
-                    min="500"
-                    max="8000"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                  <div>
+                    <Label htmlFor="model">Model</Label>
+                    <Select value={llmConfig.model} onValueChange={(value) => setLlmConfig({...llmConfig, model: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {llmConfig.provider === 'lovable-ai' && (
+                          <>
+                            <SelectItem value="google/gemini-2.5-flash">Gemini 2.5 Flash (Recommended)</SelectItem>
+                            <SelectItem value="google/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
+                            <SelectItem value="google/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</SelectItem>
+                            <SelectItem value="openai/gpt-5">GPT-5</SelectItem>
+                            <SelectItem value="openai/gpt-5-mini">GPT-5 Mini</SelectItem>
+                          </>
+                        )}
+                        {llmConfig.provider === 'openai' && (
+                          <>
+                            <SelectItem value="gpt-5-2025-08-07">GPT-5 (Recommended)</SelectItem>
+                            <SelectItem value="gpt-4.1-2025-04-14">GPT-4.1</SelectItem>
+                            <SelectItem value="gpt-5-mini-2025-08-07">GPT-5 Mini</SelectItem>
+                          </>
+                        )}
+                        {llmConfig.provider === 'perplexity' && (
+                          <>
+                            <SelectItem value="llama-3.1-sonar-large-128k-online">Llama 3.1 Sonar Large</SelectItem>
+                            <SelectItem value="llama-3.1-sonar-small-128k-online">Llama 3.1 Sonar Small</SelectItem>
+                          </>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {llmConfig.provider !== 'local' && llmConfig.provider !== 'lovable-ai' && (
+                    <div>
+                      <Label htmlFor="api-key">API Key</Label>
+                      <Input
+                        id="api-key"
+                        type="password"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        placeholder="Enter your API key"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        API key is stored locally in your browser
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="temperature">Temperature: {llmConfig.temperature}</Label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={llmConfig.temperature}
+                        onChange={(e) => setLlmConfig({...llmConfig, temperature: parseFloat(e.target.value)})}
+                        className="w-full"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="max-tokens">Max Tokens</Label>
+                      <Input
+                        type="number"
+                        value={llmConfig.maxTokens}
+                        onChange={(e) => setLlmConfig({...llmConfig, maxTokens: parseInt(e.target.value)})}
+                        min="500"
+                        max="16000"
+                      />
+                    </div>
+                  </div>
+
+                  <Button onClick={handleSaveActiveProfile} className="w-full">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Configuration
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
