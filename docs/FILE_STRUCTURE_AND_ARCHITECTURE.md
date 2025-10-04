@@ -1,13 +1,308 @@
 # IPS Security Center - File Structure and Architecture Documentation
 
 ## Table of Contents
-1. [Project Overview](#project-overview)
-2. [Root Directory Structure](#root-directory-structure)
-3. [Source Code Organization](#source-code-organization)
-4. [Component Architecture](#component-architecture)
-5. [Service Layer](#service-layer)
-6. [Type System](#type-system)
-7. [Documentation Structure](#documentation-structure)
+1. [Data Flow Architecture](#data-flow-architecture)
+2. [Project Overview](#project-overview)
+3. [Root Directory Structure](#root-directory-structure)
+4. [Source Code Organization](#source-code-organization)
+5. [Component Architecture](#component-architecture)
+6. [Service Layer](#service-layer)
+7. [Type System](#type-system)
+8. [Documentation Structure](#documentation-structure)
+
+---
+
+## Data Flow Architecture
+
+### High-Level System Architecture
+
+```mermaid
+graph TB
+    User[👤 User Interface] --> Pages[📄 Pages Layer]
+    Pages --> Components[🧩 Components Layer]
+    Components --> Hooks[🪝 Custom Hooks]
+    Components --> Services[⚙️ Services Layer]
+    Hooks --> Services
+    Services --> APIs[🌐 External APIs]
+    Services --> FastAPI[🚀 FastAPI Backend]
+    
+    subgraph "Frontend React Application"
+        Pages
+        Components
+        Hooks
+        Services
+    end
+    
+    subgraph "Backend Services"
+        FastAPI
+        APIs
+    end
+    
+    subgraph "Security Tools Ecosystem"
+        APIs --> Wazuh[🛡️ Wazuh SIEM]
+        APIs --> GVM[🔍 OpenVAS/GVM]
+        APIs --> ZAP[🕷️ OWASP ZAP]
+        APIs --> SpiderFoot[🕸️ SpiderFoot OSINT]
+    end
+    
+    FastAPI --> SecurityTools[🔧 Orchestrated Security Tools]
+    SecurityTools --> Wazuh
+    SecurityTools --> GVM
+    SecurityTools --> ZAP
+    SecurityTools --> SpiderFoot
+```
+
+### Detailed Component Data Flow
+
+```mermaid
+graph LR
+    subgraph "User Interaction Layer"
+        UI[👤 User Actions]
+    end
+    
+    subgraph "Pages"
+        IndexPage[Index.tsx<br/>Main Dashboard]
+        GVMPage[GVMManagement.tsx<br/>Vulnerability Scanning]
+        WazuhPage[WazuhManagement.tsx<br/>SIEM Management]
+        StatusPage[SystemStatus.tsx<br/>System Monitoring]
+    end
+    
+    subgraph "Core Components"
+        SecurityDashboard[SecurityDashboard<br/>Main Security View]
+        EnhancedPentest[EnhancedAgenticPentestInterface<br/>AI-Driven Pentesting]
+        WazuhMgmt[WazuhManagement<br/>SIEM Operations]
+        GVMMgmt[GVMManagement<br/>Vulnerability Scanning]
+        ZAPModule[ZapProxyModule<br/>Web App Security]
+        MitreMapper[MitreAttackMapper<br/>Threat Classification]
+        ReportingSystem[IntelligentReportingSystem<br/>Report Generation]
+        ChatPane[IppsYChatPane<br/>AI Assistant]
+    end
+    
+    subgraph "State Management Hooks"
+        SecurityStatus[useSecurityStatus<br/>Security State Hook]
+        RealtimeData[useRealTimeSecurityData<br/>Live Updates Hook]
+    end
+    
+    subgraph "API Services Layer"
+        SecurityAPI[securityApi.ts<br/>Core Security API]
+        AgenticAPI[agenticPentestApi.ts<br/>AI Pentest API]
+        IpsstcAPI[ipsstcApi.ts<br/>IPSSTC Integration]
+        EnhancedService[enhancedSecurityService.ts<br/>Enhanced Security Logic]
+        FastAPIClient[fastApiClient.ts<br/>Backend Client]
+        OpenAIService[openaiService.ts<br/>AI Service]
+    end
+    
+    UI --> IndexPage
+    UI --> GVMPage
+    UI --> WazuhPage
+    UI --> StatusPage
+    
+    IndexPage --> SecurityDashboard
+    IndexPage --> EnhancedPentest
+    GVMPage --> GVMMgmt
+    WazuhPage --> WazuhMgmt
+    
+    SecurityDashboard --> SecurityStatus
+    EnhancedPentest --> AgenticAPI
+    WazuhMgmt --> SecurityAPI
+    GVMMgmt --> SecurityAPI
+    ZAPModule --> SecurityAPI
+    ChatPane --> IpsstcAPI
+    
+    SecurityStatus --> SecurityAPI
+    RealtimeData --> SecurityAPI
+    
+    AgenticAPI --> FastAPIClient
+    SecurityAPI --> FastAPIClient
+    IpsstcAPI --> OpenAIService
+    EnhancedService --> FastAPIClient
+    
+    FastAPIClient --> Backend[🚀 FastAPI Backend Server]
+    OpenAIService --> AIGateway[🤖 AI Gateway]
+```
+
+### Data Type Flow
+
+```mermaid
+graph TD
+    subgraph "Type Definitions"
+        SecurityTypes[security.ts<br/>📋 Core Security Types]
+        AgenticTypes[agenticPentest.ts<br/>🤖 Pentest Types]
+    end
+    
+    subgraph "Component Layer"
+        Props[⚛️ Typed Component Props]
+    end
+    
+    subgraph "API Layer"
+        APIData[📡 Typed API Responses]
+    end
+    
+    subgraph "State Management"
+        StateData[💾 Typed State Objects]
+    end
+    
+    SecurityTypes --> Props
+    AgenticTypes --> Props
+    SecurityTypes --> APIData
+    AgenticTypes --> APIData
+    APIData --> StateData
+    StateData --> Props
+    
+    Props --> Render[🎨 Component Rendering]
+```
+
+### Request-Response Flow Example
+
+```mermaid
+sequenceDiagram
+    participant User as 👤 User
+    participant Component as ⚛️ Component
+    participant Hook as 🪝 Hook
+    participant Service as ⚙️ Service
+    participant FastAPI as 🚀 FastAPI
+    participant SecurityTool as 🛡️ Security Tool
+    
+    User->>Component: Trigger Action (e.g., Start Scan)
+    Component->>Hook: Call Hook Function
+    Hook->>Service: API Request
+    Service->>FastAPI: HTTP Request
+    FastAPI->>SecurityTool: Execute Security Task
+    SecurityTool-->>FastAPI: Tool Response
+    FastAPI-->>Service: API Response
+    Service-->>Hook: Processed Data
+    Hook-->>Component: Update State
+    Component-->>User: UI Update
+```
+
+### Real-Time Data Flow
+
+```mermaid
+graph LR
+    subgraph "Frontend Layer"
+        Component[⚛️ Security Component]
+        RealtimeHook[🪝 useRealTimeSecurityData]
+    end
+    
+    subgraph "Backend Services"
+        FastAPI[🚀 FastAPI Server]
+        SecurityTools[🛡️ Security Tools]
+    end
+    
+    subgraph "Real-Time Communication"
+        WebSocket[🔌 WebSocket Connection]
+        Polling[⏱️ Polling Mechanism]
+    end
+    
+    Component --> RealtimeHook
+    RealtimeHook --> WebSocket
+    RealtimeHook --> Polling
+    WebSocket --> FastAPI
+    Polling --> FastAPI
+    FastAPI --> SecurityTools
+    SecurityTools --> FastAPI
+    FastAPI --> WebSocket
+    FastAPI --> Polling
+    WebSocket --> RealtimeHook
+    Polling --> RealtimeHook
+    RealtimeHook --> Component
+```
+
+### AI-Driven Penetration Testing Flow
+
+```mermaid
+sequenceDiagram
+    participant User as 👤 Security Analyst
+    participant UI as 🎨 EnhancedAgenticPentestInterface
+    participant AgenticAPI as 🤖 agenticPentestApi
+    participant FastAPI as 🚀 FastAPI Backend
+    participant AIAgent as 🧠 AI Agent
+    participant Tools as 🔧 Security Tools
+    
+    User->>UI: Configure Pentest Parameters
+    UI->>AgenticAPI: Submit Attack Plan
+    AgenticAPI->>FastAPI: POST /pentest/session
+    FastAPI->>AIAgent: Initialize Agent
+    
+    loop Autonomous Execution
+        AIAgent->>Tools: Execute Security Tests
+        Tools-->>AIAgent: Test Results
+        AIAgent->>AIAgent: Analyze & Decide Next Steps
+        AIAgent->>FastAPI: Update Progress
+        FastAPI-->>UI: Real-Time Progress Updates
+        UI-->>User: Display Live Results
+    end
+    
+    AIAgent->>FastAPI: Final Report
+    FastAPI-->>AgenticAPI: Complete Results
+    AgenticAPI-->>UI: Render Report
+    UI-->>User: Display Comprehensive Results
+```
+
+### Security Alert Processing Flow
+
+```mermaid
+graph TB
+    subgraph "Alert Sources"
+        Wazuh[🛡️ Wazuh Alerts]
+        GVM[🔍 GVM Findings]
+        ZAP[🕷️ ZAP Results]
+    end
+    
+    subgraph "Processing Pipeline"
+        Aggregator[📊 Alert Aggregator]
+        Correlator[🔗 Event Correlator]
+        Prioritizer[⚠️ Risk Prioritizer]
+        MitreMapper[🗺️ MITRE ATT&CK Mapper]
+    end
+    
+    subgraph "Output"
+        Dashboard[📈 Security Dashboard]
+        Notifications[🔔 Real-Time Alerts]
+        Reports[📄 Intelligent Reports]
+    end
+    
+    Wazuh --> Aggregator
+    GVM --> Aggregator
+    ZAP --> Aggregator
+    
+    Aggregator --> Correlator
+    Correlator --> Prioritizer
+    Prioritizer --> MitreMapper
+    
+    MitreMapper --> Dashboard
+    MitreMapper --> Notifications
+    MitreMapper --> Reports
+```
+
+### Configuration and Environment Flow
+
+```mermaid
+graph LR
+    subgraph "Configuration Sources"
+        EnvFile[📄 .env File]
+        ConfigTS[⚙️ environment.ts]
+    end
+    
+    subgraph "Validation Layer"
+        EnvConfig[EnvironmentConfigStatus]
+        Validator[🔍 Config Validator]
+    end
+    
+    subgraph "Application Usage"
+        Services[⚙️ API Services]
+        Components[⚛️ Components]
+    end
+    
+    EnvFile --> ConfigTS
+    ConfigTS --> Validator
+    Validator --> EnvConfig
+    EnvConfig --> Services
+    EnvConfig --> Components
+    
+    Services --> BackendAPIs[🌐 Backend APIs]
+    Components --> UserInterface[🎨 UI Rendering]
+```
 
 ---
 
