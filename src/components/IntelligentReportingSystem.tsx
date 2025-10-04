@@ -1031,6 +1031,157 @@ db.execute(query, [email]);`}</pre>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Full Executive Report Preview */}
+            <Card className="border-primary/30">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <CardTitle className="text-lg">Full Security Assessment Report - Executive Format</CardTitle>
+                    <CardDescription>Complete IPS-STC report for Executive Leadership</CardDescription>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Badge variant="default">Executive Leadership</Badge>
+                      <Badge variant="outline">Communication Style: Business</Badge>
+                      <Badge variant="outline">Format: Summary</Badge>
+                      <Badge variant="outline">Technical Level: Low</Badge>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4 mb-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="bg-muted/50 p-3 rounded-lg">
+                      <div className="text-xs text-muted-foreground mb-1">Focus Areas</div>
+                      <ul className="text-xs space-y-0.5">
+                        <li>• Business risk</li>
+                        <li>• Compliance status</li>
+                        <li>• Investment needs</li>
+                        <li>• Strategic alignment</li>
+                      </ul>
+                    </div>
+                    <div className="bg-muted/50 p-3 rounded-lg">
+                      <div className="text-xs text-muted-foreground mb-1">Communication Style</div>
+                      <div className="text-sm font-medium">Business</div>
+                    </div>
+                    <div className="bg-muted/50 p-3 rounded-lg">
+                      <div className="text-xs text-muted-foreground mb-1">Preferred Format</div>
+                      <div className="text-sm font-medium">Summary</div>
+                    </div>
+                    <div className="bg-muted/50 p-3 rounded-lg">
+                      <div className="text-xs text-muted-foreground mb-1">Priority Metrics</div>
+                      <ul className="text-xs space-y-0.5">
+                        <li>• Business risk</li>
+                        <li>• ROI</li>
+                        <li>• Compliance score</li>
+                        <li>• Timeline</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <ScrollArea className="h-[600px] w-full border rounded-md">
+                  <SecurityAssessmentReport 
+                    data={{
+                      target: 'Example Corporation',
+                      reportId: 'IPS-STC-EXAM-2025-1002-RPT-001',
+                      date: new Date().toISOString().split('T')[0],
+                      riskLevel: 'Medium',
+                      vulnerabilities: {
+                        high: 4,
+                        medium: 8,
+                        low: 12,
+                      },
+                      complianceIssues: [
+                        'GDPR: SQL Injection and credential leakage risks exposure of personal data. Breach notification obligations may apply.',
+                        'NIS2: Lack of timely patching for high-risk vulnerabilities breaches mandatory resilience obligations for essential services.',
+                        'ISO 27001: Missing security controls around session management and secure configuration.',
+                      ],
+                      infrastructureFindings: [
+                        'High-risk vulnerabilities include outdated encryption libraries (OpenSSL 1.0.2 - End of Life)',
+                        'Apache Struts CVE-2025-1234: Remote code execution vulnerability confirmed',
+                        'Weak SSH cipher suites detected on production servers',
+                      ],
+                      webAppFindings: [
+                        'SQL Injection vulnerability in customer portal login form',
+                        'Reflected Cross-Site Scripting (XSS) in search functionality',
+                        'Missing Content Security Policy (CSP) headers',
+                      ],
+                      siemFindings: [
+                        'Distributed SSH brute force attempts detected across multiple servers',
+                        'Successful logins from unusual geolocations tied to leaked credentials',
+                        'Multiple failed authentication attempts followed by successful login',
+                      ],
+                      threatIntel: {
+                        leakedCredentials: [
+                          'admin@examplecorp.com found in credential dump',
+                          'sysadmin@examplecorp.com exposed in underground forum',
+                        ],
+                        suspiciousIPs: [
+                          '203.0.113.45',
+                          '198.51.100.23',
+                          '192.0.2.100',
+                        ],
+                        bruteForceAttempts: 324,
+                      },
+                      mitreMapping: [
+                        {
+                          tactic: 'Initial Access',
+                          technique: 'T1078',
+                          description: 'Valid Accounts used with leaked credentials',
+                        },
+                        {
+                          tactic: 'Credential Access',
+                          technique: 'T1110',
+                          description: 'Brute force observed on SSH services',
+                        },
+                        {
+                          tactic: 'Persistence',
+                          technique: 'T1078',
+                          description: 'Risk of sustained access if compromised accounts are not rotated',
+                        },
+                        {
+                          tactic: 'Lateral Movement',
+                          technique: 'T1021.004',
+                          description: 'SSH could be used to propagate compromise internally',
+                        },
+                      ],
+                      remediationPlan: {
+                        immediate: [
+                          'Patch Apache Struts and OpenSSL vulnerabilities immediately',
+                          'Reset all affected credentials and enforce MFA organization-wide',
+                          'Fix SQL Injection and XSS vulnerabilities in customer portals',
+                          'Block identified malicious IP addresses at firewall level',
+                        ],
+                        nearTerm: [
+                          'Enforce strong SSH cipher standards across all servers',
+                          'Deploy CSP headers and secure session controls in applications',
+                          'Enhance SIEM detection thresholds for brute force and credential stuffing',
+                          'Conduct security awareness training for all staff',
+                        ],
+                        longTerm: [
+                          'Establish continuous vulnerability management program',
+                          'Conduct red/blue team exercises simulating attack scenarios',
+                          'Integrate external OSINT feeds into SIEM for proactive detection',
+                          'Implement zero-trust architecture principles',
+                        ],
+                      },
+                    }}
+                    audienceType="executive"
+                  />
+                </ScrollArea>
+                <div className="flex gap-2 mt-3">
+                  <Button size="sm" variant="outline" onClick={() => {
+                    setSelectedTemplate('executive-summary');
+                    setSelectedAudience('executive');
+                    setReportTitle('Security Assessment Report - Target: Example Corporation');
+                    setActiveTab('generator');
+                  }}>
+                    Generate Similar Report
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 
