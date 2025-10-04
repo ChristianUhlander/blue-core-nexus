@@ -1,1 +1,10 @@
 project_id = "dkkhhgovmdklloldvhlr"
+
+[functions.ippsy-chat]
+verify_jwt = false
+
+[functions.ingest-hacktricks]
+verify_jwt = true
+
+[functions.search-hacktricks]
+verify_jwt = false
