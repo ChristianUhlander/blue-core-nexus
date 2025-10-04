@@ -3682,40 +3682,6 @@ const SecurityDashboard = () => {
                         </div>
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label>Tools Configuration</Label>
-                        <div className="grid grid-cols-3 gap-2">
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="nmap" />
-                            <Label htmlFor="nmap">Nmap</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="metasploit" />
-                            <Label htmlFor="metasploit">Metasploit</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="burpsuite" />
-                            <Label htmlFor="burpsuite">Burp Suite</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="bloodhound" />
-                            <Label htmlFor="bloodhound">BloodHound</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="crackmapexec" />
-                            <Label htmlFor="crackmapexec">CrackMapExec</Label>
-                          </div>
-                           <div className="flex items-center space-x-2">
-                             <Checkbox id="spiderfoot" />
-                             <Label htmlFor="spiderfoot">SpiderFoot</Label>
-                           </div>
-                           <div className="flex items-center space-x-2">
-                             <Checkbox id="sqlmap" />
-                             <Label htmlFor="sqlmap">SQLMap</Label>
-                           </div>
-                        </div>
-                      </div>
-                      
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Schedule Date & Time</Label>
