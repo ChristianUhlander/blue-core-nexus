@@ -42,14 +42,12 @@ graph TB
         APIs --> Wazuh[🛡️ Wazuh SIEM]
         APIs --> GVM[🔍 OpenVAS/GVM]
         APIs --> ZAP[🕷️ OWASP ZAP]
-        APIs --> SpiderFoot[🕸️ SpiderFoot OSINT]
     end
     
     FastAPI --> SecurityTools[🔧 Orchestrated Security Tools]
     SecurityTools --> Wazuh
     SecurityTools --> GVM
     SecurityTools --> ZAP
-    SecurityTools --> SpiderFoot
 ```
 
 ### Detailed Component Data Flow
@@ -599,7 +597,6 @@ The service layer provides abstracted API clients for external integrations and 
   - Wazuh SIEM API interactions
   - GVM/OpenVAS vulnerability scanning
   - ZAP proxy management
-  - SpiderFoot OSINT operations
   - Service health checks
 
 **`enhancedSecurityService.ts`**
