@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 
 import { createOpenAIService } from '@/services/openaiService';
+import { SecurityAssessmentReport } from './SecurityAssessmentReport';
 import { 
   ReportTemplate, 
   AudienceProfile, 
@@ -62,6 +63,8 @@ export const IntelligentReportingSystem: React.FC = () => {
   const [generatedReport, setGeneratedReport] = useState<string>('');
   const [researchQuery, setResearchQuery] = useState('');
   const [researchResults, setResearchResults] = useState<any[]>([]);
+  const [reportData, setReportData] = useState<any>(null);
+  const [showStructuredReport, setShowStructuredReport] = useState(false);
   
   const [llmConfig, setLlmConfig] = useState<LLMConfig>({
     provider: 'lovable-ai',
@@ -307,6 +310,102 @@ export const IntelligentReportingSystem: React.FC = () => {
   };
 
   const gatherReportData = async (): Promise<ReportData> => {
+    // Generate structured report data for SecurityAssessmentReport component
+    const targetOrg = reportTitle.includes('Target:') 
+      ? reportTitle.split('Target:')[1]?.trim() || 'Target Organization' 
+      : 'Target Organization';
+    
+    const structuredData = {
+      target: targetOrg,
+      reportId: `IPS-STC-${targetOrg.substring(0, 4).toUpperCase()}-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-RPT-001`,
+      date: new Date().toISOString().split('T')[0],
+      riskLevel: (['Low', 'Medium', 'High', 'Critical'][Math.floor(Math.random() * 4)]) as any,
+      vulnerabilities: {
+        high: Math.floor(Math.random() * 5) + 2,
+        medium: Math.floor(Math.random() * 10) + 5,
+        low: Math.floor(Math.random() * 15) + 10,
+      },
+      complianceIssues: [
+        'GDPR: SQL Injection and credential leakage risks exposure of personal data. Breach notification obligations may apply.',
+        'NIS2: Lack of timely patching for high-risk vulnerabilities breaches mandatory resilience obligations for essential services.',
+        'ISO 27001: Missing security controls around session management and secure configuration.',
+      ],
+      infrastructureFindings: [
+        'High-risk vulnerabilities include outdated encryption libraries (OpenSSL 1.0.2 - End of Life)',
+        'Apache Struts CVE-2025-1234: Remote code execution vulnerability confirmed by scanner',
+        'Weak SSH cipher suites detected on production servers - immediate upgrade required',
+        'Multiple unpatched systems identified with known CVEs',
+      ],
+      webAppFindings: [
+        'SQL Injection vulnerability in customer portal login form (CVSS 9.8)',
+        'Reflected Cross-Site Scripting (XSS) in search functionality',
+        'Missing Content Security Policy (CSP) headers across all endpoints',
+        'Insecure session management allowing session fixation attacks',
+      ],
+      siemFindings: [
+        'Distributed SSH brute force attempts detected across multiple servers',
+        'Successful logins observed from unusual geolocations tied to leaked credentials',
+        'Multiple failed authentication attempts followed by successful login patterns',
+        'Anomalous data exfiltration patterns detected during off-hours',
+      ],
+      threatIntel: {
+        leakedCredentials: [
+          `admin@${targetOrg.toLowerCase().replace(/\s+/g, '')}.com found in credential dump`,
+          `sysadmin@${targetOrg.toLowerCase().replace(/\s+/g, '')}.com exposed in underground forum`,
+        ],
+        suspiciousIPs: [
+          '203.0.113.45',
+          '198.51.100.23',
+          '192.0.2.100',
+        ],
+        bruteForceAttempts: Math.floor(Math.random() * 500) + 200,
+      },
+      mitreMapping: [
+        {
+          tactic: 'Initial Access',
+          technique: 'T1078',
+          description: 'Valid Accounts used with leaked credentials to gain unauthorized access',
+        },
+        {
+          tactic: 'Credential Access',
+          technique: 'T1110',
+          description: 'Brute force attacks observed on SSH services targeting administrative accounts',
+        },
+        {
+          tactic: 'Persistence',
+          technique: 'T1078',
+          description: 'Risk of sustained access if compromised accounts are not rotated',
+        },
+        {
+          tactic: 'Lateral Movement',
+          technique: 'T1021.004',
+          description: 'SSH could be used to propagate compromise internally across the network',
+        },
+      ],
+      remediationPlan: {
+        immediate: [
+          'Patch Apache Struts and OpenSSL vulnerabilities immediately',
+          'Reset all affected credentials and enforce MFA organization-wide',
+          'Fix SQL Injection and XSS vulnerabilities in customer portals',
+          'Block identified malicious IP addresses at firewall level',
+        ],
+        nearTerm: [
+          'Enforce strong SSH cipher standards across all servers',
+          'Deploy CSP headers and secure session controls in applications',
+          'Enhance SIEM detection thresholds for brute force and credential stuffing',
+          'Conduct security awareness training for all staff members',
+        ],
+        longTerm: [
+          'Establish continuous vulnerability management program',
+          'Conduct red/blue team exercises simulating attack scenarios',
+          'Integrate external OSINT feeds into SIEM for proactive detection',
+          'Implement zero-trust architecture principles across infrastructure',
+        ],
+      },
+    };
+    
+    setReportData(structuredData);
+    
     // In production, this would integrate with your actual security services
     const now = new Date();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -1093,35 +1192,69 @@ db.execute(query, [email]);`}</pre>
             </Card>
           </div>
 
-          {generatedReport && (
+          {generatedReport && reportData && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                  Generated Report
+                <CardTitle className="flex items-center gap-2 justify-between">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-primary" />
+                    Generated Report
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => setShowStructuredReport(!showStructuredReport)}
+                    >
+                      {showStructuredReport ? 'Show Raw' : 'Show Formatted'}
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        const blob = new Blob([generatedReport], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${reportTitle.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-1" />
+                      Download
+                    </Button>
+                  </div>
                 </CardTitle>
                 <CardDescription>
-                  Your AI-generated, audience-adapted security report
+                  Your AI-generated, audience-adapted security assessment report
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-96 w-full border rounded-md p-4">
-                  <pre className="text-sm whitespace-pre-wrap">{generatedReport}</pre>
-                </ScrollArea>
-                <div className="flex gap-2 mt-4">
-                  <Button size="sm" variant="outline">
-                    <Download className="w-4 h-4 mr-1" />
-                    Download PDF
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Eye className="w-4 h-4 mr-1" />
-                    Preview
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Send className="w-4 h-4 mr-1" />
-                    Share
-                  </Button>
-                </div>
+                {showStructuredReport ? (
+                  <SecurityAssessmentReport 
+                    data={reportData} 
+                    audienceType={selectedAudience as 'executive' | 'technical' | 'compliance'} 
+                  />
+                ) : (
+                  <>
+                    <ScrollArea className="h-96 w-full border rounded-md p-4">
+                      <pre className="text-sm whitespace-pre-wrap">{generatedReport}</pre>
+                    </ScrollArea>
+                    <div className="flex gap-2 mt-4">
+                      <Button size="sm" variant="outline">
+                        <Eye className="w-4 h-4 mr-1" />
+                        Preview
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Send className="w-4 h-4 mr-1" />
+                        Share
+                      </Button>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           )}
