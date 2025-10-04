@@ -21,7 +21,6 @@ import { k8sSecurityApi } from "@/services/k8sSecurityApi";
 import { enhancedSecurityService, type WazuhAgent, type WazuhAlert, type SecurityServiceHealth } from "@/services/enhancedSecurityService";
 import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
 import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterface";
-import { ProductionReadySecurityConfig } from "./ProductionReadySecurityConfig";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 
 import { AutomaticOSINTAgent } from "./AutomaticOSINTAgent";
@@ -115,9 +114,6 @@ const SecurityDashboard = () => {
 
   // Documentation library state
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
-
-  // Production Security Config state
-  const [isProductionConfigOpen, setIsProductionConfigOpen] = useState(false);
 
   // Intelligent Reporting state
   const [isReportingOpen, setIsReportingOpen] = useState(false);
@@ -2621,11 +2617,6 @@ const SecurityDashboard = () => {
             AI Reports
           </Button>
           
-          <Button onClick={() => setIsProductionConfigOpen(true)} variant="outline" className="flex items-center gap-2 glow-hover transition-all duration-200">
-            <Settings className="h-4 w-4" />
-            Production Config
-          </Button>
-          
           <Button onClick={() => setIsDocumentationOpen(true)} variant="outline" className="flex items-center gap-2 glow-hover transition-all duration-200">
             <FileText className="h-4 w-4" />
             Documentation
@@ -3930,19 +3921,6 @@ const SecurityDashboard = () => {
                   Schedule Test
                 </Button>
               </div>
-            </DialogContent>
-          </Dialog>}
-
-        {/* Production Security Configuration */}
-        {isProductionConfigOpen && <Dialog open={isProductionConfigOpen} onOpenChange={setIsProductionConfigOpen}>
-            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Production Security Configuration</DialogTitle>
-                <DialogDescription>
-                  Configure continuous find-fix-verify security operations with automated ticketing integration.
-                </DialogDescription>
-              </DialogHeader>
-              <ProductionReadySecurityConfig />
             </DialogContent>
           </Dialog>}
 
