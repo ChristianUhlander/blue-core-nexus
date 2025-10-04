@@ -54,6 +54,11 @@ import {
 
 export const IntelligentReportingSystem: React.FC = () => {
   const [activeTab, setActiveTab] = useState('examples');
+  
+  // Ensure Examples tab is visible on mount
+  useEffect(() => {
+    setActiveTab('examples');
+  }, []);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [selectedAudience, setSelectedAudience] = useState<string>('technical');
   const [reportTitle, setReportTitle] = useState('Security Assessment Report');
@@ -1080,9 +1085,10 @@ db.execute(query, [email]);`}</pre>
                   </div>
                 </div>
 
-                <ScrollArea className="h-[600px] w-full border rounded-md">
-                  <SecurityAssessmentReport 
-                    data={{
+                <ScrollArea className="h-[500px] w-full border rounded-md bg-background">
+                  <div className="p-4">
+                    <SecurityAssessmentReport 
+                      data={{
                       target: 'Example Corporation',
                       reportId: 'IPS-STC-EXAM-2025-1002-RPT-001',
                       date: new Date().toISOString().split('T')[0],
@@ -1166,9 +1172,10 @@ db.execute(query, [email]);`}</pre>
                           'Implement zero-trust architecture principles',
                         ],
                       },
-                    }}
-                    audienceType="executive"
-                  />
+                      }}
+                      audienceType="executive"
+                    />
+                  </div>
                 </ScrollArea>
                 <div className="flex gap-2 mt-3">
                   <Button size="sm" variant="outline" onClick={() => {
