@@ -20,7 +20,6 @@ import { EnvironmentConfigStatus } from "./EnvironmentConfigStatus";
 import { useRealTimeSecurityData } from "@/hooks/useRealTimeSecurityData";
 import { securityServicesApi } from "@/services/securityServicesApi";
 import { enhancedSecurityService, type SecurityServiceHealth } from "@/services/enhancedSecurityService";
-import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
 import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterface";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 
@@ -45,14 +44,12 @@ const SecurityDashboard = () => {
   const {
     services,
     alerts,
-    agents,
     isConnected,
     lastUpdate,
     error,
     refreshAll,
     refreshService,
     acknowledgeAlert,
-    restartAgent,
     getServiceStats
   } = useRealTimeSecurityData();
 
@@ -541,16 +538,6 @@ const SecurityDashboard = () => {
    * Backend Integration: Service discovery and health monitoring
    */
   const apiConnections = useMemo(() => [{
-    service: "Wazuh Manager",
-    endpoint: `wazuh-manager.security.svc.cluster.local:${services.wazuh.online ? '55000' : 'offline'}`,
-    status: services.wazuh.online ? "connected" : "disconnected",
-    description: "SIEM agent management and log analysis",
-    lastCheck: services.wazuh.lastCheck,
-    error: services.wazuh.error,
-    responseTime: services.wazuh.responseTime,
-    agents: services.wazuh.agents,
-    version: services.wazuh.managerVersion
-  }, {
     service: "OpenVAS Scanner",
     endpoint: `openvas-gvm.security.svc.cluster.local:${services.gvm.online ? '9392' : 'offline'}`,
     status: services.gvm.online ? "connected" : "disconnected",
@@ -567,8 +554,8 @@ const SecurityDashboard = () => {
    * Get selected agent data from real-time agents list
    */
   const getSelectedAgentData = useCallback(() => {
-    return agents.find(agent => agent.id === selectedAgent) || agents[0];
-  }, [agents, selectedAgent]);
+    return null;
+  }, [selectedAgent]);
 
   /**
    * Penetration Testing Session Management
@@ -1157,16 +1144,12 @@ const SecurityDashboard = () => {
    * Get agent statistics from real-time data
    */
   const getAgentStats = () => {
-    const activeAgents = agents.filter(a => a.status === 'active').length;
-    const offlineAgents = agents.filter(a => a.status === 'disconnected').length;
-    const pendingAgents = agents.filter(a => a.status === 'never_connected').length;
-    const totalAgents = agents.length;
     return {
-      active: activeAgents,
-      offline: offlineAgents,
-      pending: pendingAgents,
-      total: totalAgents,
-      healthScore: totalAgents > 0 ? Math.round(activeAgents / totalAgents * 100) : 0
+      active: 0,
+      offline: 0,
+      pending: 0,
+      total: 0,
+      healthScore: 0
     };
   };
 
@@ -1640,7 +1623,7 @@ const SecurityDashboard = () => {
                                       </div>
                                       <Progress value={scanProgress} className="glow animate-pulse" />
                                       <p className="text-xs text-muted-foreground">
-                                        Analyzing {agents.length} hosts for vulnerabilities...
+                                        Analyzing hosts for vulnerabilities...
                                       </p>
                                     </div>}
                                   

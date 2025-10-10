@@ -13,10 +13,8 @@
 import { 
   ServiceConfig, 
   ConnectionStatus, 
-  WazuhStatus, 
   GVMStatus,
   SecurityAlert,
-  WazuhAgent,
   ScanResult,
   ApiResponse,
   WSMessage,
@@ -25,12 +23,6 @@ import {
 
 // Service endpoint configuration
 const SERVICE_ENDPOINTS: Record<string, ServiceEndpoint> = {
-  wazuh: {
-    namespace: 'security',
-    serviceName: 'wazuh-manager',
-    port: 55000,
-    path: '/security/user/authenticate'
-  },
   gvm: {
     namespace: 'security', 
     serviceName: 'openvas-gvm',
@@ -63,7 +55,6 @@ class SecurityServicesApiClient {
   private initializeApiKeys() {
     // Browser-safe environment variable access
     this.apiKeys = {
-      wazuh: import.meta.env?.VITE_WAZUH_API_KEY || '',
       gvm: import.meta.env?.VITE_GVM_API_KEY || ''
     };
   }
@@ -198,7 +189,6 @@ class SecurityServicesApiClient {
    * Backend Endpoint: GET /api/health/all
    */
   async checkAllServicesHealth(): Promise<ApiResponse<{
-    wazuh: WazuhStatus;
     gvm: GVMStatus;
   }>> {
     return this.makeRequest('/api/health/all');
@@ -208,52 +198,8 @@ class SecurityServicesApiClient {
    * Check specific service health
    * Backend Endpoint: GET /api/health/{service}
    */
-  async checkServiceHealth(service: 'wazuh' | 'gvm'): Promise<ApiResponse<ConnectionStatus>> {
+  async checkServiceHealth(service: 'gvm'): Promise<ApiResponse<ConnectionStatus>> {
     return this.makeRequest(`/api/health/${service}`);
-  }
-
-  /**
-   * Wazuh SIEM Integration
-   * Backend Endpoint: GET /api/wazuh/agents
-   */
-  async getWazuhAgents(): Promise<ApiResponse<WazuhAgent[]>> {
-    return this.makeRequest('/api/wazuh/agents', {
-      headers: {
-        'Authorization': `Bearer ${this.apiKeys.wazuh}`
-      }
-    });
-  }
-
-  /**
-   * Get Wazuh alerts with filtering
-   * Backend Endpoint: GET /api/wazuh/alerts
-   */
-  async getWazuhAlerts(params: {
-    limit?: number;
-    offset?: number;
-    severity?: string;
-    agentId?: string;
-    timeRange?: string;
-  }): Promise<ApiResponse<SecurityAlert[]>> {
-    const queryParams = new URLSearchParams(params as Record<string, string>);
-    return this.makeRequest(`/api/wazuh/alerts?${queryParams}`, {
-      headers: {
-        'Authorization': `Bearer ${this.apiKeys.wazuh}`
-      }
-    });
-  }
-
-  /**
-   * Restart Wazuh agent
-   * Backend Endpoint: POST /api/wazuh/agents/{agentId}/restart
-   */
-  async restartWazuhAgent(agentId: string): Promise<ApiResponse<{ message: string }>> {
-    return this.makeRequest(`/api/wazuh/agents/${agentId}/restart`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.apiKeys.wazuh}`
-      }
-    });
   }
 
   /**
@@ -390,7 +336,7 @@ class SecurityServicesApiClient {
     responseTime: number;
     error?: string;
   }>> {
-    const services = ['wazuh', 'gvm', 'zap', 'spiderfoot'];
+    const services = ['gvm', 'zap', 'spiderfoot'];
     const results: Record<string, any> = {};
     
     await Promise.allSettled(

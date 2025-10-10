@@ -13,8 +13,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { fastApiClient } from '@/services/fastApiClient';
 import { 
   SecurityAlert, 
-  WazuhAgent, 
-  WazuhStatus, 
   GVMStatus,
   WSMessage 
 } from '@/types/security';
@@ -23,13 +21,11 @@ import { useToast } from '@/hooks/use-toast';
 interface RealTimeSecurityState {
   // Service Status
   services: {
-    wazuh: WazuhStatus;
     gvm: GVMStatus;
   };
   
   // Real-time Data
   alerts: SecurityAlert[];
-  agents: WazuhAgent[];
   
   // Connection State
   isConnected: boolean;
@@ -43,14 +39,11 @@ interface UseRealTimeSecurityDataReturn extends RealTimeSecurityState {
   refreshAll: () => Promise<void>;
   refreshService: (service: keyof RealTimeSecurityState['services']) => Promise<void>;
   acknowledgeAlert: (alertId: string) => Promise<void>;
-  restartAgent: (agentId: string) => Promise<void>;
   
   // Stats
   getServiceStats: () => {
     totalServices: number;
     onlineServices: number;
-    totalAgents: number;
-    activeAgents: number;
     totalAlerts: number;
     criticalAlerts: number;
   };
@@ -62,17 +55,6 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
   
   const [state, setState] = useState<RealTimeSecurityState>({
     services: {
-      wazuh: {
-        online: false,
-        lastCheck: null,
-        error: null,
-        responseTime: 0,
-        retryCount: 0,
-        agents: 0,
-        activeAgents: 0,
-        managerVersion: '',
-        rulesLoaded: 0
-      },
       gvm: {
         online: false,
         lastCheck: null,
@@ -86,7 +68,6 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
       }
     },
     alerts: [],
-    agents: [],
     isConnected: false,
     isLoading: true,
     lastUpdate: null,
@@ -136,29 +117,6 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
     }
   }, [toast]);
 
-  /**
-   * Handle agent updates
-   */
-  const handleAgentUpdate = useCallback((event: CustomEvent<WSMessage>) => {
-    const agentUpdate = event.detail.data;
-    
-    setState(prev => {
-      const updatedAgents = [...prev.agents];
-      const existingIndex = updatedAgents.findIndex(agent => agent.id === agentUpdate.id);
-      
-      if (existingIndex >= 0) {
-        updatedAgents[existingIndex] = { ...updatedAgents[existingIndex], ...agentUpdate };
-      } else {
-        updatedAgents.push(agentUpdate);
-      }
-      
-      return {
-        ...prev,
-        agents: updatedAgents,
-        lastUpdate: new Date().toISOString()
-      };
-    });
-  }, []);
 
   /**
    * Handle scan progress updates
@@ -206,17 +164,12 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
     window.addEventListener('security:alert', alertListener);
     wsListenersRef.current.push(() => window.removeEventListener('security:alert', alertListener));
 
-    // Agent updates
-    const agentListener = (event: Event) => handleAgentUpdate(event as CustomEvent<WSMessage>);
-    window.addEventListener('security:agent_update', agentListener);
-    wsListenersRef.current.push(() => window.removeEventListener('security:agent_update', agentListener));
-
     // Scan progress updates
     const scanListener = (event: Event) => handleScanProgress(event as CustomEvent<WSMessage>);
     window.addEventListener('security:scan_progress', scanListener);
     wsListenersRef.current.push(() => window.removeEventListener('security:scan_progress', scanListener));
 
-  }, [handleStatusUpdate, handleNewAlert, handleAgentUpdate, handleScanProgress]);
+  }, [handleStatusUpdate, handleNewAlert, handleScanProgress]);
 
   /**
    * Refresh all service data via FastAPI client
@@ -226,45 +179,6 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
     
     try {
       console.log('🔄 Refreshing security data via FastAPI');
-      
-      // Fetch agents
-      const agentsResponse = await fastApiClient.getWazuhAgents();
-      if (agentsResponse.success && agentsResponse.data) {
-        setState(prev => ({
-          ...prev,
-          agents: agentsResponse.data as unknown as WazuhAgent[]
-        }));
-        console.log(`✅ Loaded ${agentsResponse.data.length} Wazuh agents`);
-      }
-      
-      // Fetch alerts
-      const alertsResponse = await fastApiClient.getWazuhAlerts(100);
-      if (alertsResponse.success && alertsResponse.data) {
-        const mappedAlerts: SecurityAlert[] = alertsResponse.data.map(alert => ({
-          id: alert.id,
-          source: 'wazuh' as const,
-          timestamp: alert.timestamp,
-          severity: alert.rule.level >= 12 ? 'critical' : 
-                   alert.rule.level >= 8 ? 'high' :
-                   alert.rule.level >= 5 ? 'medium' : 'low',
-          title: alert.rule.description,
-          description: alert.full_log,
-          agentId: alert.agent.id,
-          agentName: alert.agent.name,
-          rule: {
-            id: alert.rule.id.toString(),
-            description: alert.rule.description,
-            level: alert.rule.level
-          },
-          acknowledged: false
-        }));
-        
-        setState(prev => ({
-          ...prev,
-          alerts: mappedAlerts
-        }));
-        console.log(`✅ Loaded ${mappedAlerts.length} security alerts`);
-      }
       
       // Check health of all services
       const healthResponse = await fastApiClient.getServicesHealth();
@@ -362,33 +276,6 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
     }
   }, [toast]);
 
-  /**
-   * Restart Wazuh agent via FastAPI
-   */
-  const restartAgent = useCallback(async (agentId: string) => {
-    try {
-      console.log(`🔄 Restarting agent ${agentId} via FastAPI`);
-      
-      const response = await fastApiClient.restartWazuhAgent(agentId, false);
-      
-      if (response.success) {
-        toast({
-          title: 'Agent Restart',
-          description: response.data?.message || `Agent ${agentId} restart initiated.`
-        });
-      } else {
-        throw new Error(response.error || 'Failed to restart agent');
-      }
-
-    } catch (error) {
-      console.error('❌ Failed to restart agent:', error);
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to restart agent.',
-        variant: 'destructive'
-      });
-    }
-  }, [toast]);
 
   /**
    * Get service statistics
@@ -396,16 +283,12 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
   const getServiceStats = useCallback(() => {
     const services = Object.values(state.services);
     const onlineServices = services.filter(s => s.online).length;
-    const totalAgents = state.agents.length;
-    const activeAgents = state.agents.filter(a => a.status === 'active').length;
     const totalAlerts = state.alerts.length;
     const criticalAlerts = state.alerts.filter(a => a.severity === 'critical').length;
 
     return {
       totalServices: services.length,
       onlineServices,
-      totalAgents,
-      activeAgents,
       totalAlerts,
       criticalAlerts
     };
@@ -433,7 +316,6 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
     refreshAll,
     refreshService,
     acknowledgeAlert,
-    restartAgent,
     getServiceStats
   };
 };
