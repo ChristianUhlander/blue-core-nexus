@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 interface Message {
@@ -113,27 +112,12 @@ const IppsYChatPane = ({ isOpen, onToggle }: IppsYChatPaneProps) => {
 
       console.log('Calling iPPSY chat with profile:', profileConfig.name);
       
-      const { data, error } = await supabase.functions.invoke('ippsy-chat', {
-        body: {
-          messages: conversationMessages,
-          provider: profileConfig.config.provider,
-          model: profileConfig.config.model,
-          apiKey: profileConfig.apiKey,
-          temperature: profileConfig.config.temperature,
-          maxTokens: profileConfig.config.maxTokens
-        }
-      });
-
-      if (error) {
-        console.error('iPPSY chat error:', error);
-        throw error;
-      }
-
-      const aiContent = data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
+      // Backend integration removed
+      throw new Error('Chat backend has been removed. Please configure an alternative backend.');
       
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: aiContent,
+        content: 'Chat functionality unavailable',
         isUser: false,
         timestamp: new Date(),
       };
