@@ -19,7 +19,7 @@ import { DocumentationLibrary } from "./DocumentationLibrary";
 import { EnvironmentConfigStatus } from "./EnvironmentConfigStatus";
 import { useRealTimeSecurityData } from "@/hooks/useRealTimeSecurityData";
 import { securityServicesApi } from "@/services/securityServicesApi";
-import { enhancedSecurityService, type WazuhAgent, type WazuhAlert, type SecurityServiceHealth } from "@/services/enhancedSecurityService";
+import { enhancedSecurityService, type SecurityServiceHealth } from "@/services/enhancedSecurityService";
 import { AgentConfigurationAdvanced } from "./AgentConfigurationAdvanced";
 import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterface";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
@@ -28,7 +28,7 @@ import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 import { ZapProxyModule } from "./ZapProxyModule";
 import { MitreAttackMapper } from "./MitreAttackMapper";
 
-import { WazuhSBOMManagement } from "./WazuhSBOMManagement";
+
 import GVMManagement from "../pages/GVMManagement";
 import { ConnectionStatusIndicator } from "./ConnectionStatusIndicator";
 import heroImage from "@/assets/security-hero.jpg";
@@ -41,7 +41,6 @@ import * as React from "react";
  * 
  * BACKEND INTEGRATION:
  * - Security services: OpenVAS/GVM, OWASP ZAP, SpiderFoot OSINT
- * - WebSocket endpoint at /ws for real-time security alerts
  * - REST API endpoints at /api/* with proper authentication
  * - Service health monitoring and connectivity testing
  */
@@ -62,8 +61,6 @@ const SecurityDashboard = () => {
   } = useRealTimeSecurityData();
 
   // Enhanced state management for real backend integration
-  const [realTimeAgents, setRealTimeAgents] = useState<WazuhAgent[]>([]);
-  const [realTimeAlerts, setRealTimeAlerts] = useState<WazuhAlert[]>([]);
   const [serviceHealths, setServiceHealths] = useState<SecurityServiceHealth[]>([]);
   const [backendConnected, setBackendConnected] = useState(false);
   const [vulnerabilityData, setVulnerabilityData] = useState<any[]>([]);
@@ -170,29 +167,6 @@ const SecurityDashboard = () => {
           event: string;
           handler: EventListener;
         }> = [
-        // Wazuh real-time alerts
-        {
-          event: 'security:wazuh:message',
-          handler: (event: CustomEvent) => {
-            const data = event.detail;
-            if (data.type === 'alert') {
-              setRealTimeAlerts(prev => [data.alert, ...prev.slice(0, 49)]); // Keep last 50
-              toast({
-                title: "🚨 Security Alert",
-                description: `${data.alert.rule.description} on ${data.alert.agent.name}`,
-                variant: data.alert.rule.level >= 7 ? "destructive" : "default"
-              });
-            }
-          }
-        },
-        // Service health updates
-        {
-          event: 'security:health:wazuh',
-          handler: (event: CustomEvent) => {
-            setServiceHealths(prev => prev.map(service => service.service === 'wazuh' ? event.detail : service));
-            setBackendConnected(event.detail.status === 'healthy');
-          }
-        },
         // Vulnerability scan progress
         {
           event: 'security:scan:progress',
@@ -239,8 +213,8 @@ const SecurityDashboard = () => {
           }
         }];
 
-        // Register all event listeners
-        eventListeners.forEach(({
+        // Register all event listeners (excluding Wazuh)
+        eventListeners.filter(({event}) => !event.includes('wazuh')).forEach(({
           event,
           handler
         }) => {
@@ -280,16 +254,6 @@ const SecurityDashboard = () => {
     try {
       // Parallel data fetching for better performance
       const dataPromises = [
-      // Fetch Wazuh agents
-      enhancedSecurityService.getWazuhAgents().then(agents => setRealTimeAgents(agents)).catch(error => {
-        console.error('Failed to fetch Wazuh agents:', error);
-        errors.push('Wazuh agents data unavailable');
-      }),
-      // Fetch Wazuh alerts
-      enhancedSecurityService.getWazuhAlerts(50).then(alerts => setRealTimeAlerts(alerts)).catch(error => {
-        console.error('Failed to fetch Wazuh alerts:', error);
-        errors.push('Wazuh alerts data unavailable');
-      }),
       // Refresh health checks
       enhancedSecurityService.refreshHealthChecks().then(() => {
         const healthData = enhancedSecurityService.getHealthStatuses();
@@ -362,12 +326,7 @@ const SecurityDashboard = () => {
       // 4. Vulnerability identification
       // 5. CVE correlation
 
-      const scanTargets = realTimeAgents.map(agent => ({
-        id: agent.id,
-        name: agent.name,
-        ip: agent.ip,
-        os: agent.os
-      }));
+      const scanTargets: any[] = [];
       console.log('🎯 Starting vulnerability scan for targets:', scanTargets);
 
       // Simulate real scan progress with actual backend calls
@@ -400,7 +359,7 @@ const SecurityDashboard = () => {
         variant: "destructive"
       });
     }
-  }, [cveScanning, serviceHealths, realTimeAgents, toast]);
+  }, [cveScanning, serviceHealths, toast]);
 
   /**
    * STEP 4: Generate realistic vulnerability report with CVE data
@@ -1058,22 +1017,15 @@ const SecurityDashboard = () => {
    * Real-time Service Status Management
    * Backend Integration: Dynamic service health checks and agent monitoring
    * 
-   * BACKEND API ENDPOINTS REQUIRED:
-   * - GET /api/services/status - Overall service health check
-   * - GET /api/wazuh/agents - Live agent status and count  
-   * - GET /api/gvm/status - OpenVAS/GVM service status
-   * - GET /api/zap/status - OWASP ZAP service status  
-   * - GET /api/spiderfoot/status - Spiderfoot OSINT service status
+ * BACKEND API ENDPOINTS REQUIRED:
+ * - GET /api/services/status - Overall service health check
+ * - GET /api/gvm/status - OpenVAS/GVM service status
+ * - GET /api/zap/status - OWASP ZAP service status  
+ * - GET /api/spiderfoot/status - Spiderfoot OSINT service status
    */
 
   // Real-time service status state
   const [serviceStatus, setServiceStatus] = useState({
-    wazuh: {
-      online: false,
-      agents: 0,
-      lastCheck: null,
-      error: null
-    },
     gvm: {
       online: false,
       scans: 0,
@@ -1095,55 +1047,6 @@ const SecurityDashboard = () => {
   });
   const [isCheckingServices, setIsCheckingServices] = useState(true);
 
-  /**
-   * Check Wazuh service status and agent count
-   * Backend Integration: GET /api/wazuh/status
-   */
-  const checkWazuhStatus = async () => {
-    try {
-      // Real API call to check Wazuh service
-      const response = await fetch('http://localhost:55000/security/user/authenticate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer'
-        },
-        signal: AbortSignal.timeout(5000) // 5 second timeout
-      });
-      if (response.ok) {
-        // If authentication succeeds, get agent count
-        const agentsResponse = await fetch('http://localhost:55000/agents', {
-          headers: {
-            'Authorization': 'Bearer '
-          }
-        });
-        const agentsData = agentsResponse.ok ? await agentsResponse.json() : null;
-        const activeAgents = agentsData?.data?.affected_items?.filter(agent => agent.status === 'active')?.length || 0;
-        setServiceStatus(prev => ({
-          ...prev,
-          wazuh: {
-            online: true,
-            agents: activeAgents,
-            lastCheck: new Date().toISOString(),
-            error: null
-          }
-        }));
-      } else {
-        throw new Error(`HTTP ${response.status}`);
-      }
-    } catch (error) {
-      console.log('Wazuh service offline:', error.message);
-      setServiceStatus(prev => ({
-        ...prev,
-        wazuh: {
-          online: false,
-          agents: 0,
-          lastCheck: new Date().toISOString(),
-          error: error.message
-        }
-      }));
-    }
-  };
 
   /**
    * Check OpenVAS/GVM service status  
@@ -1270,7 +1173,7 @@ const SecurityDashboard = () => {
     setIsCheckingServices(true);
 
     // Run all service checks in parallel for better performance
-    await Promise.allSettled([checkWazuhStatus(), checkGVMStatus(), checkZAPStatus(), checkSpiderfootStatus()]);
+    await Promise.allSettled([checkGVMStatus(), checkZAPStatus(), checkSpiderfootStatus()]);
     setIsCheckingServices(false);
   };
 
@@ -1331,8 +1234,8 @@ const SecurityDashboard = () => {
    * Backend Integration: Real-time alert ingestion from connected services
    * 
    * BACKEND REQUIREMENTS:
-   * - WebSocket or SSE connection for real-time alerts
-   * - Alert parsing from Wazuh, GVM, ZAP, Spiderfoot logs
+   * - Real-time alert ingestion from services
+   * - Alert parsing from GVM, ZAP, Spiderfoot logs
    * - Alert severity classification and deduplication
    * - Alert persistence and retrieval API
    */
@@ -1432,9 +1335,6 @@ const SecurityDashboard = () => {
       // This would replace the hardcoded localhost calls with proper API testing
       let testResult = false;
       switch (serviceKey) {
-        case 'wazuh':
-          testResult = await testWazuhConnection(serviceEndpoint);
-          break;
         case 'gvm':
           testResult = await testGVMConnection(serviceEndpoint);
           break;
@@ -1480,20 +1380,6 @@ const SecurityDashboard = () => {
    * Individual service connection test functions
    * Backend Integration: These should be replaced with proper API calls
    */
-  const testWazuhConnection = async (endpoint: string): Promise<boolean> => {
-    try {
-      const response = await fetch(`http://${endpoint}/security/user/authenticate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        signal: AbortSignal.timeout(5000)
-      });
-      return response.ok;
-    } catch {
-      return false;
-    }
-  };
   const testGVMConnection = async (endpoint: string): Promise<boolean> => {
     try {
       const response = await fetch(`http://${endpoint}/gmp`, {
@@ -1531,13 +1417,6 @@ const SecurityDashboard = () => {
 
   /**
    * Enhanced Agent Management Functions
-   * Backend Integration: Wazuh agent lifecycle management
-   * 
-   * BACKEND REQUIREMENTS:
-   * - POST /api/agents/restart - Restart specific agent
-   * - POST /api/agents/update - Update agent configuration
-   * - DELETE /api/agents/{id} - Remove agent
-   * - GET /api/agents/{id}/logs - Get agent-specific logs
    * - POST /api/agents/bulk-action - Perform bulk operations
    */
 
@@ -1633,14 +1512,6 @@ const SecurityDashboard = () => {
    */
   const getDynamicApiConnections = () => {
     return [{
-      service: "Wazuh Manager",
-      endpoint: "localhost:55000",
-      status: serviceStatus.wazuh.online ? "connected" : "disconnected",
-      description: "SIEM agent management and log analysis",
-      lastCheck: serviceStatus.wazuh.lastCheck,
-      error: serviceStatus.wazuh.error,
-      key: "wazuh"
-    }, {
       service: "OpenVAS Scanner",
       endpoint: "localhost:9392",
       status: serviceStatus.gvm.online ? "connected" : "disconnected",
@@ -2658,7 +2529,7 @@ const SecurityDashboard = () => {
               IPS Security Test Center
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Unified cybersecurity monitoring with Wazuh, OpenVAS, OWASP ZAP, and Spiderfoot intelligence
+              Unified cybersecurity monitoring with OpenVAS, OWASP ZAP, and Spiderfoot intelligence
             </p>
             
             {/* SUPER PROMINENT AGENTIC PENTEST BUTTON - IMPOSSIBLE TO MISS */}
@@ -2738,12 +2609,8 @@ const SecurityDashboard = () => {
                 <CardDescription>Manage all security tools from one central location</CardDescription>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue="siem" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="siem" className="flex items-center gap-2">
-                      <Shield className="h-4 w-4" />
-                      Wazuh
-                    </TabsTrigger>
+                 <Tabs defaultValue="vulnerability" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="vulnerability" className="flex items-center gap-2">
                       <Eye className="h-4 w-4" />
                       Vulnerability
@@ -2753,66 +2620,6 @@ const SecurityDashboard = () => {
                       Pentesting
                     </TabsTrigger>
                   </TabsList>
-                  
-                  <TabsContent value="siem" className="mt-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <Dialog open={isAgentStatusOpen} onOpenChange={setIsAgentStatusOpen}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="glow-hover group">
-                            <Package className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-                            SBOM Management
-                            <div className="ml-2 w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[1000px] max-h-[85vh] gradient-card border-primary/20">
-                          <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2 text-xl">
-                              <div className="relative">
-                                <Package className="h-6 w-6 text-primary animate-pulse" />
-                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-ping" />
-                              </div>
-                              Software Bill of Materials (SBOM)
-                              <Badge variant="default" className="ml-2 animate-pulse-glow">
-                                WAZUH
-                              </Badge>
-                            </DialogTitle>
-                            <DialogDescription className="text-base">
-                              Generate comprehensive software inventories with vulnerability correlation using Wazuh Syscollector
-                            </DialogDescription>
-                          </DialogHeader>
-
-                          <WazuhSBOMManagement />
-
-                          <div className="flex justify-between items-center gap-2 pt-6 border-t border-border/50">
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      
-                      <Dialog open={isMitreMapperOpen} onOpenChange={setIsMitreMapperOpen}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="glow-hover">
-                            <Target className="h-4 w-4 mr-2" />
-                            MITRE ATT&CK Mapper
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
-                          <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
-                              <Shield className="h-5 w-5 text-primary" />
-                              MITRE ATT&CK Log Mapping
-                            </DialogTitle>
-                            <DialogDescription>
-                              Import Wazuh logs and map threats to the MITRE ATT&CK framework
-                            </DialogDescription>
-                          </DialogHeader>
-                          
-                          <ScrollArea className="h-[75vh]">
-                            <MitreAttackMapper />
-                          </ScrollArea>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  </TabsContent>
                   
                   <TabsContent value="vulnerability" className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
