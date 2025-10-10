@@ -42,19 +42,12 @@ export interface GVMStatus extends ConnectionStatus {
   lastScan?: string;
 }
 
-export interface ZAPStatus extends ConnectionStatus {
-  scans: number;
-  activeScans: number;
-  alerts: number;
-  spiderProgress: number;
-  activeScanProgress: number;
-}
 
 
 // Alert Types
 export interface SecurityAlert {
   id: string;
-  source: 'wazuh' | 'gvm' | 'zap';
+  source: 'wazuh' | 'gvm';
   timestamp: string;
   severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
   title: string;

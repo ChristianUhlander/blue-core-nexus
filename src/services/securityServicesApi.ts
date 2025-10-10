@@ -14,8 +14,7 @@ import {
   ServiceConfig, 
   ConnectionStatus, 
   WazuhStatus, 
-  GVMStatus, 
-  ZAPStatus,
+  GVMStatus,
   SecurityAlert,
   WazuhAgent,
   ScanResult,
@@ -37,12 +36,6 @@ const SERVICE_ENDPOINTS: Record<string, ServiceEndpoint> = {
     serviceName: 'openvas-gvm',
     port: 9392,
     path: '/gmp'
-  },
-  zap: {
-    namespace: 'security',
-    serviceName: 'owasp-zap',
-    port: 8080,
-    path: '/JSON/core/view/version'
   }
 };
 
@@ -71,8 +64,7 @@ class SecurityServicesApiClient {
     // Browser-safe environment variable access
     this.apiKeys = {
       wazuh: import.meta.env?.VITE_WAZUH_API_KEY || '',
-      gvm: import.meta.env?.VITE_GVM_API_KEY || '',
-      zap: import.meta.env?.VITE_ZAP_API_KEY || ''
+      gvm: import.meta.env?.VITE_GVM_API_KEY || ''
     };
   }
 
@@ -208,7 +200,6 @@ class SecurityServicesApiClient {
   async checkAllServicesHealth(): Promise<ApiResponse<{
     wazuh: WazuhStatus;
     gvm: GVMStatus;
-    zap: ZAPStatus;
   }>> {
     return this.makeRequest('/api/health/all');
   }
@@ -217,7 +208,7 @@ class SecurityServicesApiClient {
    * Check specific service health
    * Backend Endpoint: GET /api/health/{service}
    */
-  async checkServiceHealth(service: 'wazuh' | 'gvm' | 'zap'): Promise<ApiResponse<ConnectionStatus>> {
+  async checkServiceHealth(service: 'wazuh' | 'gvm'): Promise<ApiResponse<ConnectionStatus>> {
     return this.makeRequest(`/api/health/${service}`);
   }
 

@@ -25,9 +25,6 @@ import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterfa
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 
 
-import { ZapProxyModule } from "./ZapProxyModule";
-
-
 import GVMManagement from "../pages/GVMManagement";
 import { ConnectionStatusIndicator } from "./ConnectionStatusIndicator";
 import heroImage from "@/assets/security-hero.jpg";
@@ -75,9 +72,6 @@ const SecurityDashboard = () => {
   
   const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
-
-  // ZAP Proxy dialog state
-  const [isZapProxyOpen, setIsZapProxyOpen] = useState(false);
 
   // Target configuration for pentest modules
   const pentestTargetConfig = {
@@ -189,13 +183,6 @@ const SecurityDashboard = () => {
           event: 'security:health:gvm',
           handler: (event: CustomEvent) => {
             setServiceHealths(prev => prev.map(service => service.service === 'gvm' ? event.detail : service));
-          }
-        },
-        // ZAP updates
-        {
-          event: 'security:health:zap',
-          handler: (event: CustomEvent) => {
-            setServiceHealths(prev => prev.map(service => service.service === 'zap' ? event.detail : service));
           }
         }];
 
@@ -525,26 +512,6 @@ const SecurityDashboard = () => {
     tags: []
   });
 
-  // ZAP Scan State Management
-  // Backend Integration: Terminal wrapper for OWASP ZAP automation
-  const [isZapScanOpen, setIsZapScanOpen] = useState(false);
-  const [zapScanRunning, setZapScanRunning] = useState(false);
-  const [zapScanProgress, setZapScanProgress] = useState(0);
-  const [zapScanConfig, setZapScanConfig] = useState({
-    target: 'https://',
-    scanType: 'baseline',
-    spiderEnabled: true,
-    activeScanEnabled: true,
-    authEnabled: false,
-    authUrl: '',
-    username: '',
-    password: '',
-    excludeUrls: [''],
-    includeAlphaRules: false,
-    includeBetaRules: false,
-    reportFormat: 'html',
-    maxDuration: 60 // minutes
-  });
 
   /**
    * Real-time Security Service Connection Testing
@@ -604,16 +571,6 @@ const SecurityDashboard = () => {
     responseTime: services.gvm.responseTime,
     scans: services.gvm.scans,
     vulnerabilities: services.gvm.vulnerabilities
-  }, {
-    service: "OWASP ZAP",
-    endpoint: `owasp-zap.security.svc.cluster.local:${services.zap.online ? '8080' : 'offline'}`,
-    status: services.zap.online ? "connected" : "disconnected",
-    description: "Web application security testing",
-    lastCheck: services.zap.lastCheck,
-    error: services.zap.error,
-    responseTime: services.zap.responseTime,
-    scans: services.zap.scans,
-    alerts: services.zap.alerts
   }], [services]);
 
 
@@ -1006,12 +963,6 @@ const SecurityDashboard = () => {
       scans: 0,
       lastCheck: null,
       error: null
-    },
-    zap: {
-      online: false,
-      scans: 0,
-      lastCheck: null,
-      error: null
     }
   });
   const [isCheckingServices, setIsCheckingServices] = useState(true);
@@ -1061,43 +1012,6 @@ const SecurityDashboard = () => {
   };
 
   /**
-   * Check OWASP ZAP service status
-   * Backend Integration: GET /api/zap/status  
-   */
-  const checkZAPStatus = async () => {
-    try {
-      const response = await fetch('http://localhost:8080/JSON/core/view/version/?apikey=', {
-        signal: AbortSignal.timeout(5000)
-      });
-      if (response.ok) {
-        setServiceStatus(prev => ({
-          ...prev,
-          zap: {
-            online: true,
-            scans: prev.zap.scans,
-            // Keep existing scan count
-            lastCheck: new Date().toISOString(),
-            error: null
-          }
-        }));
-      } else {
-        throw new Error(`HTTP ${response.status}`);
-      }
-    } catch (error) {
-      console.log('ZAP service offline:', error.message);
-      setServiceStatus(prev => ({
-        ...prev,
-        zap: {
-          online: false,
-          scans: 0,
-          lastCheck: new Date().toISOString(),
-          error: error.message
-        }
-      }));
-    }
-  };
-
-  /**
    * Perform comprehensive service health check
    * Backend Integration: Parallel service status checks
    */
@@ -1105,7 +1019,7 @@ const SecurityDashboard = () => {
     setIsCheckingServices(true);
 
     // Run all service checks in parallel for better performance
-    await Promise.allSettled([checkGVMStatus(), checkZAPStatus()]);
+    await Promise.allSettled([checkGVMStatus()]);
     setIsCheckingServices(false);
   };
 
@@ -1137,16 +1051,6 @@ const SecurityDashboard = () => {
       color: serviceStatus.gvm.online ? "blue-500" : "red-500",
       lastCheck: serviceStatus.gvm.lastCheck,
       error: serviceStatus.gvm.error
-    }, {
-      name: "OWASP ZAP",
-      description: "Web Application Security Testing",
-      status: serviceStatus.zap.online ? "active" : "offline",
-      scans: serviceStatus.zap.scans,
-      findings: serviceStatus.zap.online ? 12 : 0,
-      icon: Zap,
-      color: serviceStatus.zap.online ? "yellow-500" : "red-500",
-      lastCheck: serviceStatus.zap.lastCheck,
-      error: serviceStatus.zap.error
     }];
   };
 
@@ -1167,7 +1071,7 @@ const SecurityDashboard = () => {
    * 
    * BACKEND REQUIREMENTS:
    * - Real-time alert ingestion from services
-   * - Alert parsing from GVM, ZAP logs
+   * - Alert parsing from GVM logs
    * - Alert severity classification and deduplication
    * - Alert persistence and retrieval API
    */
@@ -1185,16 +1089,6 @@ const SecurityDashboard = () => {
         connected: true
       });
     }
-    if (serviceStatus.zap.online) {
-      dynamicAlerts.push({
-        type: "info",
-        message: "Web application scan completed successfully",
-        time: "10m ago",
-        source: "OWASP ZAP",
-        severity: "info",
-        connected: true
-      });
-    }
 
     // Add "Connect feed" messages for offline services
     if (!serviceStatus.gvm.online) {
@@ -1206,17 +1100,6 @@ const SecurityDashboard = () => {
         severity: "offline",
         connected: false,
         error: serviceStatus.gvm.error
-      });
-    }
-    if (!serviceStatus.zap.online) {
-      dynamicAlerts.push({
-        type: "disconnected",
-        message: "Connect feed to receive web security alerts",
-        time: serviceStatus.zap.lastCheck ? `Last check: ${new Date(serviceStatus.zap.lastCheck).toLocaleTimeString()}` : "Never connected",
-        source: "OWASP ZAP",
-        severity: "offline",
-        connected: false,
-        error: serviceStatus.zap.error
       });
     }
 
@@ -1438,14 +1321,6 @@ const SecurityDashboard = () => {
       lastCheck: serviceStatus.gvm.lastCheck,
       error: serviceStatus.gvm.error,
       key: "gvm"
-    }, {
-      service: "OWASP ZAP",
-      endpoint: "localhost:8080",
-      status: serviceStatus.zap.online ? "connected" : "disconnected",
-      description: "Web application security testing",
-      lastCheck: serviceStatus.zap.lastCheck,
-      error: serviceStatus.zap.error,
-      key: "zap"
     }];
   };
 

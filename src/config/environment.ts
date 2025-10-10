@@ -23,7 +23,6 @@ export interface EnvironmentConfig {
   services: {
     wazuh: SecurityServiceConfig;
     gvm: SecurityServiceConfig;
-    zap: SecurityServiceConfig;
   };
   websocket: {
     url: string;
@@ -64,13 +63,6 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
           username: 'admin',
           password: 'admin', // In production, this would come from secure storage
         },
-      },
-      zap: {
-        baseUrl: isDevelopment ? 'http://localhost:8080' : 'https://zap-api.yourdomain.com',
-        timeout: 20000,
-        retryAttempts: 3,
-        retryDelay: 2000,
-        apiKey: '', // In production, this would come from secure storage
       },
     },
     websocket: {

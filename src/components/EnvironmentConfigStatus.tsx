@@ -95,11 +95,6 @@ export const EnvironmentConfigStatus = () => {
                 serviceConfig={config.services.gvm}
                 icon={Database}
               />
-              <ServiceStatus 
-                name="ZAP Proxy" 
-                serviceConfig={config.services.zap}
-                icon={Settings}
-              />
             </div>
           </div>
 

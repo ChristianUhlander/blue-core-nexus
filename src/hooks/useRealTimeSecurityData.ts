@@ -15,8 +15,7 @@ import {
   SecurityAlert, 
   WazuhAgent, 
   WazuhStatus, 
-  GVMStatus, 
-  ZAPStatus,
+  GVMStatus,
   WSMessage 
 } from '@/types/security';
 import { useToast } from '@/hooks/use-toast';
@@ -26,7 +25,6 @@ interface RealTimeSecurityState {
   services: {
     wazuh: WazuhStatus;
     gvm: GVMStatus;
-    zap: ZAPStatus;
   };
   
   // Real-time Data
@@ -85,18 +83,6 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
         activeScans: 0,
         totalTasks: 0,
         vulnerabilities: 0
-      },
-      zap: {
-        online: false,
-        lastCheck: null,
-        error: null,
-        responseTime: 0,
-        retryCount: 0,
-        scans: 0,
-        activeScans: 0,
-        alerts: 0,
-        spiderProgress: 0,
-        activeScanProgress: 0
       }
     },
     alerts: [],
