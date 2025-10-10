@@ -39,7 +39,7 @@ import * as React from "react";
  * Production-ready security monitoring with comprehensive error handling
  * 
  * BACKEND INTEGRATION:
- * - Security services: OpenVAS/GVM, OWASP ZAP, SpiderFoot OSINT
+ * - Security services: OpenVAS/GVM, OWASP ZAP
  * - REST API endpoints at /api/* with proper authentication
  * - Service health monitoring and connectivity testing
  */
@@ -120,15 +120,10 @@ const SecurityDashboard = () => {
   const [selectedAgent, setSelectedAgent] = useState<string>('');
   const [cveScanning, setCveScanning] = useState(false);
   const [owaspScanning, setOwaspScanning] = useState(false);
-  const [spiderfootScanning, setSpiderfootScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [selectedScanType, setSelectedScanType] = useState('all');
   const [resultFilter, setResultFilter] = useState('all');
   const [owaspTarget, setOwaspTarget] = useState('https://');
-  const [spiderfootTarget, setSpiderfootTarget] = useState('');
-  const [spiderfootTargetType, setSpiderfootTargetType] = useState('domain');
-  const [spiderfootScanType, setSpiderfootScanType] = useState('footprint');
-  const [selectedSpiderfootModules, setSelectedSpiderfootModules] = useState<string[]>(['sfp_dnsresolve', 'sfp_whois', 'sfp_shodan', 'sfp_virustotal', 'sfp_threatcrowd']);
   const [selectedOwaspTests, setSelectedOwaspTests] = useState<string[]>(['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10']);
   const [agentConfig, setAgentConfig] = useState({
     logLevel: 'info',
@@ -201,13 +196,6 @@ const SecurityDashboard = () => {
           event: 'security:health:zap',
           handler: (event: CustomEvent) => {
             setServiceHealths(prev => prev.map(service => service.service === 'zap' ? event.detail : service));
-          }
-        },
-        // SpiderFoot updates
-        {
-          event: 'security:health:spiderfoot',
-          handler: (event: CustomEvent) => {
-            setServiceHealths(prev => prev.map(service => service.service === 'spiderfoot' ? event.detail : service));
           }
         }];
 
@@ -626,16 +614,6 @@ const SecurityDashboard = () => {
     responseTime: services.zap.responseTime,
     scans: services.zap.scans,
     alerts: services.zap.alerts
-  }, {
-    service: "Spiderfoot OSINT",
-    endpoint: `spiderfoot-osint.security.svc.cluster.local:${services.spiderfoot.online ? '5001' : 'offline'}`,
-    status: services.spiderfoot.online ? "connected" : "disconnected",
-    description: "Open source intelligence gathering",
-    lastCheck: services.spiderfoot.lastCheck,
-    error: services.spiderfoot.error,
-    responseTime: services.spiderfoot.responseTime,
-    sources: services.spiderfoot.sources,
-    entities: services.spiderfoot.entities
   }], [services]);
 
 
@@ -1018,8 +996,7 @@ const SecurityDashboard = () => {
  * BACKEND API ENDPOINTS REQUIRED:
  * - GET /api/services/status - Overall service health check
  * - GET /api/gvm/status - OpenVAS/GVM service status
- * - GET /api/zap/status - OWASP ZAP service status  
- * - GET /api/spiderfoot/status - Spiderfoot OSINT service status
+ * - GET /api/zap/status - OWASP ZAP service status
    */
 
   // Real-time service status state
@@ -1033,12 +1010,6 @@ const SecurityDashboard = () => {
     zap: {
       online: false,
       scans: 0,
-      lastCheck: null,
-      error: null
-    },
-    spiderfoot: {
-      online: false,
-      sources: 0,
       lastCheck: null,
       error: null
     }
@@ -1127,43 +1098,6 @@ const SecurityDashboard = () => {
   };
 
   /**
-   * Check Spiderfoot service status
-   * Backend Integration: GET /api/spiderfoot/status
-   */
-  const checkSpiderfootStatus = async () => {
-    try {
-      const response = await fetch('http://localhost:5001/api?func=ping&apikey=', {
-        signal: AbortSignal.timeout(5000)
-      });
-      if (response.ok) {
-        setServiceStatus(prev => ({
-          ...prev,
-          spiderfoot: {
-            online: true,
-            sources: 156,
-            // Default source count when online
-            lastCheck: new Date().toISOString(),
-            error: null
-          }
-        }));
-      } else {
-        throw new Error(`HTTP ${response.status}`);
-      }
-    } catch (error) {
-      console.log('Spiderfoot service offline:', error.message);
-      setServiceStatus(prev => ({
-        ...prev,
-        spiderfoot: {
-          online: false,
-          sources: 0,
-          lastCheck: new Date().toISOString(),
-          error: error.message
-        }
-      }));
-    }
-  };
-
-  /**
    * Perform comprehensive service health check
    * Backend Integration: Parallel service status checks
    */
@@ -1171,7 +1105,7 @@ const SecurityDashboard = () => {
     setIsCheckingServices(true);
 
     // Run all service checks in parallel for better performance
-    await Promise.allSettled([checkGVMStatus(), checkZAPStatus(), checkSpiderfootStatus()]);
+    await Promise.allSettled([checkGVMStatus(), checkZAPStatus()]);
     setIsCheckingServices(false);
   };
 
@@ -1233,7 +1167,7 @@ const SecurityDashboard = () => {
    * 
    * BACKEND REQUIREMENTS:
    * - Real-time alert ingestion from services
-   * - Alert parsing from GVM, ZAP, Spiderfoot logs
+   * - Alert parsing from GVM, ZAP logs
    * - Alert severity classification and deduplication
    * - Alert persistence and retrieval API
    */
@@ -1339,9 +1273,6 @@ const SecurityDashboard = () => {
         case 'zap':
           testResult = await testZAPConnection(serviceEndpoint);
           break;
-        case 'spiderfoot':
-          testResult = await testSpiderfootConnection(serviceEndpoint);
-          break;
       }
       toast({
         title: testResult ? "Connection Successful" : "Connection Failed",
@@ -1395,16 +1326,6 @@ const SecurityDashboard = () => {
   const testZAPConnection = async (endpoint: string): Promise<boolean> => {
     try {
       const response = await fetch(`http://${endpoint}/JSON/core/view/version/?apikey=`, {
-        signal: AbortSignal.timeout(5000)
-      });
-      return response.ok;
-    } catch {
-      return false;
-    }
-  };
-  const testSpiderfootConnection = async (endpoint: string): Promise<boolean> => {
-    try {
-      const response = await fetch(`http://${endpoint}/api?func=ping&apikey=`, {
         signal: AbortSignal.timeout(5000)
       });
       return response.ok;
@@ -1525,14 +1446,6 @@ const SecurityDashboard = () => {
       lastCheck: serviceStatus.zap.lastCheck,
       error: serviceStatus.zap.error,
       key: "zap"
-    }, {
-      service: "Spiderfoot OSINT",
-      endpoint: "localhost:5001",
-      status: serviceStatus.spiderfoot.online ? "connected" : "disconnected",
-      description: "Open source intelligence gathering",
-      lastCheck: serviceStatus.spiderfoot.lastCheck,
-      error: serviceStatus.spiderfoot.error,
-      key: "spiderfoot"
     }];
   };
 
@@ -1899,10 +1812,9 @@ const SecurityDashboard = () => {
   };
 
   /**
-   * Spiderfoot OSINT Modules and Configuration
-   * Based on 200+ available Spiderfoot modules for intelligence gathering
+   * Get agent statistics from real-time data
    */
-  const spiderfootModules = [
+  const getAgentStats = () => {
   // Core Network & Infrastructure
   {
     id: 'sfp_dnsresolve',
@@ -2527,7 +2439,7 @@ const SecurityDashboard = () => {
               IPS Security Test Center
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Unified cybersecurity monitoring with OpenVAS, OWASP ZAP, and Spiderfoot intelligence
+              Unified cybersecurity monitoring with OpenVAS and OWASP ZAP
             </p>
             
             {/* SUPER PROMINENT AGENTIC PENTEST BUTTON - IMPOSSIBLE TO MISS */}

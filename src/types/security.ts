@@ -50,18 +50,11 @@ export interface ZAPStatus extends ConnectionStatus {
   activeScanProgress: number;
 }
 
-export interface SpiderfootStatus extends ConnectionStatus {
-  sources: number;
-  activeSources: number;
-  entities: number;
-  modules: number;
-  lastScan?: string;
-}
 
 // Alert Types
 export interface SecurityAlert {
   id: string;
-  source: 'wazuh' | 'gvm' | 'zap' | 'spiderfoot';
+  source: 'wazuh' | 'gvm' | 'zap';
   timestamp: string;
   severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
   title: string;

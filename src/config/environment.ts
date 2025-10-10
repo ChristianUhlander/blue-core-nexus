@@ -24,7 +24,6 @@ export interface EnvironmentConfig {
     wazuh: SecurityServiceConfig;
     gvm: SecurityServiceConfig;
     zap: SecurityServiceConfig;
-    spiderfoot: SecurityServiceConfig;
   };
   websocket: {
     url: string;
@@ -71,13 +70,6 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
         timeout: 20000,
         retryAttempts: 3,
         retryDelay: 2000,
-        apiKey: '', // In production, this would come from secure storage
-      },
-      spiderfoot: {
-        baseUrl: isDevelopment ? 'http://localhost:5001' : 'https://spiderfoot-api.yourdomain.com',
-        timeout: 25000,
-        retryAttempts: 2,
-        retryDelay: 3000,
         apiKey: '', // In production, this would come from secure storage
       },
     },

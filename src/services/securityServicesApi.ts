@@ -15,8 +15,7 @@ import {
   ConnectionStatus, 
   WazuhStatus, 
   GVMStatus, 
-  ZAPStatus, 
-  SpiderfootStatus,
+  ZAPStatus,
   SecurityAlert,
   WazuhAgent,
   ScanResult,
@@ -44,12 +43,6 @@ const SERVICE_ENDPOINTS: Record<string, ServiceEndpoint> = {
     serviceName: 'owasp-zap',
     port: 8080,
     path: '/JSON/core/view/version'
-  },
-  spiderfoot: {
-    namespace: 'security',
-    serviceName: 'spiderfoot-osint',
-    port: 5001,
-    path: '/api'
   }
 };
 
@@ -79,8 +72,7 @@ class SecurityServicesApiClient {
     this.apiKeys = {
       wazuh: import.meta.env?.VITE_WAZUH_API_KEY || '',
       gvm: import.meta.env?.VITE_GVM_API_KEY || '',
-      zap: import.meta.env?.VITE_ZAP_API_KEY || '',
-      spiderfoot: import.meta.env?.VITE_SPIDERFOOT_API_KEY || ''
+      zap: import.meta.env?.VITE_ZAP_API_KEY || ''
     };
   }
 
@@ -217,7 +209,6 @@ class SecurityServicesApiClient {
     wazuh: WazuhStatus;
     gvm: GVMStatus;
     zap: ZAPStatus;
-    spiderfoot: SpiderfootStatus;
   }>> {
     return this.makeRequest('/api/health/all');
   }
@@ -226,7 +217,7 @@ class SecurityServicesApiClient {
    * Check specific service health
    * Backend Endpoint: GET /api/health/{service}
    */
-  async checkServiceHealth(service: 'wazuh' | 'gvm' | 'zap' | 'spiderfoot'): Promise<ApiResponse<ConnectionStatus>> {
+  async checkServiceHealth(service: 'wazuh' | 'gvm' | 'zap'): Promise<ApiResponse<ConnectionStatus>> {
     return this.makeRequest(`/api/health/${service}`);
   }
 

@@ -100,11 +100,6 @@ export const EnvironmentConfigStatus = () => {
                 serviceConfig={config.services.zap}
                 icon={Settings}
               />
-              <ServiceStatus 
-                name="Spiderfoot" 
-                serviceConfig={config.services.spiderfoot}
-                icon={Server}
-              />
             </div>
           </div>
 

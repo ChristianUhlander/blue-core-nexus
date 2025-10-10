@@ -462,7 +462,6 @@ The platform will automatically check:
 - **Wazuh SIEM**: Security event monitoring
 - **OpenVAS/GVM**: Vulnerability assessment
 - **OWASP ZAP**: Web application security testing
-- **SpiderFoot**: OSINT intelligence gathering
 
 ## Step 3: Dashboard Overview
 Key sections available:

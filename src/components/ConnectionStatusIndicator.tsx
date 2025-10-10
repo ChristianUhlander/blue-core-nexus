@@ -59,7 +59,7 @@ export const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps>
     window.addEventListener('security:websocket:connected', handleWebSocketConnected);
     window.addEventListener('security:websocket:disconnected', handleWebSocketDisconnected);
     
-    ['wazuh', 'gvm', 'zap', 'spiderfoot'].forEach(service => {
+    ['wazuh', 'gvm', 'zap'].forEach(service => {
       window.addEventListener(`security:health:${service}`, handleHealthUpdate as EventListener);
     });
 
@@ -68,7 +68,7 @@ export const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps>
       window.removeEventListener('security:websocket:connected', handleWebSocketConnected);
       window.removeEventListener('security:websocket:disconnected', handleWebSocketDisconnected);
       
-      ['wazuh', 'gvm', 'zap', 'spiderfoot'].forEach(service => {
+      ['wazuh', 'gvm', 'zap'].forEach(service => {
         window.removeEventListener(`security:health:${service}`, handleHealthUpdate as EventListener);
       });
     };

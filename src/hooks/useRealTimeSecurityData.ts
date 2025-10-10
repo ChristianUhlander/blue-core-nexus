@@ -16,8 +16,7 @@ import {
   WazuhAgent, 
   WazuhStatus, 
   GVMStatus, 
-  ZAPStatus, 
-  SpiderfootStatus,
+  ZAPStatus,
   WSMessage 
 } from '@/types/security';
 import { useToast } from '@/hooks/use-toast';
@@ -28,7 +27,6 @@ interface RealTimeSecurityState {
     wazuh: WazuhStatus;
     gvm: GVMStatus;
     zap: ZAPStatus;
-    spiderfoot: SpiderfootStatus;
   };
   
   // Real-time Data
@@ -99,17 +97,6 @@ export const useRealTimeSecurityData = (): UseRealTimeSecurityDataReturn => {
         alerts: 0,
         spiderProgress: 0,
         activeScanProgress: 0
-      },
-      spiderfoot: {
-        online: false,
-        lastCheck: null,
-        error: null,
-        responseTime: 0,
-        retryCount: 0,
-        sources: 0,
-        activeSources: 0,
-        entities: 0,
-        modules: 0
       }
     },
     alerts: [],
