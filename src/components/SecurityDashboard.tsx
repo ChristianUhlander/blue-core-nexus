@@ -91,12 +91,6 @@ const SecurityDashboard = () => {
     compliance: []
   };
 
-  // ZAP Proxy content component
-  const ZapProxyContent = () => (
-    <ScrollArea className="h-[70vh] rounded-md border">
-      <ZapProxyModule sessionId="demo-session" />
-    </ScrollArea>
-  );
 
   // IppsY chat pane state
   const [isIppsYOpen, setIsIppsYOpen] = useState(false);
@@ -814,137 +808,7 @@ const SecurityDashboard = () => {
    * - Network access should be restricted to authorized targets
    */
 
-  /**
-   * Handle ZAP scan execution via terminal wrapper
-   * Backend Integration: POST /api/security/zap/scan
-   * 
-   * Terminal Commands that backend should execute:
-   * 1. Start ZAP daemon: `zap.sh -daemon -host 0.0.0.0 -port 8080`
-   * 2. Spider scan: `zap-cli spider [target_url]`
-   * 3. Active scan: `zap-cli active-scan [target_url]`
-   * 4. Generate report: `zap-cli report -o [output_file] -f [format]`
-   * 5. Stop daemon: `zap-cli shutdown`
-   */
-  const handleZapScanLaunch = async () => {
-    // Validation
-    if (!zapScanConfig.target.trim() || !zapScanConfig.target.startsWith('http')) {
-      toast({
-        title: "Invalid Target",
-        description: "Please enter a valid HTTP/HTTPS URL to scan.",
-        variant: "destructive"
-      });
-      return;
-    }
-    setZapScanRunning(true);
-    setZapScanProgress(0);
-    try {
-      // Backend API call to start ZAP scan via terminal wrapper
-      // POST /api/security/zap/scan
-      const scanPayload = {
-        target: zapScanConfig.target,
-        scanType: zapScanConfig.scanType,
-        options: {
-          spider: zapScanConfig.spiderEnabled,
-          activeScan: zapScanConfig.activeScanEnabled,
-          authentication: zapScanConfig.authEnabled ? {
-            url: zapScanConfig.authUrl,
-            username: zapScanConfig.username,
-            password: zapScanConfig.password // Backend should encrypt this
-          } : null,
-          exclusions: zapScanConfig.excludeUrls.filter(url => url.trim()),
-          includeAlphaRules: zapScanConfig.includeAlphaRules,
-          includeBetaRules: zapScanConfig.includeBetaRules,
-          reportFormat: zapScanConfig.reportFormat,
-          maxDuration: zapScanConfig.maxDuration
-        },
-        timestamp: new Date().toISOString(),
-        scanId: `zap-scan-${Date.now()}` // Unique identifier for tracking
-      };
 
-      // In production, this would be an actual API call:
-      // const response = await fetch('/api/security/zap/scan', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(scanPayload)
-      // });
-
-      console.log('ZAP Scan initiated with payload:', scanPayload);
-
-      // Simulate scan progress (backend should provide real-time updates via WebSocket or polling)
-      const progressInterval = setInterval(() => {
-        setZapScanProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(progressInterval);
-            setZapScanRunning(false);
-
-            // Show completion notification
-            toast({
-              title: "ZAP Scan Complete",
-              description: `Security scan completed for ${zapScanConfig.target}. Report generated successfully.`
-            });
-
-            // Backend should return scan results and report download link
-            return 100;
-          }
-          return prev + Math.random() * 10;
-        });
-      }, 1000);
-      toast({
-        title: "ZAP Scan Started",
-        description: `OWASP ZAP scan initiated for ${zapScanConfig.target} via terminal wrapper.`
-      });
-    } catch (error) {
-      console.error('ZAP scan failed:', error);
-      setZapScanRunning(false);
-      setZapScanProgress(0);
-      toast({
-        title: "Scan Failed",
-        description: "Failed to start ZAP scan. Check backend terminal wrapper configuration.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  /**
-   * Handle stopping running ZAP scan
-   * Backend Integration: POST /api/security/zap/stop
-   */
-  const handleZapScanStop = async () => {
-    // Backend should execute: `zap-cli shutdown` or kill ZAP process
-    setZapScanRunning(false);
-    setZapScanProgress(0);
-    toast({
-      title: "Scan Stopped",
-      description: "ZAP scan has been terminated."
-    });
-  };
-
-  /**
-   * Handle updating exclude URLs array
-   */
-  const handleExcludeUrlChange = (index: number, value: string) => {
-    const updatedUrls = [...zapScanConfig.excludeUrls];
-    updatedUrls[index] = value;
-    setZapScanConfig({
-      ...zapScanConfig,
-      excludeUrls: updatedUrls
-    });
-  };
-  const addExcludeUrl = () => {
-    setZapScanConfig({
-      ...zapScanConfig,
-      excludeUrls: [...zapScanConfig.excludeUrls, '']
-    });
-  };
-  const removeExcludeUrl = (index: number) => {
-    if (zapScanConfig.excludeUrls.length > 1) {
-      const updatedUrls = zapScanConfig.excludeUrls.filter((_, i) => i !== index);
-      setZapScanConfig({
-        ...zapScanConfig,
-        excludeUrls: updatedUrls
-      });
-    }
-  };
 
   /**
    * Real-time Service Status Management
@@ -2385,47 +2249,9 @@ const SecurityDashboard = () => {
                   
                    <TabsContent value="webapp" className="mt-4">
                      <div className="grid grid-cols-1 gap-4">
-                       {/* OWASP ZAP Proxy */}
-                       <Dialog open={isZapProxyOpen} onOpenChange={setIsZapProxyOpen}>
-                         <DialogTrigger asChild>
-                           <Card className="gradient-card border-primary/20 hover:border-primary/50 cursor-pointer transition-all duration-300 hover-scale">
-                             <CardContent className="p-6 text-center">
-                               <div className="flex flex-col items-center gap-4">
-                                 <div className="relative">
-                                   <Zap className="h-16 w-16 text-yellow-500 animate-pulse" />
-                                   <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full animate-ping" />
-                                 </div>
-                                 <div>
-                                   <h3 className="text-2xl font-semibold text-glow">OWASP ZAP Proxy</h3>
-                                   <p className="text-sm text-muted-foreground mt-2">Web Application Security Testing</p>
-                                 </div>
-                                 <Badge variant="secondary" className="animate-pulse-glow">
-                                   OWASP Standard
-                                 </Badge>
-                               </div>
-                             </CardContent>
-                           </Card>
-                         </DialogTrigger>
-                         <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
-                           <DialogHeader>
-                             <DialogTitle className="flex items-center gap-2 text-xl">
-                               <div className="relative">
-                                 <Zap className="h-6 w-6 text-yellow-500 animate-pulse" />
-                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full animate-ping" />
-                               </div>
-                               OWASP ZAP Web Application Security Testing
-                               <Badge variant="secondary" className="ml-2 animate-pulse-glow">
-                                 OWASP STANDARD
-                               </Badge>
-                             </DialogTitle>
-                             <DialogDescription className="text-base">
-                               Comprehensive web application security testing with OWASP ZAP Proxy
-                             </DialogDescription>
-                           </DialogHeader>
-                           
-                           <ZapProxyContent />
-                         </DialogContent>
-                       </Dialog>
+                       <div className="text-center p-8 text-muted-foreground">
+                         Web application security tools will be available here
+                       </div>
                      </div>
                      </TabsContent>
                   </Tabs>
@@ -2489,10 +2315,6 @@ const SecurityDashboard = () => {
                     {tool.scans !== undefined && <span className="flex items-center gap-1">
                         <Activity className="h-4 w-4" />
                         {tool.scans} scans
-                      </span>}
-                    {tool.findings !== undefined && <span className="flex items-center gap-1">
-                        <Bug className="h-4 w-4" />
-                        {tool.findings} findings
                       </span>}
                   </div>
 
