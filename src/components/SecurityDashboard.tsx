@@ -27,7 +27,7 @@ import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 
 import { ZapProxyModule } from "./ZapProxyModule";
 import { MitreAttackMapper } from "./MitreAttackMapper";
-import WazuhManagement from "../pages/WazuhManagement";
+
 import { WazuhSBOMManagement } from "./WazuhSBOMManagement";
 import GVMManagement from "../pages/GVMManagement";
 import { ConnectionStatusIndicator } from "./ConnectionStatusIndicator";
@@ -40,7 +40,7 @@ import * as React from "react";
  * Production-ready security monitoring with comprehensive error handling
  * 
  * BACKEND INTEGRATION:
- * - Security services: Wazuh SIEM, OpenVAS/GVM, OWASP ZAP, SpiderFoot OSINT
+ * - Security services: OpenVAS/GVM, OWASP ZAP, SpiderFoot OSINT
  * - WebSocket endpoint at /ws for real-time security alerts
  * - REST API endpoints at /api/* with proper authentication
  * - Service health monitoring and connectivity testing
@@ -77,7 +77,7 @@ const SecurityDashboard = () => {
   const [isScanResultsOpen, setIsScanResultsOpen] = useState(false);
   const [isOwaspScanOpen, setIsOwaspScanOpen] = useState(false);
   const [isThreatAnalysisOpen, setIsThreatAnalysisOpen] = useState(false);
-  const [isWazuhManagementOpen, setIsWazuhManagementOpen] = useState(false);
+  
   const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
 
@@ -2756,33 +2756,6 @@ const SecurityDashboard = () => {
                   
                   <TabsContent value="siem" className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <Dialog open={isWazuhManagementOpen} onOpenChange={setIsWazuhManagementOpen}>
-                        <DialogTrigger asChild>
-                          <Button className="glow-hover" variant="default" size="sm">
-                            Manage Wazuh SIEM
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[95vw] sm:max-h-[95vh] max-h-[95vh] gradient-card border-primary/20">
-                          <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2 text-xl">
-                              <div className="relative">
-                                <Shield className="h-6 w-6 text-primary animate-pulse" />
-                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-ping" />
-                              </div>
-                              Wazuh SIEM Management
-                              <Badge variant="default" className="ml-2 animate-pulse-glow">
-                                LIVE
-                              </Badge>
-                            </DialogTitle>
-                            <DialogDescription className="text-base">
-                              Comprehensive security information and event management system
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="overflow-auto max-h-[calc(95vh-200px)]">
-                            <WazuhManagement />
-                          </div>
-                        </DialogContent>
-                      </Dialog>
                       <Dialog open={isAgentStatusOpen} onOpenChange={setIsAgentStatusOpen}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" className="glow-hover group">
@@ -3793,10 +3766,6 @@ const SecurityDashboard = () => {
                       <div className="space-y-2">
                         <Label>Monitoring Services</Label>
                         <div className="grid grid-cols-2 gap-2">
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="wazuh-monitoring" />
-                            <Label htmlFor="wazuh-monitoring">Wazuh SIEM Monitoring</Label>
-                          </div>
                           <div className="flex items-center space-x-2">
                             <Checkbox id="zap-monitoring" />
                             <Label htmlFor="zap-monitoring">OWASP ZAP Web Monitoring</Label>
