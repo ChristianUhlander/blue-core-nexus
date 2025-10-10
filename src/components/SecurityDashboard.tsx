@@ -26,7 +26,6 @@ import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
 
 
 import { ZapProxyModule } from "./ZapProxyModule";
-import { MitreAttackMapper } from "./MitreAttackMapper";
 
 
 import GVMManagement from "../pages/GVMManagement";
@@ -69,7 +68,6 @@ const SecurityDashboard = () => {
 
   // Dialog state management
   const [isAgentStatusOpen, setIsAgentStatusOpen] = useState(false);
-  const [isMitreMapperOpen, setIsMitreMapperOpen] = useState(false);
   const [isCveAssessmentOpen, setIsCveAssessmentOpen] = useState(false);
   const [isScanResultsOpen, setIsScanResultsOpen] = useState(false);
   const [isOwaspScanOpen, setIsOwaspScanOpen] = useState(false);
