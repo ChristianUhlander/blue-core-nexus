@@ -1,4 +1,4 @@
-import { Shield, Eye, Zap, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle, Brain, Network, Terminal, Key, PlayCircle, Unlock, Package } from "lucide-react";
+import { Shield, Eye, Search, Activity, AlertTriangle, CheckCircle, Clock, Server, Database, Wifi, WifiOff, Users, Settings, Cog, FileText, ToggleLeft, ToggleRight, Scan, Bug, ShieldAlert, TrendingUp, Download, RefreshCw, Filter, BarChart3, Calendar, Target, Play, Code, Lock, Globe, MapPin, Mail, Phone, User, Building, Loader2, CheckCheck, X, AlertCircle, BrainCircuit, Info, Bot, MessageCircle, Brain, Network, Terminal, Key, PlayCircle, Unlock, Package } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +36,7 @@ import * as React from "react";
  * Production-ready security monitoring with comprehensive error handling
  * 
  * BACKEND INTEGRATION:
- * - Security services: OpenVAS/GVM, OWASP ZAP
+ * - Security services: OpenVAS/GVM
  * - REST API endpoints at /api/* with proper authentication
  * - Service health monitoring and connectivity testing
  */
@@ -67,7 +67,6 @@ const SecurityDashboard = () => {
   const [isAgentStatusOpen, setIsAgentStatusOpen] = useState(false);
   const [isCveAssessmentOpen, setIsCveAssessmentOpen] = useState(false);
   const [isScanResultsOpen, setIsScanResultsOpen] = useState(false);
-  const [isOwaspScanOpen, setIsOwaspScanOpen] = useState(false);
   const [isThreatAnalysisOpen, setIsThreatAnalysisOpen] = useState(false);
   
   const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
@@ -106,12 +105,9 @@ const SecurityDashboard = () => {
   // Scan and configuration state
   const [selectedAgent, setSelectedAgent] = useState<string>('');
   const [cveScanning, setCveScanning] = useState(false);
-  const [owaspScanning, setOwaspScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [selectedScanType, setSelectedScanType] = useState('all');
   const [resultFilter, setResultFilter] = useState('all');
-  const [owaspTarget, setOwaspTarget] = useState('https://');
-  const [selectedOwaspTests, setSelectedOwaspTests] = useState<string[]>(['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10']);
   const [agentConfig, setAgentConfig] = useState({
     logLevel: 'info',
     scanFrequency: '1h',
@@ -790,22 +786,6 @@ const SecurityDashboard = () => {
     }
   };
 
-  /**
-   * OWASP ZAP Terminal Wrapper Integration Functions
-   * Backend Integration: Terminal/Shell commands to control ZAP daemon and scanning
-   * 
-   * BACKEND REQUIREMENTS:
-   * 1. ZAP daemon must be installed and accessible via command line
-   * 2. Backend API endpoints to handle terminal commands securely
-   * 3. File system access for report generation and storage
-   * 4. Process management for long-running scans
-   * 
-   * SECURITY CONSIDERATIONS:
-   * - All terminal commands must be sanitized to prevent injection
-   * - ZAP daemon should run in isolated environment
-   * - Scan results should be stored securely with access controls
-   * - Network access should be restricted to authorized targets
-   */
 
 
 
@@ -816,7 +796,6 @@ const SecurityDashboard = () => {
  * BACKEND API ENDPOINTS REQUIRED:
  * - GET /api/services/status - Overall service health check
  * - GET /api/gvm/status - OpenVAS/GVM service status
- * - GET /api/zap/status - OWASP ZAP service status
    */
 
   // Real-time service status state
@@ -1016,9 +995,6 @@ const SecurityDashboard = () => {
         case 'gvm':
           testResult = await testGVMConnection(serviceEndpoint);
           break;
-        case 'zap':
-          testResult = await testZAPConnection(serviceEndpoint);
-          break;
       }
       toast({
         title: testResult ? "Connection Successful" : "Connection Failed",
@@ -1062,16 +1038,6 @@ const SecurityDashboard = () => {
         headers: {
           'Content-Type': 'application/xml'
         },
-        signal: AbortSignal.timeout(5000)
-      });
-      return response.ok;
-    } catch {
-      return false;
-    }
-  };
-  const testZAPConnection = async (endpoint: string): Promise<boolean> => {
-    try {
-      const response = await fetch(`http://${endpoint}/JSON/core/view/version/?apikey=`, {
         signal: AbortSignal.timeout(5000)
       });
       return response.ok;
@@ -1399,155 +1365,6 @@ const SecurityDashboard = () => {
     };
   };
 
-  /**
-   * OWASP Top 10 2021 Security Testing Categories
-   * Research-based test definitions with educational payloads
-   */
-  const owaspTop10Tests = [{
-    id: 'A01',
-    category: 'Broken Access Control',
-    description: 'Testing for unauthorized access to resources and functions',
-    risk: 'CRITICAL',
-    tests: ['Horizontal privilege escalation', 'Vertical privilege escalation', 'Directory traversal', 'Force browsing', 'Missing function-level access control'],
-    payloads: ['../../../etc/passwd', '../../../../windows/system32/drivers/etc/hosts', '/admin/users', '/api/admin/delete_user', 'POST /api/users/1 with different user context'],
-    enabled: true
-  }, {
-    id: 'A02',
-    category: 'Cryptographic Failures',
-    description: 'Testing for weak cryptographic implementations',
-    risk: 'HIGH',
-    tests: ['Weak encryption algorithms', 'Insufficient key lengths', 'Clear-text data transmission', 'Weak random number generation', 'Certificate validation issues'],
-    payloads: ['SSL/TLS cipher suite analysis', 'HTTP vs HTTPS transmission check', 'Weak password hashing detection', 'Certificate chain validation', 'Random number predictability tests'],
-    enabled: true
-  }, {
-    id: 'A03',
-    category: 'Injection',
-    description: 'Testing for SQL, NoSQL, OS, and LDAP injection vulnerabilities',
-    risk: 'CRITICAL',
-    tests: ['SQL injection', 'NoSQL injection', 'OS command injection', 'LDAP injection', 'XPath injection'],
-    payloads: ["' OR '1'='1' --", "'; DROP TABLE users; --", '{"$gt": ""}', '; ls -la', '& ping 127.0.0.1', "')(|(cn=*))", "' or position()=1 or '"],
-    enabled: true
-  }, {
-    id: 'A04',
-    category: 'Insecure Design',
-    description: 'Testing for design flaws and missing security controls',
-    risk: 'MEDIUM',
-    tests: ['Business logic flaws', 'Missing security controls', 'Insufficient threat modeling', 'Inadequate security architecture', 'Missing secure design patterns'],
-    payloads: ['Business logic bypass attempts', 'Race condition tests', 'State manipulation tests', 'Workflow bypass attempts', 'Security control enumeration'],
-    enabled: true
-  }, {
-    id: 'A05',
-    category: 'Security Misconfiguration',
-    description: 'Testing for insecure default configurations',
-    risk: 'MEDIUM',
-    tests: ['Default credentials', 'Directory listing', 'Unnecessary services', 'Error message disclosure', 'Missing security headers'],
-    payloads: ['admin/admin login attempts', '/server-status access test', 'HTTP OPTIONS method check', 'Forced SQL errors for info disclosure', 'Missing HSTS/CSP header detection'],
-    enabled: true
-  }, {
-    id: 'A06',
-    category: 'Vulnerable Components',
-    description: 'Testing for known vulnerable components and libraries',
-    risk: 'HIGH',
-    tests: ['Outdated framework versions', 'Vulnerable JavaScript libraries', 'Known CVE exploitation', 'Component enumeration', 'License compliance checks'],
-    payloads: ['Framework version fingerprinting', 'jQuery version detection', 'WordPress plugin enumeration', 'Known exploit payload testing', 'Dependency vulnerability scanning'],
-    enabled: true
-  }, {
-    id: 'A07',
-    category: 'Authentication Failures',
-    description: 'Testing for weak authentication and session management',
-    risk: 'HIGH',
-    tests: ['Weak password policies', 'Brute force attacks', 'Session fixation', 'Session hijacking', 'Multi-factor authentication bypass'],
-    payloads: ['Common password dictionary', 'Session token predictability tests', 'Cookie security analysis', 'Password reset token enumeration', 'Account lockout policy testing'],
-    enabled: true
-  }, {
-    id: 'A08',
-    category: 'Software Integrity Failures',
-    description: 'Testing for untrusted software updates and CI/CD security',
-    risk: 'MEDIUM',
-    tests: ['Unsigned software updates', 'Insecure deserialization', 'Supply chain attacks', 'Code integrity verification', 'Auto-update mechanism security'],
-    payloads: ['Malicious serialized objects', 'Update mechanism manipulation', 'Package repository poisoning tests', 'Code signing verification', 'Dependency confusion attacks'],
-    enabled: true
-  }, {
-    id: 'A09',
-    category: 'Logging & Monitoring Failures',
-    description: 'Testing for inadequate logging and monitoring',
-    risk: 'LOW',
-    tests: ['Missing audit logs', 'Insufficient log data', 'Log injection attacks', 'Real-time monitoring gaps', 'Alert mechanism testing'],
-    payloads: ['Log injection payloads', 'Event correlation tests', 'Log tampering attempts', 'Monitoring bypass techniques', 'Alert evasion methods'],
-    enabled: true
-  }, {
-    id: 'A10',
-    category: 'Server-Side Request Forgery',
-    description: 'Testing for SSRF vulnerabilities',
-    risk: 'MEDIUM',
-    tests: ['Internal network scanning', 'Cloud metadata access', 'File system access', 'Service enumeration', 'Port scanning via SSRF'],
-    payloads: ['http://127.0.0.1/admin', 'http://169.254.169.254/latest/meta-data/', 'file:///etc/passwd', 'http://localhost:22', 'gopher://127.0.0.1:3306/'],
-    enabled: true
-  }];
-
-  /**
-   * Handle OWASP Top 10 scan launch
-   */
-  const handleOwaspScan = () => {
-    if (!owaspTarget || !owaspTarget.startsWith('http')) {
-      toast({
-        title: "Invalid Target",
-        description: "Please enter a valid HTTP/HTTPS URL for scanning",
-        variant: "destructive"
-      });
-      return;
-    }
-    if (selectedOwaspTests.length === 0) {
-      toast({
-        title: "No Tests Selected",
-        description: "Please select at least one OWASP Top 10 category to test",
-        variant: "destructive"
-      });
-      return;
-    }
-    setOwaspScanning(true);
-    setScanProgress(0);
-
-    // Simulate progressive scan
-    const interval = setInterval(() => {
-      setScanProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setOwaspScanning(false);
-          toast({
-            title: "OWASP Scan Complete",
-            description: `Completed testing ${selectedOwaspTests.length} categories against ${owaspTarget}`
-          });
-          return 100;
-        }
-        return prev + Math.random() * 10;
-      });
-    }, 800);
-  };
-
-  /**
-   * Toggle OWASP test selection
-   */
-  const toggleOwaspTest = (testId: string) => {
-    setSelectedOwaspTests(prev => prev.includes(testId) ? prev.filter(id => id !== testId) : [...prev, testId]);
-  };
-
-  /**
-   * Get OWASP scan statistics
-   */
-  const getOwaspStats = () => {
-    const critical = owaspTop10Tests.filter(t => t.risk === 'CRITICAL' && selectedOwaspTests.includes(t.id)).length;
-    const high = owaspTop10Tests.filter(t => t.risk === 'HIGH' && selectedOwaspTests.includes(t.id)).length;
-    const medium = owaspTop10Tests.filter(t => t.risk === 'MEDIUM' && selectedOwaspTests.includes(t.id)).length;
-    const low = owaspTop10Tests.filter(t => t.risk === 'LOW' && selectedOwaspTests.includes(t.id)).length;
-    return {
-      critical,
-      high,
-      medium,
-      low,
-      total: selectedOwaspTests.length
-    };
-  };
 
   /**
    * Get target type icon
@@ -1740,7 +1557,7 @@ const SecurityDashboard = () => {
                       Vulnerability
                     </TabsTrigger>
                     <TabsTrigger value="webapp" className="flex items-center gap-2">
-                      <Zap className="h-4 w-4" />
+                      <Terminal className="h-4 w-4" />
                       Pentesting
                     </TabsTrigger>
                   </TabsList>
