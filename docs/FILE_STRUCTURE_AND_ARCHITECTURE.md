@@ -39,15 +39,11 @@ graph TB
     end
     
     subgraph "Security Tools Ecosystem"
-        APIs --> Wazuh[🛡️ Wazuh SIEM]
         APIs --> GVM[🔍 OpenVAS/GVM]
-        APIs --> ZAP[🕷️ OWASP ZAP]
     end
     
     FastAPI --> SecurityTools[🔧 Orchestrated Security Tools]
-    SecurityTools --> Wazuh
     SecurityTools --> GVM
-    SecurityTools --> ZAP
 ```
 
 ### Detailed Component Data Flow
@@ -61,16 +57,13 @@ graph LR
     subgraph "Pages"
         IndexPage[Index.tsx<br/>Main Dashboard]
         GVMPage[GVMManagement.tsx<br/>Vulnerability Scanning]
-        WazuhPage[WazuhManagement.tsx<br/>SIEM Management]
         StatusPage[SystemStatus.tsx<br/>System Monitoring]
     end
     
     subgraph "Core Components"
         SecurityDashboard[SecurityDashboard<br/>Main Security View]
         EnhancedPentest[EnhancedAgenticPentestInterface<br/>AI-Driven Pentesting]
-        WazuhMgmt[WazuhManagement<br/>SIEM Operations]
         GVMMgmt[GVMManagement<br/>Vulnerability Scanning]
-        ZAPModule[ZapProxyModule<br/>Web App Security]
         MitreMapper[MitreAttackMapper<br/>Threat Classification]
         ReportingSystem[IntelligentReportingSystem<br/>Report Generation]
         ChatPane[IppsYChatPane<br/>AI Assistant]
@@ -92,19 +85,15 @@ graph LR
     
     UI --> IndexPage
     UI --> GVMPage
-    UI --> WazuhPage
     UI --> StatusPage
     
     IndexPage --> SecurityDashboard
     IndexPage --> EnhancedPentest
     GVMPage --> GVMMgmt
-    WazuhPage --> WazuhMgmt
     
     SecurityDashboard --> SecurityStatus
     EnhancedPentest --> AgenticAPI
-    WazuhMgmt --> SecurityAPI
     GVMMgmt --> SecurityAPI
-    ZAPModule --> SecurityAPI
     ChatPane --> IpsstcAPI
     
     SecurityStatus --> SecurityAPI
@@ -242,9 +231,7 @@ sequenceDiagram
 ```mermaid
 graph TB
     subgraph "Alert Sources"
-        Wazuh[🛡️ Wazuh Alerts]
         GVM[🔍 GVM Findings]
-        ZAP[🕷️ ZAP Results]
     end
     
     subgraph "Processing Pipeline"
@@ -260,9 +247,7 @@ graph TB
         Reports[📄 Intelligent Reports]
     end
     
-    Wazuh --> Aggregator
     GVM --> Aggregator
-    ZAP --> Aggregator
     
     Aggregator --> Correlator
     Correlator --> Prioritizer
@@ -476,15 +461,6 @@ These components form the foundational design system:
   - Displays vulnerability reports
   - Schedules automated scans
   - Exports scan results
-
-**`ZapProxyModule.tsx`**
-- **Purpose:** OWASP ZAP web application security testing
-- **Responsibilities:**
-  - Configures ZAP proxy settings
-  - Initiates web application scans
-  - Displays discovered vulnerabilities
-  - Manages spider and active scan configurations
-  - Shows scan progress and results
 
 #### Penetration Testing Components
 
@@ -809,13 +785,10 @@ App (Root)
     └── Routes
         ├── Index (Dashboard)
         │   └── SecurityDashboard
-        │       ├── WazuhManagement
         │       ├── GVMManagement
-        │       ├── ZapProxyModule
         │       ├── EnhancedAgenticPentestInterface
         │       ├── IntelligentReportingSystem
         │       └── MitreAttackMapper
-        ├── WazuhManagement (Dedicated page)
         ├── GVMManagement (Dedicated page)
         ├── SystemStatus
         └── NotFound (404)

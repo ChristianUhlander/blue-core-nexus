@@ -6,7 +6,6 @@ A comprehensive cybersecurity management dashboard with real-time API connection
 
 ✅ **Full API Service Layer** (`src/services/securityApi.ts`)
 - OpenVAS/GVM integration (port 9392)  
-- OWASP ZAP integration (port 8080)
 - Spiderfoot OSINT integration (port 5001)
 
 ✅ **Real-time Connection Status**
@@ -26,10 +25,9 @@ All buttons show live API status:
 - **Error**: Red indicators, mock data displayed
 
 ### Required Backend Setup
-Connect to Supabase and deploy these Edge Functions:
+Connect to backend and deploy these Edge Functions:
 ```bash
 /functions/v1/openvas-start-scan  
-/functions/v1/zap-owasp-scan
 /functions/v1/spiderfoot-osint
 ```
 
@@ -40,8 +38,8 @@ Connect to Supabase and deploy these Edge Functions:
 - [x] Mock data for development
 - [x] TypeScript interfaces
 - [x] Responsive UI components
-- [ ] Deploy Supabase Edge Functions
+- [ ] Deploy Edge Functions
 - [ ] Configure API secrets
 - [ ] Connect to actual security tools
 
-**Ready for Supabase backend integration!**
+**Ready for backend integration!**

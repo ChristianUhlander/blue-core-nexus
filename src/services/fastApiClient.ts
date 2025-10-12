@@ -161,17 +161,6 @@ class FastApiClient {
     return this.makeRequest(`${this.baseUrl}/api/gvm/reports/${reportId}?format=${format}`);
   }
 
-  // OWASP ZAP Methods
-  async getZapVersion(): Promise<ApiResponse<any>> {
-    return this.makeRequest(`${this.baseUrl}/api/zap/version`);
-  }
-
-  async startZapScan(target: string, scanType: string): Promise<ApiResponse<any>> {
-    return this.makeRequest(`${this.baseUrl}/api/zap/scan`, {
-      method: 'POST',
-      body: JSON.stringify({ target, scanType }),
-    });
-  }
 
   // SpiderFoot Methods
   async getSpiderfootScans(): Promise<ApiResponse<any[]>> {
@@ -223,13 +212,6 @@ export const mockData = {
       lastCheck: new Date().toISOString(),
       responseTime: 0,
       error: 'Service unavailable',
-    },
-    {
-      service: 'zap',
-      status: 'unhealthy' as const,
-      lastCheck: new Date().toISOString(),
-      responseTime: 0,
-      error: 'Connection timeout',
     },
     {
       service: 'spiderfoot',

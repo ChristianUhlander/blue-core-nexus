@@ -459,9 +459,7 @@ The IPS Security Center provides comprehensive security monitoring and penetrati
 
 ## Step 2: Service Verification
 The platform will automatically check:
-- **Wazuh SIEM**: Security event monitoring
 - **OpenVAS/GVM**: Vulnerability assessment
-- **OWASP ZAP**: Web application security testing
 
 ## Step 3: Dashboard Overview
 Key sections available:
@@ -500,9 +498,7 @@ The IPS Security Center follows a microservices architecture with clear separati
 - **Responsive Design**: Works on desktop and mobile devices
 
 ### Security Services Layer
-- **Wazuh SIEM**: Security information and event management
 - **OpenVAS/GVM**: Vulnerability assessment and management  
-- **OWASP ZAP**: Web application security testing
 - **SpiderFoot**: Open source intelligence gathering
 
 ### Integration Layer
@@ -549,7 +545,7 @@ The IPS Security Center follows a microservices architecture with clear separati
           content: `# IPS Security Center - Technical Architecture
 
 ## Overview
-The IPS Security Center integrates multiple security tools including Wazuh, OpenVAS/GVM, OWASP ZAP. It uses React 18 with TypeScript for the frontend and FastAPI for the backend.
+The IPS Security Center integrates multiple security tools including OpenVAS/GVM. It uses React 18 with TypeScript for the frontend and FastAPI for the backend.
 
 ## Current Architecture
 - **Frontend**: React 18, TypeScript, Tailwind CSS, Vite
@@ -558,9 +554,7 @@ The IPS Security Center integrates multiple security tools including Wazuh, Open
 - **Backend (Planned)**: FastAPI, PostgreSQL, Redis
 
 ## Service Integrations
-1. Wazuh SIEM - Host-based intrusion detection
-2. OpenVAS/GVM - Vulnerability assessment
-3. OWASP ZAP - Web application security testing
+1. OpenVAS/GVM - Vulnerability assessment
 
 For complete details, see docs/TECHNICAL_ARCHITECTURE.md`
         },
