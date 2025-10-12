@@ -85,11 +85,6 @@ export interface SpiderScanRequest {
   target: string;
 }
 
-export interface WazuhLogRequest {
-  filename?: string;
-  date?: string;
-  format?: string;
-}
 
 class IpsstcApiService {
   private baseUrl: string;
@@ -248,22 +243,6 @@ class IpsstcApiService {
     return this.makeRequest('/api/v1/zap/reports/download', {
       method: 'POST',
       body: JSON.stringify({ report_id: reportId, format })
-    });
-  }
-
-  // Wazuh Management
-  async getWazuhLogs(): Promise<any> {
-    return this.makeRequest('/api/v1/wazuh/logs');
-  }
-
-  async getWazuhStatus(): Promise<any> {
-    return this.makeRequest('/api/v1/wazuh/status');
-  }
-
-  async downloadWazuhLog(request: WazuhLogRequest): Promise<any> {
-    return this.makeRequest('/api/v1/wazuh/logs/download', {
-      method: 'POST',
-      body: JSON.stringify(request)
     });
   }
 

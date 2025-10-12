@@ -5,7 +5,6 @@ A comprehensive cybersecurity management dashboard with real-time API connection
 ## 🔧 Features Implemented
 
 ✅ **Full API Service Layer** (`src/services/securityApi.ts`)
-- Wazuh SIEM integration (port 55000)
 - OpenVAS/GVM integration (port 9392)  
 - OWASP ZAP integration (port 8080)
 - Spiderfoot OSINT integration (port 5001)
@@ -16,7 +15,6 @@ A comprehensive cybersecurity management dashboard with real-time API connection
 - Live status monitoring every 30 seconds
 
 ✅ **Production-Ready Components**
-- WazuhManagement.tsx - Agent management, alerts
 - GVMManagement.tsx - Vulnerability scanning
 - Status management hook with error handling
 
@@ -30,7 +28,6 @@ All buttons show live API status:
 ### Required Backend Setup
 Connect to Supabase and deploy these Edge Functions:
 ```bash
-/functions/v1/wazuh-health-check
 /functions/v1/openvas-start-scan  
 /functions/v1/zap-owasp-scan
 /functions/v1/spiderfoot-osint

@@ -86,11 +86,6 @@ export const EnvironmentConfigStatus = () => {
             </div>
             <div className="grid gap-3">
               <ServiceStatus 
-                name="Wazuh SIEM" 
-                serviceConfig={config.services.wazuh}
-                icon={Server}
-              />
-              <ServiceStatus 
                 name="GVM Scanner" 
                 serviceConfig={config.services.gvm}
                 icon={Database}

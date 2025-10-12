@@ -14,42 +14,6 @@ export interface ApiResponse<T = any> {
   requestId?: string;
 }
 
-export interface WazuhAgent {
-  id: string;
-  name: string;
-  ip: string;
-  status: 'active' | 'disconnected' | 'pending' | 'never_connected';
-  os: {
-    platform: string;
-    version: string;
-    name: string;
-  };
-  version: string;
-  lastKeepAlive: string;
-  group: string[];
-  node_name: string;
-}
-
-export interface WazuhAlert {
-  id: string;
-  timestamp: string;
-  rule: {
-    id: number;
-    level: number;
-    description: string;
-    groups: string[];
-  };
-  agent: {
-    id: string;
-    name: string;
-    ip: string;
-  };
-  location: string;
-  full_log: string;
-  decoder: {
-    name: string;
-  };
-}
 
 export interface ServiceHealth {
   service: string;
@@ -136,58 +100,6 @@ class FastApiClient {
       error: 'Unexpected error in retry logic',
       timestamp: new Date().toISOString(),
     };
-  }
-
-  // Wazuh API Methods
-  async getWazuhAgents(limit?: number, sort?: string): Promise<ApiResponse<WazuhAgent[]>> {
-    const params = new URLSearchParams();
-    if (limit) params.append('limit', limit.toString());
-    if (sort) params.append('sort', sort);
-    
-    const queryString = params.toString();
-    const url = `${this.baseUrl}/api/wazuh/agents${queryString ? `?${queryString}` : ''}`;
-    
-    return this.makeRequest<WazuhAgent[]>(url);
-  }
-
-  async getWazuhAlerts(limit = 50): Promise<ApiResponse<WazuhAlert[]>> {
-    return this.makeRequest<WazuhAlert[]>(`${this.baseUrl}/api/wazuh/alerts?limit=${limit}`);
-  }
-
-  async searchWazuhAlerts(query: {
-    size?: number;
-    sort?: string;
-    search?: string;
-    rule_id?: number;
-    agent_id?: string;
-    level?: number;
-  }): Promise<ApiResponse<WazuhAlert[]>> {
-    return this.makeRequest<WazuhAlert[]>(`${this.baseUrl}/api/wazuh/alerts/search`, {
-      method: 'POST',
-      body: JSON.stringify(query),
-    });
-  }
-
-  async restartWazuhAgent(agentId: string, waitForComplete = false): Promise<ApiResponse<{
-    status: string;
-    message: string;
-  }>> {
-    return this.makeRequest(`${this.baseUrl}/api/wazuh/agents/${agentId}/restart`, {
-      method: 'PUT',
-      body: JSON.stringify({ wait_for_complete: waitForComplete }),
-    });
-  }
-
-  async searchWazuhVulnerabilities(query: {
-    agent_id?: string;
-    cve?: string;
-    severity?: string;
-    status?: string;
-  }): Promise<ApiResponse<any[]>> {
-    return this.makeRequest(`${this.baseUrl}/api/wazuh/vulnerabilities/search`, {
-      method: 'POST',
-      body: JSON.stringify(query),
-    });
   }
 
   // Health Check Methods
@@ -304,81 +216,7 @@ export const fastApiClient = new FastApiClient();
 
 // Mock data for development when backend is unavailable
 export const mockData = {
-  agents: [
-    {
-      id: '001',
-      name: 'web-server-01',
-      ip: '192.168.1.100',
-      status: 'active' as const,
-      os: { platform: 'ubuntu', version: '20.04', name: 'Ubuntu' },
-      version: '4.3.10',
-      lastKeepAlive: new Date().toISOString(),
-      group: ['default', 'web-servers'],
-      node_name: 'node01',
-    },
-    {
-      id: '002', 
-      name: 'db-server-01',
-      ip: '192.168.1.101',
-      status: 'active' as const,
-      os: { platform: 'centos', version: '8', name: 'CentOS' },
-      version: '4.3.10',
-      lastKeepAlive: new Date().toISOString(),
-      group: ['default', 'database'],
-      node_name: 'node01',
-    },
-    {
-      id: '003',
-      name: 'app-server-01', 
-      ip: '192.168.1.102',
-      status: 'disconnected' as const,
-      os: { platform: 'windows', version: '2019', name: 'Windows Server' },
-      version: '4.3.10',
-      lastKeepAlive: new Date(Date.now() - 300000).toISOString(),
-      group: ['default', 'applications'],
-      node_name: 'node02',
-    },
-  ] as WazuhAgent[],
-
-  alerts: [
-    {
-      id: 'alert_001',
-      timestamp: new Date().toISOString(),
-      rule: {
-        id: 5710,
-        level: 5,
-        description: 'Attempt to login using a non-existent user',
-        groups: ['authentication_failed', 'pci_dss_10.2.4'],
-      },
-      agent: { id: '001', name: 'web-server-01', ip: '192.168.1.100' },
-      location: '/var/log/auth.log',
-      full_log: 'Jan 30 09:54:35 web-server-01 sshd[1234]: Failed password for invalid user admin from 192.168.1.200 port 22 ssh2',
-      decoder: { name: 'sshd' },
-    },
-    {
-      id: 'alert_002',
-      timestamp: new Date(Date.now() - 120000).toISOString(),
-      rule: {
-        id: 31151,
-        level: 10,
-        description: 'Multiple authentication failures',
-        groups: ['authentication_failures', 'pci_dss_11.4'],
-      },
-      agent: { id: '002', name: 'db-server-01', ip: '192.168.1.101' },
-      location: '/var/log/secure',
-      full_log: 'Jan 30 09:52:15 db-server-01 sshd[5678]: Failed password for root from 10.0.0.50 port 22 ssh2',
-      decoder: { name: 'sshd' },
-    },
-  ] as WazuhAlert[],
-
   serviceHealth: [
-    {
-      service: 'wazuh',
-      status: 'unhealthy' as const,
-      lastCheck: new Date().toISOString(),
-      responseTime: 0,
-      error: 'Connection refused',
-    },
     {
       service: 'gvm',
       status: 'unhealthy' as const,
