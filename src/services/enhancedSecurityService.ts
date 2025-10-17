@@ -55,7 +55,7 @@ export interface WazuhAlert {
 }
 
 export interface SecurityServiceHealth {
-  service: 'gvm' | 'spiderfoot';
+  service: 'wazuh' | 'gvm' | 'spiderfoot';
   status: 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
   lastCheck: string;
   responseTime: number;
@@ -89,7 +89,7 @@ class CircuitBreaker {
   private readonly resetTimeout = 60000; // 1 minute
 
   constructor() {
-    ['gvm', 'spiderfoot'].forEach(service => {
+    ['wazuh', 'gvm', 'spiderfoot'].forEach(service => {
       this.states.set(service, {
         failures: 0,
         lastFailure: 0,
@@ -171,7 +171,7 @@ class EnhancedSecurityService {
   // ========== INITIALIZATION ==========
 
   private initializeHealthStatuses(): void {
-    const services: Array<SecurityServiceHealth['service']> = ['gvm', 'spiderfoot'];
+    const services: Array<SecurityServiceHealth['service']> = ['wazuh', 'gvm', 'spiderfoot'];
     
     services.forEach(service => {
       this.healthStatuses.set(service, {
@@ -424,7 +424,7 @@ class EnhancedSecurityService {
   }
 
   private async performHealthChecks(): Promise<void> {
-    const services: Array<SecurityServiceHealth['service']> = ['gvm', 'spiderfoot'];
+    const services: Array<SecurityServiceHealth['service']> = ['wazuh', 'gvm', 'spiderfoot'];
     
     const healthChecks = services.map(service => this.checkServiceHealth(service));
     

@@ -67,6 +67,7 @@ const SecurityDashboard = () => {
   const [isThreatAnalysisOpen, setIsThreatAnalysisOpen] = useState(false);
   
   const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
+  const [isWazuhManagementOpen, setIsWazuhManagementOpen] = useState(false);
 
   // Target configuration for pentest modules
   const pentestTargetConfig = {
@@ -172,8 +173,16 @@ const SecurityDashboard = () => {
           }
         }];
 
-        // Register all event listeners (excluding Wazuh)
-        eventListeners.filter(({event}) => !event.includes('wazuh')).forEach(({
+        // Wazuh status updates
+        eventListeners.push({
+          event: 'security:health:wazuh',
+          handler: (event: CustomEvent) => {
+            setServiceHealths(prev => prev.map(service => service.service === 'wazuh' ? event.detail : service));
+          }
+        });
+
+        // Register all event listeners
+        eventListeners.forEach(({
           event,
           handler
         }) => {
@@ -1547,6 +1556,16 @@ const SecurityDashboard = () => {
                   
                   <TabsContent value="vulnerability" className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <Button 
+                        className="glow-hover" 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => window.location.href = '/wazuh'}
+                      >
+                        <Shield className="h-4 w-4 mr-2" />
+                        Manage Wazuh SIEM
+                      </Button>
+                      
                       <Dialog open={isGvmManagementOpen} onOpenChange={setIsGvmManagementOpen}>
                         <DialogTrigger asChild>
                           <Button className="glow-hover" variant="default" size="sm">
