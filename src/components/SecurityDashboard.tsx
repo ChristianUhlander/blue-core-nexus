@@ -1556,19 +1556,10 @@ const SecurityDashboard = () => {
                   
                   <TabsContent value="vulnerability" className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <Button 
-                        className="glow-hover" 
-                        variant="default" 
-                        size="sm"
-                        onClick={() => window.location.href = '/wazuh'}
-                      >
-                        <Shield className="h-4 w-4 mr-2" />
-                        Manage Wazuh SIEM
-                      </Button>
-                      
                       <Dialog open={isGvmManagementOpen} onOpenChange={setIsGvmManagementOpen}>
                         <DialogTrigger asChild>
                           <Button className="glow-hover" variant="default" size="sm">
+                            <Bug className="h-4 w-4 mr-2" />
                             Manage GVM/OpenVAS
                           </Button>
                         </DialogTrigger>
@@ -1584,6 +1575,32 @@ const SecurityDashboard = () => {
                           </DialogHeader>
                           <div className="overflow-auto max-h-[75vh]">
                             <GVMManagement />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Dialog open={isWazuhManagementOpen} onOpenChange={setIsWazuhManagementOpen}>
+                        <DialogTrigger asChild>
+                          <Button className="glow-hover" variant="default" size="sm">
+                            <Shield className="h-4 w-4 mr-2" />
+                            Manage Wazuh SIEM
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1400px] max-h-[90vh] gradient-card border-primary/20 overflow-hidden">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <Shield className="h-6 w-6 text-primary animate-pulse" />
+                              Wazuh SIEM Management
+                            </DialogTitle>
+                            <DialogDescription>
+                              Comprehensive security monitoring and threat detection console
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="overflow-auto max-h-[75vh]">
+                            {/* Wazuh Management component will be rendered here */}
+                            <div className="p-6 text-center text-muted-foreground">
+                              Wazuh Management Console - Navigate to <a href="/wazuh" className="text-primary underline">/wazuh</a> for full interface
+                            </div>
                           </div>
                         </DialogContent>
                       </Dialog>
