@@ -22,7 +22,7 @@ import { securityServicesApi } from "@/services/securityServicesApi";
 import { enhancedSecurityService, type SecurityServiceHealth } from "@/services/enhancedSecurityService";
 import { EnhancedAgenticPentestInterface } from "./EnhancedAgenticPentestInterface";
 import { IntelligentReportingSystem } from "./IntelligentReportingSystem";
-
+import MitreAttackMapping from "./MitreAttackMapping";
 
 import GVMManagement from "../pages/GVMManagement";
 import { ConnectionStatusIndicator } from "./ConnectionStatusIndicator";
@@ -68,6 +68,7 @@ const SecurityDashboard = () => {
   
   const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
   const [isWazuhManagementOpen, setIsWazuhManagementOpen] = useState(false);
+  const [isMitreMapOpen, setIsMitreMapOpen] = useState(false);
 
   // Target configuration for pentest modules
   const pentestTargetConfig = {
@@ -1554,8 +1555,8 @@ const SecurityDashboard = () => {
                     </TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="vulnerability" className="mt-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                   <TabsContent value="vulnerability" className="mt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                       <Button 
                         className="glow-hover" 
                         variant="default" 
@@ -1565,6 +1566,29 @@ const SecurityDashboard = () => {
                         <Shield className="h-4 w-4 mr-2" />
                         Manage Wazuh SIEM
                       </Button>
+                      
+                      <Dialog open={isMitreMapOpen} onOpenChange={setIsMitreMapOpen}>
+                        <DialogTrigger asChild>
+                          <Button className="glow-hover" variant="default" size="sm">
+                            <Target className="h-4 w-4 mr-2" />
+                            MITRE ATT&CK
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1400px] max-h-[90vh] gradient-card border-primary/20 overflow-hidden">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <Target className="h-6 w-6 text-primary animate-pulse" />
+                              MITRE ATT&CK Framework Mapping
+                            </DialogTitle>
+                            <DialogDescription>
+                              Threat intelligence mapped to MITRE ATT&CK tactics and techniques
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="overflow-auto max-h-[75vh]">
+                            <MitreAttackMapping />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                       
                       <Dialog open={isGvmManagementOpen} onOpenChange={setIsGvmManagementOpen}>
                         <DialogTrigger asChild>

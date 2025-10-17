@@ -6,6 +6,24 @@
 import { config, logger } from '@/config/environment';
 import type { WazuhAgent, WazuhAlert, ConnectionStatus } from '@/types/security';
 
+export interface MitreTechniqueMapping {
+  techniqueId: string;
+  techniqueName: string;
+  tactics: string[];
+  alertCount: number;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  lastSeen: string;
+  relatedAlerts: string[];
+}
+
+export interface MitreTacticSummary {
+  tacticName: string;
+  tacticId: string;
+  techniqueCount: number;
+  totalAlerts: number;
+  criticalTechniques: number;
+}
+
 interface WazuhApiResponse<T = any> {
   error: number;
   data: {
@@ -321,6 +339,102 @@ class WazuhApiClient {
         medium: 0,
         low: 0,
       };
+    }
+  }
+
+  /**
+   * Get MITRE ATT&CK technique mappings from alerts
+   */
+  async getMitreTechniques(timeRange: string = '24h'): Promise<MitreTechniqueMapping[]> {
+    try {
+      const alerts = await this.getAlerts({ limit: 1000, timeRange });
+      const techniqueMap = new Map<string, MitreTechniqueMapping>();
+
+      alerts.forEach(alert => {
+        if (alert.mitre?.id) {
+          alert.mitre.id.forEach((techId, idx) => {
+            const techName = alert.mitre?.technique[idx] || 'Unknown';
+            const tactics = alert.mitre?.tactic || [];
+
+            if (techniqueMap.has(techId)) {
+              const existing = techniqueMap.get(techId)!;
+              existing.alertCount++;
+              existing.relatedAlerts.push(alert.id);
+              existing.lastSeen = alert.timestamp > existing.lastSeen ? alert.timestamp : existing.lastSeen;
+            } else {
+              const severity = alert.ruleLevel >= 12 ? 'critical' : 
+                             alert.ruleLevel >= 8 ? 'high' :
+                             alert.ruleLevel >= 5 ? 'medium' : 'low';
+              
+              techniqueMap.set(techId, {
+                techniqueId: techId,
+                techniqueName: techName,
+                tactics: tactics,
+                alertCount: 1,
+                severity,
+                lastSeen: alert.timestamp,
+                relatedAlerts: [alert.id]
+              });
+            }
+          });
+        }
+      });
+
+      return Array.from(techniqueMap.values());
+    } catch (error) {
+      logger.error('Failed to get MITRE techniques', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get MITRE ATT&CK tactic summary
+   */
+  async getMitreTactics(timeRange: string = '24h'): Promise<MitreTacticSummary[]> {
+    try {
+      const techniques = await this.getMitreTechniques(timeRange);
+      const tacticMap = new Map<string, MitreTacticSummary>();
+
+      techniques.forEach(tech => {
+        tech.tactics.forEach(tactic => {
+          if (tacticMap.has(tactic)) {
+            const existing = tacticMap.get(tactic)!;
+            existing.techniqueCount++;
+            existing.totalAlerts += tech.alertCount;
+            if (tech.severity === 'critical') {
+              existing.criticalTechniques++;
+            }
+          } else {
+            tacticMap.set(tactic, {
+              tacticName: tactic,
+              tacticId: '',
+              techniqueCount: 1,
+              totalAlerts: tech.alertCount,
+              criticalTechniques: tech.severity === 'critical' ? 1 : 0
+            });
+          }
+        });
+      });
+
+      return Array.from(tacticMap.values());
+    } catch (error) {
+      logger.error('Failed to get MITRE tactics', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get detailed alerts for a specific MITRE technique
+   */
+  async getMitreTechniqueAlerts(techniqueId: string): Promise<WazuhAlert[]> {
+    try {
+      const alerts = await this.getAlerts({ limit: 1000 });
+      return alerts.filter(alert => 
+        alert.mitre?.id.includes(techniqueId)
+      );
+    } catch (error) {
+      logger.error('Failed to get MITRE technique alerts', { techniqueId, error });
+      return [];
     }
   }
 }
