@@ -289,7 +289,7 @@ const SystemStatus: React.FC = () => {
           </TabsList>
 
           <TabsContent value="services" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {serviceHealths.map(service => (
                 <Card key={service.service}>
                   <CardHeader className="pb-3">
@@ -298,7 +298,12 @@ const SystemStatus: React.FC = () => {
                         <div className={getStatusColor(service.status)}>
                           {getServiceIcon(service.service)}
                         </div>
-                        <CardTitle className="text-base capitalize">{service.service}</CardTitle>
+                        <CardTitle className="text-base">
+                          {service.service === 'wazuh' ? 'Wazuh SIEM' : 
+                           service.service === 'gvm' ? 'GVM Scanner' : 
+                           service.service === 'spiderfoot' ? 'SpiderFoot OSINT' : 
+                           service.service}
+                        </CardTitle>
                       </div>
                       <Badge variant={getStatusBadgeVariant(service.status)} className="text-xs">
                         {service.status}
