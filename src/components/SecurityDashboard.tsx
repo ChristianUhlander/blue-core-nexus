@@ -802,6 +802,13 @@ const SecurityDashboard = () => {
       scans: 0,
       lastCheck: null,
       error: null
+    },
+    wazuh: {
+      online: false,
+      agents: 0,
+      alerts: 0,
+      lastCheck: null,
+      error: null
     }
   });
   const [isCheckingServices, setIsCheckingServices] = useState(true);
@@ -851,6 +858,48 @@ const SecurityDashboard = () => {
   };
 
   /**
+   * Check Wazuh SIEM service status
+   * Backend Integration: Wazuh API health check
+   */
+  const checkWazuhStatus = async () => {
+    try {
+      const wazuhApi = (await import('@/services/wazuhApi')).default;
+      const health = await wazuhApi.checkHealth();
+      
+      if (health.online) {
+        // Get agent stats if service is online
+        const stats = await wazuhApi.getAgentStats();
+        const alertStats = await wazuhApi.getAlertStats('24h');
+        
+        setServiceStatus(prev => ({
+          ...prev,
+          wazuh: {
+            online: true,
+            agents: stats.active,
+            alerts: alertStats.critical + alertStats.high,
+            lastCheck: new Date().toISOString(),
+            error: null
+          }
+        }));
+      } else {
+        throw new Error(health.error || 'Service unavailable');
+      }
+    } catch (error) {
+      console.log('Wazuh service offline:', error.message);
+      setServiceStatus(prev => ({
+        ...prev,
+        wazuh: {
+          online: false,
+          agents: 0,
+          alerts: 0,
+          lastCheck: new Date().toISOString(),
+          error: error.message
+        }
+      }));
+    }
+  };
+
+  /**
    * Perform comprehensive service health check
    * Backend Integration: Parallel service status checks
    */
@@ -858,7 +907,7 @@ const SecurityDashboard = () => {
     setIsCheckingServices(true);
 
     // Run all service checks in parallel for better performance
-    await Promise.allSettled([checkGVMStatus()]);
+    await Promise.allSettled([checkGVMStatus(), checkWazuhStatus()]);
     setIsCheckingServices(false);
   };
 
@@ -880,17 +929,30 @@ const SecurityDashboard = () => {
    * This replaces the static tools array with dynamic data
    */
   const getDynamicToolsData = () => {
-    return [{
-      name: "OpenVAS Scanner",
-      description: "Vulnerability Assessment and Management",
-      status: serviceStatus.gvm.online ? "active" : "offline",
-      vulnerabilities: serviceStatus.gvm.online ? 42 : 0,
-      scans: serviceStatus.gvm.scans,
-      icon: Eye,
-      color: serviceStatus.gvm.online ? "blue-500" : "red-500",
-      lastCheck: serviceStatus.gvm.lastCheck,
-      error: serviceStatus.gvm.error
-    }];
+    return [
+      {
+        name: "OpenVAS Scanner",
+        description: "Vulnerability Assessment and Management",
+        status: serviceStatus.gvm.online ? "active" : "offline",
+        vulnerabilities: serviceStatus.gvm.online ? 42 : 0,
+        scans: serviceStatus.gvm.scans,
+        icon: Eye,
+        color: serviceStatus.gvm.online ? "blue-500" : "red-500",
+        lastCheck: serviceStatus.gvm.lastCheck,
+        error: serviceStatus.gvm.error
+      },
+      {
+        name: "Wazuh SIEM",
+        description: "Security Information and Event Management",
+        status: serviceStatus.wazuh.online ? "active" : "offline",
+        agents: serviceStatus.wazuh.agents,
+        alerts: serviceStatus.wazuh.alerts,
+        icon: Shield,
+        color: serviceStatus.wazuh.online ? "green-500" : "red-500",
+        lastCheck: serviceStatus.wazuh.lastCheck,
+        error: serviceStatus.wazuh.error
+      }
+    ];
   };
 
   /**
@@ -2161,6 +2223,14 @@ const SecurityDashboard = () => {
                     {tool.scans !== undefined && <span className="flex items-center gap-1">
                         <Activity className="h-4 w-4" />
                         {tool.scans} scans
+                      </span>}
+                    {tool.agents !== undefined && <span className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        {tool.agents} agents
+                      </span>}
+                    {tool.alerts !== undefined && <span className="flex items-center gap-1 text-orange-500">
+                        <AlertTriangle className="h-4 w-4" />
+                        {tool.alerts} alerts
                       </span>}
                   </div>
 
