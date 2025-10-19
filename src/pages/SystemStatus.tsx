@@ -70,7 +70,7 @@ const SystemStatus: React.FC = () => {
     window.addEventListener('security:websocket:connected', handleWebSocketConnected);
     window.addEventListener('security:websocket:disconnected', handleWebSocketDisconnected);
     
-    ['gvm', 'spiderfoot'].forEach(service => {
+    ['wazuh', 'gvm', 'spiderfoot'].forEach(service => {
       window.addEventListener(`security:health:${service}`, handleHealthUpdate as EventListener);
     });
 
@@ -82,7 +82,7 @@ const SystemStatus: React.FC = () => {
       window.removeEventListener('security:websocket:connected', handleWebSocketConnected);
       window.removeEventListener('security:websocket:disconnected', handleWebSocketDisconnected);
       
-      ['gvm', 'spiderfoot'].forEach(service => {
+      ['wazuh', 'gvm', 'spiderfoot'].forEach(service => {
         window.removeEventListener(`security:health:${service}`, handleHealthUpdate as EventListener);
       });
       
@@ -107,6 +107,7 @@ const SystemStatus: React.FC = () => {
 
   const getServiceIcon = (service: string) => {
     switch (service) {
+      case 'wazuh': return <Shield className="h-5 w-5" />;
       case 'gvm': return <Bug className="h-5 w-5" />;
       case 'spiderfoot': return <Eye className="h-5 w-5" />;
       default: return <Server className="h-5 w-5" />;
