@@ -1544,10 +1544,14 @@ const SecurityDashboard = () => {
               </CardHeader>
               <CardContent>
                  <Tabs defaultValue="vulnerability" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="vulnerability" className="flex items-center gap-2">
                       <Eye className="h-4 w-4" />
                       Vulnerability
+                    </TabsTrigger>
+                    <TabsTrigger value="wazuh" className="flex items-center gap-2">
+                      <Shield className="h-4 w-4" />
+                      Wazuh SIEM
                     </TabsTrigger>
                     <TabsTrigger value="webapp" className="flex items-center gap-2">
                       <Terminal className="h-4 w-4" />
@@ -1556,40 +1560,7 @@ const SecurityDashboard = () => {
                   </TabsList>
                   
                    <TabsContent value="vulnerability" className="mt-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                      <Button 
-                        className="glow-hover" 
-                        variant="default" 
-                        size="sm"
-                        onClick={() => window.location.href = '/wazuh'}
-                      >
-                        <Shield className="h-4 w-4 mr-2" />
-                        Manage Wazuh SIEM
-                      </Button>
-                      
-                      <Dialog open={isMitreMapOpen} onOpenChange={setIsMitreMapOpen}>
-                        <DialogTrigger asChild>
-                          <Button className="glow-hover" variant="default" size="sm">
-                            <Target className="h-4 w-4 mr-2" />
-                            MITRE ATT&CK
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[1400px] max-h-[90vh] gradient-card border-primary/20 overflow-hidden">
-                          <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2 text-xl">
-                              <Target className="h-6 w-6 text-primary animate-pulse" />
-                              MITRE ATT&CK Framework Mapping
-                            </DialogTitle>
-                            <DialogDescription>
-                              Threat intelligence mapped to MITRE ATT&CK tactics and techniques
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="overflow-auto max-h-[75vh]">
-                            <MitreAttackMapping />
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <Dialog open={isGvmManagementOpen} onOpenChange={setIsGvmManagementOpen}>
                         <DialogTrigger asChild>
                           <Button className="glow-hover" variant="default" size="sm">
@@ -2079,6 +2050,43 @@ const SecurityDashboard = () => {
                                 Schedule New Scan
                               </Button>
                             </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="wazuh" className="mt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <Button 
+                        className="glow-hover" 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => window.location.href = '/wazuh'}
+                      >
+                        <Shield className="h-4 w-4 mr-2" />
+                        Manage Wazuh SIEM
+                      </Button>
+                      
+                      <Dialog open={isMitreMapOpen} onOpenChange={setIsMitreMapOpen}>
+                        <DialogTrigger asChild>
+                          <Button className="glow-hover" variant="default" size="sm">
+                            <Target className="h-4 w-4 mr-2" />
+                            MITRE ATT&CK Mapping
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[1400px] max-h-[90vh] gradient-card border-primary/20 overflow-hidden">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <Target className="h-6 w-6 text-primary animate-pulse" />
+                              MITRE ATT&CK Framework Mapping
+                            </DialogTitle>
+                            <DialogDescription>
+                              Threat intelligence mapped to MITRE ATT&CK tactics and techniques
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="overflow-auto max-h-[75vh]">
+                            <MitreAttackMapping />
                           </div>
                         </DialogContent>
                       </Dialog>
