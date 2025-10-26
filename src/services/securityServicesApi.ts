@@ -1,6 +1,6 @@
 /**
  * Security Services API Client
- * HTTP API client for security tools (Wazuh, GVM, ZAP, Spiderfoot)
+ * HTTP API client for security tools (Wazuh, GVM, ZAP)
  * 
  * FEATURES:
  * - HTTP request handling with retry logic and timeout
@@ -272,35 +272,6 @@ class SecurityServicesApiClient {
     });
   }
 
-  /**
-   * Spiderfoot OSINT Integration
-   * Backend Endpoint: POST /api/spiderfoot/scans
-   */
-  async startSpiderfootScan(config: {
-    target: string;
-    scanType: string;
-    modules: string[];
-  }): Promise<ApiResponse<{ scanId: string }>> {
-    return this.makeRequest('/api/spiderfoot/scans', {
-      method: 'POST',
-      body: JSON.stringify(config),
-      headers: {
-        'Authorization': `Bearer ${this.apiKeys.spiderfoot}`
-      }
-    });
-  }
-
-  /**
-   * Get Spiderfoot scan results
-   * Backend Endpoint: GET /api/spiderfoot/scans/{scanId}/results
-   */
-  async getSpiderfootResults(scanId: string): Promise<ApiResponse<any[]>> {
-    return this.makeRequest(`/api/spiderfoot/scans/${scanId}/results`, {
-      headers: {
-        'Authorization': `Bearer ${this.apiKeys.spiderfoot}`
-      }
-    });
-  }
 
   /**
    * QA Validation Methods
@@ -336,7 +307,7 @@ class SecurityServicesApiClient {
     responseTime: number;
     error?: string;
   }>> {
-    const services = ['gvm', 'zap', 'spiderfoot'];
+    const services = ['gvm', 'zap'];
     const results: Record<string, any> = {};
     
     await Promise.allSettled(

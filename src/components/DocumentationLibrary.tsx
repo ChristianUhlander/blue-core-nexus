@@ -499,7 +499,7 @@ The IPS Security Center follows a microservices architecture with clear separati
 
 ### Security Services Layer
 - **OpenVAS/GVM**: Vulnerability assessment and management  
-- **SpiderFoot**: Open source intelligence gathering
+
 
 ### Integration Layer
 - **Security API Gateway**: Unified API access to all services

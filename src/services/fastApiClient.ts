@@ -161,19 +161,6 @@ class FastApiClient {
     return this.makeRequest(`${this.baseUrl}/api/gvm/reports/${reportId}?format=${format}`);
   }
 
-
-  // SpiderFoot Methods
-  async getSpiderfootScans(): Promise<ApiResponse<any[]>> {
-    return this.makeRequest<any[]>(`${this.baseUrl}/api/spiderfoot/scans`);
-  }
-
-  async startSpiderfootScan(target: string, scanType: string, modules: string[]): Promise<ApiResponse<any>> {
-    return this.makeRequest(`${this.baseUrl}/api/spiderfoot/scan`, {
-      method: 'POST',
-      body: JSON.stringify({ target, scanType, modules }),
-    });
-  }
-
   // WebSocket Connection
   connectWebSocket(): WebSocket | null {
     try {
@@ -212,13 +199,6 @@ export const mockData = {
       lastCheck: new Date().toISOString(),
       responseTime: 0,
       error: 'Service unavailable',
-    },
-    {
-      service: 'spiderfoot',
-      status: 'unhealthy' as const,
-      lastCheck: new Date().toISOString(),
-      responseTime: 0,
-      error: 'Service not running',
     },
   ] as ServiceHealth[],
 };

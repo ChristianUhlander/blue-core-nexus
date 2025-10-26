@@ -5,7 +5,7 @@
  * - Wazuh SIEM
  * - OpenVAS/GVM
  * - OWASP ZAP
- * - Spiderfoot OSINT
+ 
  * 
  * Each service includes:
  * - Connection status monitoring
@@ -374,120 +374,6 @@ export class ZAPService {
 }
 
 /**
- * Spiderfoot OSINT Intelligence Gathering Service
- * 
- * Spiderfoot provides OSINT capabilities via REST API
- * Documentation: https://spiderfoot.readthedocs.io/en/latest/api/
- */
-export class SpiderfootService {
-  private baseUrl: string;
-  private apiKey: string;
-  private status: ApiConnectionStatus;
-
-  constructor(baseUrl: string = 'http://localhost:5001', apiKey: string = '') {
-    this.baseUrl = baseUrl;
-    this.apiKey = apiKey;
-    this.status = {
-      service: 'Spiderfoot OSINT',
-      connected: false,
-      lastChecked: new Date()
-    };
-  }
-
-  /**
-   * Check Spiderfoot API connection
-   * @returns Promise<ApiConnectionStatus>
-   */
-  async checkConnection(): Promise<ApiConnectionStatus> {
-    const startTime = Date.now();
-    
-    try {
-      // TODO: Replace with backend API call
-      // This would call: /api/spiderfoot-health-check
-      const response = await fetch(`${this.baseUrl}/api?func=ping&apikey=${this.apiKey}`);
-      
-      const latency = Date.now() - startTime;
-      
-      if (response.ok) {
-        this.status = {
-          service: 'Spiderfoot OSINT',
-          connected: true,
-          lastChecked: new Date(),
-          latency
-        };
-      } else {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-    } catch (error) {
-      this.status = {
-        service: 'Spiderfoot OSINT',
-        connected: false,
-        lastChecked: new Date(),
-        error: error instanceof Error ? error.message : 'Connection failed'
-      };
-    }
-
-    return this.status;
-  }
-
-  /**
-   * Start OSINT scan
-   * @param target - Target to investigate
-   * @param modules - Modules to use
-   * @returns Promise<string> - Scan ID
-   */
-  async startScan(target: string, modules: string[] = []): Promise<string> {
-    try {
-      // TODO: Implement via backend API
-      // This would call: /api/spiderfoot-start-scan
-      const response = await fetch(`${this.baseUrl}/api`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          func: 'startscan',
-          apikey: this.apiKey,
-          scanname: `OSINT_${Date.now()}`,
-          scantarget: target,
-          modules: modules.join(',')
-        })
-      });
-      
-      if (!response.ok) throw new Error('Failed to start OSINT scan');
-      
-      const data = await response.json();
-      return data.id;
-    } catch (error) {
-      console.error('Spiderfoot startScan error:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get scan results
-   * @param scanId - Scan ID
-   * @returns Promise<any[]>
-   */
-  async getScanResults(scanId: string): Promise<any[]> {
-    try {
-      // TODO: Implement via backend API
-      const response = await fetch(`${this.baseUrl}/api?func=scandata&id=${scanId}&apikey=${this.apiKey}`);
-      
-      if (!response.ok) throw new Error('Failed to fetch scan results');
-      
-      const data = await response.json();
-      return data || [];
-    } catch (error) {
-      console.error('Spiderfoot getScanResults error:', error);
-      return [];
-    }
-  }
-
-  getStatus(): ApiConnectionStatus {
-    return this.status;
-  }
-}
-
-/**
  * Main Security API Manager
  * 
  * Coordinates all security services and provides unified interface
@@ -509,7 +395,6 @@ export class SecurityApiManager {
     this.services.set('wazuh', new WazuhService());
     this.services.set('openvas', new OpenVASService());
     this.services.set('zap', new ZAPService());
-    this.services.set('spiderfoot', new SpiderfootService());
   }
 
   /**

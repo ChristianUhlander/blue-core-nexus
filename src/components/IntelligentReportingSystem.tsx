@@ -1405,7 +1405,7 @@ db.execute(query, [email]);`}</pre>
                       <SelectItem value="wazuh">Wazuh SIEM Logs</SelectItem>
                       <SelectItem value="openvas">OpenVAS/GVM Scans</SelectItem>
                       <SelectItem value="owaspzap">OWASP ZAP Results</SelectItem>
-                      <SelectItem value="spiderfoot">SpiderFoot OSINT</SelectItem>
+                      
                       <SelectItem value="network">Network Scans</SelectItem>
                       <SelectItem value="webapp">Web Application Tests</SelectItem>
                       <SelectItem value="ad">Active Directory Assessment</SelectItem>

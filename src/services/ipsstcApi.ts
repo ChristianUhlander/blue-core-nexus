@@ -262,14 +262,6 @@ class IpsstcApiService {
     });
   }
 
-  // SpiderFoot
-  async launchSpiderfoot(request: SpiderScanRequest): Promise<any> {
-    return this.makeRequest('/api/v1/spiderfoot/api/v1/spiderfoot/scan', {
-      method: 'POST',
-      body: JSON.stringify(request)
-    });
-  }
-
   // AI Report Generation
   async generateReport(request: ReportRequest): Promise<ReportResponse> {
     return this.makeRequest('/api/v1/report/generate', {
