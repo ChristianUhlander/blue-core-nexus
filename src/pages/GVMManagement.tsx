@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Shield, Target, FileText, Users, Settings, Key, Activity, AlertTriangle, CheckCircle, Clock, Play, Pause, Trash2, Eye, Plus, RefreshCw, Download, Edit, Server, Database, Globe } from "lucide-react";
+import { ArrowLeft, Shield, Target, FileText, Users, Settings, Key, Activity, AlertTriangle, CheckCircle, Clock, Play, Pause, Trash2, Eye, Plus, RefreshCw, Download, Edit, Server, Database, Globe, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ipsstcApi, type TargetOut, type TargetIn, type ScannerOut, type ReportOut } from "@/services/ipsstcApi";
 
@@ -340,6 +340,39 @@ const GVMManagement = () => {
       });
     } finally {
       setOperationLoading(prev => ({ ...prev, [`scan_${target.id}`]: false }));
+    }
+  }, [toast]);
+
+  /**
+   * Stop a running scan
+   */
+  const handleStopScan = useCallback(async (targetId: number, taskId: string) => {
+    try {
+      setOperationLoading(prev => ({ ...prev, [`stop_${targetId}`]: true }));
+      
+      await ipsstcApi.stopScan(taskId);
+      
+      // Remove from active scan progress
+      setActiveScanProgress(prev => {
+        const newProgress = { ...prev };
+        delete newProgress[targetId];
+        return newProgress;
+      });
+      
+      toast({
+        title: "Scan Stopped",
+        description: "The scan has been stopped successfully."
+      });
+      
+    } catch (error) {
+      console.error('Failed to stop scan:', error);
+      toast({
+        title: "Error",
+        description: "Failed to stop scan. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setOperationLoading(prev => ({ ...prev, [`stop_${targetId}`]: false }));
     }
   }, [toast]);
   
@@ -898,19 +931,35 @@ const GVMManagement = () => {
                                 >
                                   <Edit className="w-4 h-4" />
                                 </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleStartScan(target)}
-                                  disabled={operationLoading[`scan_${target.id}`] || !target.is_active}
-                                  title="Start vulnerability scan"
-                                >
-                                  {operationLoading[`scan_${target.id}`] ? (
-                                    <div className="w-4 h-4 animate-spin border-2 border-current border-t-transparent rounded-full" />
-                                  ) : (
-                                    <Play className="w-4 h-4" />
-                                  )}
-                                </Button>
+                                {activeScanProgress[target.id] !== undefined ? (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleStopScan(target.id, target.gvmid)}
+                                    disabled={operationLoading[`stop_${target.id}`]}
+                                    title="Stop running scan"
+                                  >
+                                    {operationLoading[`stop_${target.id}`] ? (
+                                      <div className="w-4 h-4 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                                    ) : (
+                                      <X className="w-4 h-4 text-destructive" />
+                                    )}
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleStartScan(target)}
+                                    disabled={operationLoading[`scan_${target.id}`] || !target.is_active}
+                                    title="Start vulnerability scan"
+                                  >
+                                    {operationLoading[`scan_${target.id}`] ? (
+                                      <div className="w-4 h-4 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                                    ) : (
+                                      <Play className="w-4 h-4" />
+                                    )}
+                                  </Button>
+                                )}
                                 <Button
                                   variant="ghost"
                                   size="sm"

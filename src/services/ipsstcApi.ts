@@ -212,6 +212,13 @@ class IpsstcApiService {
     });
   }
 
+  async stopScan(taskId: string): Promise<any> {
+    return this.makeRequest('/api/v1/gvm/scan/stop', {
+      method: 'POST',
+      body: JSON.stringify({ task_id: taskId })
+    });
+  }
+
   async getReports(): Promise<ReportOut[]> {
     return this.makeRequest('/api/v1/gvm/reports');
   }
