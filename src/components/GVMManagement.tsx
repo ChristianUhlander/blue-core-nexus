@@ -12,7 +12,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Eye, Target, Shield, Play, Pause, Download, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Eye, Target, Shield, Play, Pause, Download, AlertTriangle, CheckCircle, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -315,6 +315,27 @@ const GVMManagement: React.FC = () => {
   };
 
   /**
+   * Stop a running scan
+   * @param scanId - ID of the scan to stop
+   */
+  const stopScan = async (scanId: string) => {
+    try {
+      setScans(prev => prev.filter(scan => scan.id !== scanId));
+      
+      toast({
+        title: "Scan Stopped",
+        description: "The scan has been stopped successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to stop scan",
+        variant: "destructive",
+      });
+    }
+  };
+
+  /**
    * Test connection to GVM
    */
   const testConnection = async () => {
@@ -435,22 +456,40 @@ const GVMManagement: React.FC = () => {
                         {scan.status}
                       </Badge>
                       {scan.status === 'running' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => controlScan(scan.id, 'pause')}
-                        >
-                          <Pause className="h-4 w-4" />
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => controlScan(scan.id, 'pause')}
+                          >
+                            <Pause className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => stopScan(scan.id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
                       )}
                       {scan.status === 'paused' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => controlScan(scan.id, 'resume')}
-                        >
-                          <Play className="h-4 w-4" />
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => controlScan(scan.id, 'resume')}
+                          >
+                            <Play className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => stopScan(scan.id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>
