@@ -64,44 +64,6 @@
   }
 }
 
-/* Futuristic Utility Classes */
-@layer utilities {
-  .glow {
-    box-shadow: var(--shadow-glow);
-    transition: var(--transition-glow);
-  }
-  
-  .glow-strong {
-    box-shadow: var(--shadow-glow-strong);
-  }
-  
-  .glow-hover:hover {
-    box-shadow: var(--shadow-glow-strong);
-    transform: translateY(-2px);
-  }
-  
-  .gradient-bg {
-    background: var(--gradient-background);
-  }
-  
-  .gradient-card {
-    background: var(--gradient-card);
-    backdrop-filter: blur(10px);
-    border: 1px solid hsl(var(--border) / 0.3);
-  }
-  
-  .text-glow {
-    text-shadow: 0 0 10px hsl(var(--glow-primary) / 0.5);
-  }
-  
-  .animate-pulse-glow {
-    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-  
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-}
 
 @layer base {
   * {
@@ -112,24 +74,5 @@
     @apply bg-background text-foreground;
     background: var(--gradient-background);
     min-height: 100vh;
-  }
-  
-  /* Futuristic Animations */
-  @keyframes pulse-glow {
-    0%, 100% {
-      box-shadow: 0 0 20px hsl(var(--glow-primary) / 0.3);
-    }
-    50% {
-      box-shadow: 0 0 30px hsl(var(--glow-primary) / 0.6);
-    }
-  }
-  
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
   }
 }
