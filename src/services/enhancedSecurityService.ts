@@ -17,43 +17,6 @@ import { config, logger } from "@/config/environment";
 
 // ========== TYPE DEFINITIONS ==========
 
-export interface WazuhAgent {
-  id: string;
-  name: string;
-  ip: string;
-  status: 'active' | 'disconnected' | 'pending' | 'never_connected';
-  os: {
-    platform: string;
-    version: string;
-    name: string;
-  };
-  version: string;
-  lastKeepAlive: string;
-  group: string[];
-  node_name: string;
-}
-
-export interface WazuhAlert {
-  id: string;
-  timestamp: string;
-  rule: {
-    id: number;
-    level: number;
-    description: string;
-    groups: string[];
-  };
-  agent: {
-    id: string;
-    name: string;
-    ip: string;
-  };
-  location: string;
-  full_log: string;
-  decoder: {
-    name: string;
-  };
-}
-
 export interface SecurityServiceHealth {
   service: 'wazuh' | 'gvm';
   status: 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
@@ -357,59 +320,6 @@ class EnhancedSecurityService {
     }
   }
 
-  // ========== WAZUH METHODS ==========
-
-  async getWazuhAgents(): Promise<WazuhAgent[]> {
-    try {
-      console.log('🔄 getWazuhAgents called (demo mode - returning empty array)');
-      // Skip API call in demo mode
-      return [];
-      
-    } catch (error) {
-      logger.error('Error fetching Wazuh agents:', error);
-      return [];
-    }
-  }
-
-  async getWazuhAlerts(limit = 50): Promise<WazuhAlert[]> {
-    try {
-      console.log('🔄 getWazuhAlerts called (demo mode - returning empty array)');
-      // Skip API call in demo mode
-      return [];
-      
-    } catch (error) {
-      logger.error('Error fetching Wazuh alerts:', error);
-      return [];
-    }
-  }
-
-  async restartWazuhAgent(agentId: string): Promise<void> {
-    try {
-      await this.makeRequest(
-        `${config.api.baseUrl}/api/wazuh/agents/${agentId}/restart`,
-        { method: 'POST' },
-        'wazuh'
-      );
-      
-      logger.info(`Successfully restarted Wazuh agent ${agentId}`);
-      
-      toast({
-        title: "🔄 Agent Restarted",
-        description: `Wazuh agent ${agentId} has been restarted successfully`,
-      });
-      
-    } catch (error) {
-      logger.error(`Error restarting Wazuh agent ${agentId}:`, error);
-      
-      toast({
-        title: "❌ Restart Failed",
-        description: `Failed to restart agent ${agentId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        variant: "destructive",
-      });
-      
-      throw error;
-    }
-  }
 
   // ========== HEALTH CHECK METHODS ==========
 
@@ -525,79 +435,6 @@ class EnhancedSecurityService {
       this.ws = null;
     }
     logger.info('EnhancedSecurityService disconnected');
-  }
-
-  // ========== MOCK DATA FOR DEVELOPMENT ==========
-
-  private getMockAgents(): WazuhAgent[] {
-    return [
-      {
-        id: '001',
-        name: 'web-server-01',
-        ip: '192.168.1.100',
-        status: 'active',
-        os: { platform: 'ubuntu', version: '20.04', name: 'Ubuntu' },
-        version: '4.3.10',
-        lastKeepAlive: new Date().toISOString(),
-        group: ['default', 'web-servers'],
-        node_name: 'node01',
-      },
-      {
-        id: '002', 
-        name: 'db-server-01',
-        ip: '192.168.1.101',
-        status: 'active',
-        os: { platform: 'centos', version: '8', name: 'CentOS' },
-        version: '4.3.10',
-        lastKeepAlive: new Date().toISOString(),
-        group: ['default', 'database'],
-        node_name: 'node01',
-      },
-      {
-        id: '003',
-        name: 'app-server-01', 
-        ip: '192.168.1.102',
-        status: 'disconnected',
-        os: { platform: 'windows', version: '2019', name: 'Windows Server' },
-        version: '4.3.10',
-        lastKeepAlive: new Date(Date.now() - 300000).toISOString(),
-        group: ['default', 'applications'],
-        node_name: 'node02',
-      },
-    ];
-  }
-
-  private getMockAlerts(): WazuhAlert[] {
-    return [
-      {
-        id: 'alert_001',
-        timestamp: new Date().toISOString(),
-        rule: {
-          id: 5710,
-          level: 5,
-          description: 'Attempt to login using a non-existent user',
-          groups: ['authentication_failed', 'pci_dss_10.2.4'],
-        },
-        agent: { id: '001', name: 'web-server-01', ip: '192.168.1.100' },
-        location: '/var/log/auth.log',
-        full_log: 'Jan 30 09:54:35 web-server-01 sshd[1234]: Failed password for invalid user admin from 192.168.1.200 port 22 ssh2',
-        decoder: { name: 'sshd' },
-      },
-      {
-        id: 'alert_002',
-        timestamp: new Date(Date.now() - 120000).toISOString(),
-        rule: {
-          id: 31151,
-          level: 10,
-          description: 'Multiple authentication failures',
-          groups: ['authentication_failures', 'pci_dss_11.4'],
-        },
-        agent: { id: '002', name: 'db-server-01', ip: '192.168.1.101' },
-        location: '/var/log/secure',
-        full_log: 'Jan 30 09:52:15 db-server-01 sshd[5678]: Failed password for root from 10.0.0.50 port 22 ssh2',
-        decoder: { name: 'sshd' },
-      },
-    ];
   }
 }
 
