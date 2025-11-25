@@ -26,14 +26,6 @@ export interface ConnectionStatus {
 }
 
 // Service Status Types
-export interface WazuhStatus extends ConnectionStatus {
-  agents: number;
-  activeAgents: number;
-  alerts: number;
-  criticalAlerts: number;
-  lastAlert?: string;
-}
-
 export interface GVMStatus extends ConnectionStatus {
   scans: number;
   activeScans: number;
@@ -47,7 +39,7 @@ export interface GVMStatus extends ConnectionStatus {
 // Alert Types
 export interface SecurityAlert {
   id: string;
-  source: 'wazuh' | 'gvm';
+  source: 'gvm';
   timestamp: string;
   severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
   title: string;
@@ -62,44 +54,6 @@ export interface SecurityAlert {
   data?: Record<string, any>;
   acknowledged: boolean;
   assignedTo?: string;
-}
-
-// Wazuh Types
-export interface WazuhAgent {
-  id: string;
-  name: string;
-  ip: string;
-  status: 'active' | 'disconnected' | 'never_connected' | 'pending';
-  os: {
-    platform: string;
-    version: string;
-    name: string;
-  };
-  version: string;
-  lastKeepAlive?: string;
-  nodeName?: string;
-  dateAdd: string;
-  manager?: string;
-  group?: string[];
-}
-
-export interface WazuhAlert {
-  id: string;
-  timestamp: string;
-  ruleId: string;
-  ruleLevel: number;
-  ruleDescription: string;
-  agentId: string;
-  agentName: string;
-  location: string;
-  srcIp?: string;
-  dstIp?: string;
-  fullLog: string;
-  mitre?: {
-    id: string[];
-    tactic: string[];
-    technique: string[];
-  };
 }
 
 // Scan Types
