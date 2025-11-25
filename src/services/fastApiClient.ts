@@ -189,16 +189,3 @@ class FastApiClient {
 
 // Export singleton instance
 export const fastApiClient = new FastApiClient();
-
-// Mock data for development when backend is unavailable
-export const mockData = {
-  serviceHealth: [
-    {
-      service: 'gvm',
-      status: 'unhealthy' as const,
-      lastCheck: new Date().toISOString(),
-      responseTime: 0,
-      error: 'Service unavailable',
-    },
-  ] as ServiceHealth[],
-};
