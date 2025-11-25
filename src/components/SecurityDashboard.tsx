@@ -67,7 +67,6 @@ const SecurityDashboard = () => {
   const [isThreatAnalysisOpen, setIsThreatAnalysisOpen] = useState(false);
   
   const [isGvmManagementOpen, setIsGvmManagementOpen] = useState(false);
-  const [isWazuhManagementOpen, setIsWazuhManagementOpen] = useState(false);
   const [isMitreMapOpen, setIsMitreMapOpen] = useState(false);
 
   // Target configuration for pentest modules
@@ -173,14 +172,6 @@ const SecurityDashboard = () => {
             setServiceHealths(prev => prev.map(service => service.service === 'gvm' ? event.detail : service));
           }
         }];
-
-        // Wazuh status updates
-        eventListeners.push({
-          event: 'security:health:wazuh',
-          handler: (event: CustomEvent) => {
-            setServiceHealths(prev => prev.map(service => service.service === 'wazuh' ? event.detail : service));
-          }
-        });
 
         // Register all event listeners
         eventListeners.forEach(({
@@ -802,13 +793,6 @@ const SecurityDashboard = () => {
       scans: 0,
       lastCheck: null,
       error: null
-    },
-    wazuh: {
-      online: false,
-      agents: 0,
-      alerts: 0,
-      lastCheck: null,
-      error: null
     }
   });
   const [isCheckingServices, setIsCheckingServices] = useState(true);
@@ -858,48 +842,6 @@ const SecurityDashboard = () => {
   };
 
   /**
-   * Check Wazuh SIEM service status
-   * Backend Integration: Wazuh API health check
-   */
-  const checkWazuhStatus = async () => {
-    try {
-      const wazuhApi = (await import('@/services/wazuhApi')).default;
-      const health = await wazuhApi.checkHealth();
-      
-      if (health.online) {
-        // Get agent stats if service is online
-        const stats = await wazuhApi.getAgentStats();
-        const alertStats = await wazuhApi.getAlertStats('24h');
-        
-        setServiceStatus(prev => ({
-          ...prev,
-          wazuh: {
-            online: true,
-            agents: stats.active,
-            alerts: alertStats.critical + alertStats.high,
-            lastCheck: new Date().toISOString(),
-            error: null
-          }
-        }));
-      } else {
-        throw new Error(health.error || 'Service unavailable');
-      }
-    } catch (error) {
-      console.log('Wazuh service offline:', error.message);
-      setServiceStatus(prev => ({
-        ...prev,
-        wazuh: {
-          online: false,
-          agents: 0,
-          alerts: 0,
-          lastCheck: new Date().toISOString(),
-          error: error.message
-        }
-      }));
-    }
-  };
-
-  /**
    * Perform comprehensive service health check
    * Backend Integration: Parallel service status checks
    */
@@ -907,7 +849,7 @@ const SecurityDashboard = () => {
     setIsCheckingServices(true);
 
     // Run all service checks in parallel for better performance
-    await Promise.allSettled([checkGVMStatus(), checkWazuhStatus()]);
+    await Promise.allSettled([checkGVMStatus()]);
     setIsCheckingServices(false);
   };
 
@@ -940,17 +882,6 @@ const SecurityDashboard = () => {
         color: serviceStatus.gvm.online ? "blue-500" : "red-500",
         lastCheck: serviceStatus.gvm.lastCheck,
         error: serviceStatus.gvm.error
-      },
-      {
-        name: "Wazuh SIEM",
-        description: "Security Information and Event Management",
-        status: serviceStatus.wazuh.online ? "active" : "offline",
-        agents: serviceStatus.wazuh.agents,
-        alerts: serviceStatus.wazuh.alerts,
-        icon: Shield,
-        color: serviceStatus.wazuh.online ? "green-500" : "red-500",
-        lastCheck: serviceStatus.wazuh.lastCheck,
-        error: serviceStatus.wazuh.error
       }
     ];
   };
@@ -1611,10 +1542,6 @@ const SecurityDashboard = () => {
                       <Eye className="h-4 w-4" />
                       Vulnerability
                     </TabsTrigger>
-                    <TabsTrigger value="wazuh" className="flex items-center gap-2">
-                      <Shield className="h-4 w-4" />
-                      Wazuh SIEM
-                    </TabsTrigger>
                     <TabsTrigger value="webapp" className="flex items-center gap-2">
                       <Terminal className="h-4 w-4" />
                       Pentesting
@@ -2118,43 +2045,7 @@ const SecurityDashboard = () => {
                     </div>
                   </TabsContent>
                   
-                  <TabsContent value="wazuh" className="mt-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Button 
-                        className="glow-hover" 
-                        variant="default" 
-                        size="sm"
-                        onClick={() => window.location.href = '/wazuh'}
-                      >
-                        <Shield className="h-4 w-4 mr-2" />
-                        Manage Wazuh SIEM
-                      </Button>
-                      
-                      <Dialog open={isMitreMapOpen} onOpenChange={setIsMitreMapOpen}>
-                        <DialogTrigger asChild>
-                          <Button className="glow-hover" variant="default" size="sm">
-                            <Target className="h-4 w-4 mr-2" />
-                            MITRE ATT&CK Mapping
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[1400px] max-h-[90vh] gradient-card border-primary/20 overflow-hidden">
-                          <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2 text-xl">
-                              <Target className="h-6 w-6 text-primary animate-pulse" />
-                              MITRE ATT&CK Framework Mapping
-                            </DialogTitle>
-                            <DialogDescription>
-                              Threat intelligence mapped to MITRE ATT&CK tactics and techniques
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="overflow-auto max-h-[75vh]">
-                            <MitreAttackMapping />
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  </TabsContent>
-                  
+                   
                    <TabsContent value="webapp" className="mt-4">
                      <div className="grid grid-cols-1 gap-4">
                        <div className="text-center p-8 text-muted-foreground">
@@ -2223,14 +2114,6 @@ const SecurityDashboard = () => {
                     {tool.scans !== undefined && <span className="flex items-center gap-1">
                         <Activity className="h-4 w-4" />
                         {tool.scans} scans
-                      </span>}
-                    {tool.agents !== undefined && <span className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        {tool.agents} agents
-                      </span>}
-                    {tool.alerts !== undefined && <span className="flex items-center gap-1 text-orange-500">
-                        <AlertTriangle className="h-4 w-4" />
-                        {tool.alerts} alerts
                       </span>}
                   </div>
 

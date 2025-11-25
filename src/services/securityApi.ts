@@ -2,10 +2,8 @@
  * Security API Service Layer
  * 
  * This service layer provides interfaces to various security tools:
- * - Wazuh SIEM
  * - OpenVAS/GVM
  * - OWASP ZAP
- 
  * 
  * Each service includes:
  * - Connection status monitoring
@@ -30,118 +28,6 @@ export interface SecurityService {
   baseUrl: string;
   apiKey?: string;
   status: ApiConnectionStatus;
-}
-
-/**
- * Wazuh SIEM API Service
- * 
- * Wazuh provides SIEM capabilities with REST API
- * Documentation: https://documentation.wazuh.com/current/user-manual/api/index.html
- */
-export class WazuhService {
-  private baseUrl: string;
-  private apiKey: string;
-  private status: ApiConnectionStatus;
-
-  constructor(baseUrl: string = 'http://localhost:55000', apiKey: string = '') {
-    this.baseUrl = baseUrl;
-    this.apiKey = apiKey;
-    this.status = {
-      service: 'Wazuh SIEM',
-      connected: false,
-      lastChecked: new Date()
-    };
-  }
-
-  /**
-   * Check Wazuh API connection and authentication
-   * @returns Promise<ApiConnectionStatus>
-   */
-  async checkConnection(): Promise<ApiConnectionStatus> {
-    const startTime = Date.now();
-    
-    try {
-      // TODO: Replace with actual backend API call
-      // This would call: /api/wazuh-health-check
-      const response = await fetch(`${this.baseUrl}/security/user/authenticate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
-        }
-      });
-
-      const latency = Date.now() - startTime;
-      
-      if (response.ok) {
-        this.status = {
-          service: 'Wazuh SIEM',
-          connected: true,
-          lastChecked: new Date(),
-          latency
-        };
-      } else {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-    } catch (error) {
-      this.status = {
-        service: 'Wazuh SIEM',
-        connected: false,
-        lastChecked: new Date(),
-        error: error instanceof Error ? error.message : 'Connection failed'
-      };
-    }
-
-    return this.status;
-  }
-
-  /**
-   * Get active agents from Wazuh
-   * @returns Promise<any[]>
-   */
-  async getAgents(): Promise<any[]> {
-    try {
-      // TODO: Implement via backend API
-      // This would call: /api/wazuh-agents
-      const response = await fetch(`${this.baseUrl}/agents`, {
-        headers: { 'Authorization': `Bearer ${this.apiKey}` }
-      });
-      
-      if (!response.ok) throw new Error('Failed to fetch agents');
-      
-      const data = await response.json();
-      return data.data?.affected_items || [];
-    } catch (error) {
-      console.error('Wazuh getAgents error:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Get recent alerts from Wazuh
-   * @param limit - Number of alerts to retrieve
-   * @returns Promise<any[]>
-   */
-  async getAlerts(limit: number = 50): Promise<any[]> {
-    try {
-      // TODO: Implement via backend API
-      const response = await fetch(`${this.baseUrl}/security/events?limit=${limit}`, {
-        headers: { 'Authorization': `Bearer ${this.apiKey}` }
-      });
-      
-      if (!response.ok) throw new Error('Failed to fetch alerts');
-      
-      const data = await response.json();
-      return data.data?.affected_items || [];
-    } catch (error) {
-      console.error('Wazuh getAlerts error:', error);
-      return [];
-    }
-  }
-
-  getStatus(): ApiConnectionStatus {
-    return this.status;
-  }
 }
 
 /**
@@ -392,7 +278,6 @@ export class SecurityApiManager {
    */
   private initializeServices(): void {
     // TODO: Replace with proper secret management
-    this.services.set('wazuh', new WazuhService());
     this.services.set('openvas', new OpenVASService());
     this.services.set('zap', new ZAPService());
   }

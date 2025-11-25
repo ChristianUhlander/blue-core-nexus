@@ -21,7 +21,6 @@ export interface EnvironmentConfig {
     timeout: number;
   };
   services: {
-    wazuh: SecurityServiceConfig;
     gvm: SecurityServiceConfig;
   };
   websocket: {
@@ -44,16 +43,6 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
       timeout: 30000,
     },
     services: {
-      wazuh: {
-        baseUrl: isDevelopment ? 'http://localhost:55000' : 'https://wazuh-api.yourdomain.com',
-        timeout: 30000,
-        retryAttempts: 2,
-        retryDelay: 3000,
-        credentials: {
-          username: 'wazuh',
-          password: 'wazuh', // In production, this would come from secure storage
-        },
-      },
       gvm: {
         baseUrl: isDevelopment ? 'http://localhost:9392' : 'https://gvm-api.yourdomain.com',
         timeout: 30000,

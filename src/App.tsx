@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import GVMManagement from "./pages/GVMManagement";
-import WazuhManagement from "./pages/WazuhManagement";
 import SystemStatus from "./pages/SystemStatus";
 import NotFound from "./pages/NotFound";
 
@@ -20,7 +19,6 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/gvm" element={<GVMManagement />} />
-          <Route path="/wazuh" element={<WazuhManagement />} />
           <Route path="/status" element={<SystemStatus />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

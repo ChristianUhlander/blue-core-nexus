@@ -78,31 +78,7 @@ export const MitreAttackMapping: React.FC<MitreAttackMappingProps> = ({ classNam
   const loadMitreData = async () => {
     setLoading(true);
     try {
-      // Import wazuhApi dynamically to get real MITRE data
-      const { wazuhApi } = await import('@/services/wazuhApi');
-      const mitreData = await wazuhApi.getMitreTechniques(timeRange);
-      
-      // Transform API data to component format
-      const transformedTechniques: MitreTechnique[] = mitreData.map(tech => ({
-        id: tech.techniqueId,
-        name: tech.techniqueName,
-        tactics: tech.tactics,
-        count: tech.alertCount,
-        severity: tech.severity,
-        lastSeen: tech.lastSeen,
-        alerts: [] // Can be populated from relatedAlerts if needed
-      }));
-
-      setTechniques(transformedTechniques);
-      
-      toast({
-        title: "Success",
-        description: `Loaded ${transformedTechniques.length} MITRE techniques`
-      });
-    } catch (error) {
-      console.error('Failed to load MITRE data:', error);
-      
-      // Fallback to mock data for demonstration
+      // Use mock data for demonstration
       const mockTechniques: MitreTechnique[] = [
         {
           id: 'T1566.001',
@@ -156,8 +132,8 @@ export const MitreAttackMapping: React.FC<MitreAttackMappingProps> = ({ classNam
       setTechniques(mockTechniques);
       
       toast({
-        title: "Using Demo Data",
-        description: "Could not connect to Wazuh API, showing example data",
+        title: "MITRE Data Loaded",
+        description: "Showing example MITRE ATT&CK mappings",
         variant: "default"
       });
     } finally {

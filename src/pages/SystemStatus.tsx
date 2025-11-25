@@ -70,7 +70,7 @@ const SystemStatus: React.FC = () => {
     window.addEventListener('security:websocket:connected', handleWebSocketConnected);
     window.addEventListener('security:websocket:disconnected', handleWebSocketDisconnected);
     
-    ['wazuh', 'gvm'].forEach(service => {
+    ['gvm'].forEach(service => {
       window.addEventListener(`security:health:${service}`, handleHealthUpdate as EventListener);
     });
 
@@ -82,7 +82,7 @@ const SystemStatus: React.FC = () => {
       window.removeEventListener('security:websocket:connected', handleWebSocketConnected);
       window.removeEventListener('security:websocket:disconnected', handleWebSocketDisconnected);
       
-      ['wazuh', 'gvm'].forEach(service => {
+      ['gvm'].forEach(service => {
         window.removeEventListener(`security:health:${service}`, handleHealthUpdate as EventListener);
       });
       
@@ -107,7 +107,6 @@ const SystemStatus: React.FC = () => {
 
   const getServiceIcon = (service: string) => {
     switch (service) {
-      case 'wazuh': return <Shield className="h-5 w-5" />;
       case 'gvm': return <Bug className="h-5 w-5" />;
       default: return <Server className="h-5 w-5" />;
     }
@@ -298,9 +297,7 @@ const SystemStatus: React.FC = () => {
                           {getServiceIcon(service.service)}
                         </div>
                         <CardTitle className="text-base">
-                          {service.service === 'wazuh' ? 'Wazuh SIEM' : 
-                            service.service === 'gvm' ? 'GVM Scanner' : 
-                            service.service}
+                          {service.service === 'gvm' ? 'GVM Scanner' : service.service}
                         </CardTitle>
                       </div>
                       <Badge variant={getStatusBadgeVariant(service.status)} className="text-xs">
