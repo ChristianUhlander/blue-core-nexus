@@ -18,7 +18,7 @@ import { config, logger } from "@/config/environment";
 // ========== TYPE DEFINITIONS ==========
 
 export interface SecurityServiceHealth {
-  service: 'wazuh' | 'gvm';
+  service: 'gvm';
   status: 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
   lastCheck: string;
   responseTime: number;
@@ -52,12 +52,10 @@ class CircuitBreaker {
   private readonly resetTimeout = 60000; // 1 minute
 
   constructor() {
-    ['wazuh', 'gvm'].forEach(service => {
-      this.states.set(service, {
-        failures: 0,
-        lastFailure: 0,
-        state: 'closed'
-      });
+    this.states.set('gvm', {
+      failures: 0,
+      lastFailure: 0,
+      state: 'closed'
     });
   }
 
@@ -134,15 +132,11 @@ class EnhancedSecurityService {
   // ========== INITIALIZATION ==========
 
   private initializeHealthStatuses(): void {
-    const services: Array<SecurityServiceHealth['service']> = ['wazuh', 'gvm'];
-    
-    services.forEach(service => {
-      this.healthStatuses.set(service, {
-        service,
-        status: 'unknown',
-        lastCheck: new Date().toISOString(),
-        responseTime: 0,
-      });
+    this.healthStatuses.set('gvm', {
+      service: 'gvm',
+      status: 'unknown',
+      lastCheck: new Date().toISOString(),
+      responseTime: 0,
     });
   }
 
@@ -211,21 +205,6 @@ class EnhancedSecurityService {
     logger.debug('WebSocket message received:', data);
 
     switch (data.type) {
-      case 'wazuh_alert':
-        window.dispatchEvent(new CustomEvent('security:wazuh:message', { 
-          detail: { type: 'alert', alert: data.payload } 
-        }));
-        
-        // Show critical alerts as toasts
-        if (data.payload.rule?.level >= 10) {
-          toast({
-            title: "🚨 Critical Security Alert",
-            description: `${data.payload.rule.description} on ${data.payload.agent.name}`,
-            variant: "destructive",
-          });
-        }
-        break;
-        
       case 'service_health':
         this.updateHealthStatus(data.service, data.payload);
         break;
@@ -334,12 +313,8 @@ class EnhancedSecurityService {
   }
 
   private async performHealthChecks(): Promise<void> {
-    const services: Array<SecurityServiceHealth['service']> = ['wazuh', 'gvm'];
-    
-    const healthChecks = services.map(service => this.checkServiceHealth(service));
-    
     try {
-      await Promise.allSettled(healthChecks);
+      await this.checkServiceHealth('gvm');
     } catch (error) {
       logger.error('Health check error:', error);
     }
