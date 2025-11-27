@@ -2,7 +2,7 @@ import { ModelConfiguration as ModelConfigComponent } from "@/components/ModelCo
 import { ModelConfiguration } from "@/types/modelConfig";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import EnhancedAgenticPentestInterface from "@/components/EnhancedAgenticPentestInterface";
+import { EnhancedAgenticPentestInterface } from "@/components/EnhancedAgenticPentestInterface";
 
 const Index = () => {
   const [showConfig, setShowConfig] = useState(true);
