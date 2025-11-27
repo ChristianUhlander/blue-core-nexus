@@ -58,19 +58,13 @@ export const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps>
     // Register event listeners
     window.addEventListener('security:websocket:connected', handleWebSocketConnected);
     window.addEventListener('security:websocket:disconnected', handleWebSocketDisconnected);
-    
-    ['wazuh', 'gvm'].forEach(service => {
-      window.addEventListener(`security:health:${service}`, handleHealthUpdate as EventListener);
-    });
+    window.addEventListener('security:health:gvm', handleHealthUpdate as EventListener);
 
     // Cleanup
     return () => {
       window.removeEventListener('security:websocket:connected', handleWebSocketConnected);
       window.removeEventListener('security:websocket:disconnected', handleWebSocketDisconnected);
-      
-      ['wazuh', 'gvm'].forEach(service => {
-        window.removeEventListener(`security:health:${service}`, handleHealthUpdate as EventListener);
-      });
+      window.removeEventListener('security:health:gvm', handleHealthUpdate as EventListener);
     };
   }, []);
 
