@@ -104,16 +104,16 @@ class FastApiClient {
 
   // Health Check Methods
   async getServicesHealth(): Promise<ApiResponse<ServiceHealth[]>> {
-    return this.makeRequest<ServiceHealth[]>(`${this.baseUrl}/api/health/all`);
+    return this.makeRequest<ServiceHealth[]>(`${this.baseUrl}/health/all`);
   }
 
   async checkServiceHealth(service: string): Promise<ApiResponse<ServiceHealth>> {
-    return this.makeRequest<ServiceHealth>(`${this.baseUrl}/api/health/${service}`);
+    return this.makeRequest<ServiceHealth>(`${this.baseUrl}/health/${service}`);
   }
 
   // GVM/OpenVAS Methods
   async listGvmTargets(): Promise<ApiResponse<any[]>> {
-    return this.makeRequest(`${this.baseUrl}/api/gvm/targets`);
+    return this.makeRequest(`${this.baseUrl}/gvm/targets`);
   }
 
   async createGvmTarget(target: {
@@ -122,20 +122,20 @@ class FastApiClient {
     port_list_id?: string;
     comment?: string;
   }): Promise<ApiResponse<{ id: string }>> {
-    return this.makeRequest(`${this.baseUrl}/api/gvm/targets`, {
+    return this.makeRequest(`${this.baseUrl}/gvm/targets`, {
       method: 'POST',
       body: JSON.stringify(target),
     });
   }
 
   async deleteGvmTarget(targetId: string): Promise<ApiResponse<void>> {
-    return this.makeRequest(`${this.baseUrl}/api/gvm/targets/${targetId}`, {
+    return this.makeRequest(`${this.baseUrl}/gvm/targets/${targetId}`, {
       method: 'DELETE',
     });
   }
 
   async listGvmTasks(): Promise<ApiResponse<any[]>> {
-    return this.makeRequest(`${this.baseUrl}/api/gvm/tasks`);
+    return this.makeRequest(`${this.baseUrl}/gvm/tasks`);
   }
 
   async createGvmTask(task: {
@@ -145,20 +145,20 @@ class FastApiClient {
     scanner_id?: string;
     comment?: string;
   }): Promise<ApiResponse<{ id: string }>> {
-    return this.makeRequest(`${this.baseUrl}/api/gvm/tasks`, {
+    return this.makeRequest(`${this.baseUrl}/gvm/tasks`, {
       method: 'POST',
       body: JSON.stringify(task),
     });
   }
 
   async startGvmTask(taskId: string): Promise<ApiResponse<{ report_id: string }>> {
-    return this.makeRequest(`${this.baseUrl}/api/gvm/tasks/${taskId}/start`, {
+    return this.makeRequest(`${this.baseUrl}/gvm/tasks/${taskId}/start`, {
       method: 'POST',
     });
   }
 
   async getGvmReport(reportId: string, format: 'xml' | 'pdf' | 'html' = 'xml'): Promise<ApiResponse<any>> {
-    return this.makeRequest(`${this.baseUrl}/api/gvm/reports/${reportId}?format=${format}`);
+    return this.makeRequest(`${this.baseUrl}/gvm/reports/${reportId}?format=${format}`);
   }
 
   // WebSocket Connection
