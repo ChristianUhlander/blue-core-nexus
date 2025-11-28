@@ -26,6 +26,7 @@ import MitreAttackMapping from "./MitreAttackMapping";
 
 import GVMManagement from "../pages/GVMManagement";
 import { ConnectionStatusIndicator } from "./ConnectionStatusIndicator";
+import { MCPBridgeStatusIndicator } from "./MCPBridgeStatusIndicator";
 import heroImage from "@/assets/security-hero.jpg";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import * as React from "react";
@@ -2171,6 +2172,11 @@ const SecurityDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* MCP Bridge Status */}
+        <div className="mb-12">
+          <MCPBridgeStatusIndicator />
+        </div>
 
         {/* Real-time Alert Feed */}
         <Card id="alert-feed" className="gradient-card glow mb-12">
